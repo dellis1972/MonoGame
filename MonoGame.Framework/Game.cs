@@ -375,6 +375,7 @@ namespace Microsoft.Xna.Framework
                 Platform.RunLoop();
                 EndRun();
                 OnExiting(this, EventArgs.Empty);
+                UnloadContent();
                 break;
             default:
                 throw new NotImplementedException(string.Format(
@@ -573,6 +574,7 @@ namespace Microsoft.Xna.Framework
             platform.AsyncRunLoopEnded -= Platform_AsyncRunLoopEnded;
             EndRun();
             OnExiting(this, EventArgs.Empty);
+            UnloadContent();
         }
 
 #if WINRT
