@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{49706DF8-D951-4029-9318-237FBCF97126}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Xna.Framework.Net</RootNamespace>
+    <AssemblyName>MonoGame.Framework.Net</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\MonoGame.Framework\Net\AvailableNetworkSession.cs">
+      <Link>AvailableNetworkSession.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\AvailableNetworkSessionCollection.cs">
+      <Link>AvailableNetworkSessionCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandEvent.cs">
+      <Link>CommandEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandEventType.cs">
+      <Link>CommandEventType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandGamerJoined.cs">
+      <Link>CommandGamerJoined.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandGamerLeft.cs">
+      <Link>CommandGamerLeft.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandGamerStateChange.cs">
+      <Link>CommandGamerStateChange.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandReceiveData.cs">
+      <Link>CommandReceiveData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandSendData.cs">
+      <Link>CommandSendData.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\CommandSessionStateChange.cs">
+      <Link>CommandSessionStateChange.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\GamerStates.cs">
+      <Link>GamerStates.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\ICommand.cs">
+      <Link>ICommand.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\LocalNetworkGamer.cs">
+      <Link>LocalNetworkGamer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\MonoGamerPeer.cs">
+      <Link>MonoGamerPeer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkException.cs">
+      <Link>NetworkException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkGamer.cs">
+      <Link>NetworkGamer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkMachine.cs">
+      <Link>NetworkMachine.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkMessageType.cs">
+      <Link>NetworkMessageType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkNotAvailableException.cs">
+      <Link>NetworkNotAvailableException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSession.cs">
+      <Link>NetworkSession.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSessionEndReason.cs">
+      <Link>NetworkSessionEndReason.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSessionJoinError.cs">
+      <Link>NetworkSessionJoinError.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSessionJoinException.cs">
+      <Link>NetworkSessionJoinException.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSessionProperties.cs">
+      <Link>NetworkSessionProperties.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSessionState.cs">
+      <Link>NetworkSessionState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\NetworkSessionType.cs">
+      <Link>NetworkSessionType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\PacketReader.cs">
+      <Link>PacketReader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\PacketWriter.cs">
+      <Link>PacketWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\QualityOfService.cs">
+      <Link>QualityOfService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Net\SendDataOptions.cs">
+      <Link>SendDataOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ThirdParty\Lidgren.Network\Lidgren.Network.Windows.csproj">
+      <Project>{AE483C29-042E-4226-BA52-D247CE7676DA}</Project>
+      <Name>Lidgren.Network.Windows</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.Game.csproj">
+      <Project>{E955E85A-C19A-4FF5-946D-B1E629ED2F67}</Project>
+      <Name>MonoGame.Framework.Game</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.GamerServices.csproj">
+      <Project>{8D9AA87A-39CE-4288-A95A-0B0A30ADA2A3}</Project>
+      <Name>MonoGame.Framework.GamerServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.Graphics.csproj">
+      <Project>{14A84B2A-D9E1-4BB7-9FF0-E037BF0625F3}</Project>
+      <Name>MonoGame.Framework.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.csproj">
+      <Project>{6CBEB36E-6086-4820-B9C7-602CE8E2F258}</Project>
+      <Name>MonoGame.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

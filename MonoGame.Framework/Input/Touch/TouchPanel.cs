@@ -214,7 +214,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
 #if ANDROID				
 				return (int)Game.Activity.Resources.DisplayMetrics.HeightPixels;
 #else
-                return Game.Instance.Window.ClientBounds.Height;
+                return 0;// Game.Instance.Window.ClientBounds.Height;
 #endif
             }
             set
@@ -235,7 +235,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
 #if ANDROID				
 				return (int)Game.Activity.Resources.DisplayMetrics.WidthPixels;
 #else
-                return Game.Instance.Window.ClientBounds.Width;
+                return 0;// Game.Instance.Window.ClientBounds.Width;
 #endif				
             }
             set

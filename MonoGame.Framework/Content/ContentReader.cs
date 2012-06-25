@@ -42,7 +42,6 @@ namespace Microsoft.Xna.Framework.Content
     {
         private ContentManager contentManager;
         private ContentTypeReaderManager typeReaderManager;
-        private GraphicsDevice graphicsDevice;
         private string assetName;
         private List<KeyValuePair<int, Action<object>>> sharedResourceFixups;
         private ContentTypeReader[] typeReaders;
@@ -57,18 +56,10 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
 
-        internal GraphicsDevice GraphicsDevice
-        {
-            get
-            {
-                return this.graphicsDevice;
-            }
-        }
-
-        internal ContentReader(ContentManager manager, Stream stream, GraphicsDevice graphicsDevice, string assetName, int version)
+        internal ContentReader(ContentManager manager, Stream stream
+            , string assetName, int version)
             : base(stream)
         {
-            this.graphicsDevice = graphicsDevice;
             this.contentManager = manager;
             this.assetName = assetName;
 			this.version = version;

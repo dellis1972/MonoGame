@@ -130,7 +130,7 @@ namespace Microsoft.Xna.Framework.Net
 //				//  se that we can broadcast the change to other peers.
 //				localGamer.PropertyChanged += HandleGamerPropertyChanged;	
 //				
-//			}
+//			}            
 
 			_remoteGamers = new GamerCollection<NetworkGamer>();
 			_previousGamers = new GamerCollection<NetworkGamer>();

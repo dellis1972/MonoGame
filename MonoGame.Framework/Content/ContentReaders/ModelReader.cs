@@ -88,7 +88,7 @@ namespace Microsoft.Xna.Framework.Content
 		protected internal override Model Read(ContentReader reader, Model existingInstance)
 		{
 			List<ModelBone> bones = new List<ModelBone>();
-
+            GraphicsDevice device = (GraphicsDevice)reader.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
             // Read the bone names and transforms.
             uint boneCount = reader.ReadUInt32();
             Debug.WriteLine("Bone count: {0}", boneCount);
@@ -188,7 +188,7 @@ namespace Microsoft.Xna.Framework.Content
 
 					
                 }
-				ModelMesh mesh = new ModelMesh(reader.GraphicsDevice, parts);
+				ModelMesh mesh = new ModelMesh(device, parts);
 				mesh.Name = name;
 				mesh.ParentBone = bones[parentBoneIndex];
 				mesh.ParentBone.AddMesh(mesh);
@@ -199,7 +199,7 @@ namespace Microsoft.Xna.Framework.Content
             // Read the final pieces of model data.
             var rootBoneIndex = ReadBoneReference(reader, boneCount);
 
-            Model model = new Model(reader.GraphicsDevice, bones, meshes);
+            Model model = new Model(device, bones, meshes);
 
             model.Root = bones[rootBoneIndex];
 		

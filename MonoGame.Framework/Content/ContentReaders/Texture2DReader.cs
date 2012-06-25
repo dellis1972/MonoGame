@@ -55,7 +55,7 @@ namespace Microsoft.Xna.Framework.Content
         protected internal override Texture2D Read(ContentReader reader, Texture2D existingInstance)
 		{
 			Texture2D texture = null;
-			
+            IGraphicsDeviceService device = (IGraphicsDeviceService)reader.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));            
 			SurfaceFormat surfaceFormat;
 			if (reader.version < 5) {
 				SurfaceFormat_Legacy legacyFormat = (SurfaceFormat_Legacy)reader.ReadInt32 ();
@@ -111,7 +111,7 @@ namespace Microsoft.Xna.Framework.Content
 					break;
 			}
 			
-			texture = new Texture2D(reader.GraphicsDevice, width, height, levelCount > 1, convertedFormat);
+			texture = new Texture2D(device.GraphicsDevice, width, height, levelCount > 1, convertedFormat);
 			
 			for (int level=0; level<levelCount; level++)
 			{

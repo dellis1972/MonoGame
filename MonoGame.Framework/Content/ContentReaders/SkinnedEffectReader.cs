@@ -7,8 +7,8 @@ namespace Microsoft.Xna.Framework.Content
     class SkinnedEffectReader : ContentTypeReader<SkinnedEffect>
     {
         protected internal override SkinnedEffect Read(ContentReader input, SkinnedEffect existingInstance)
-        {
-            var effect = new SkinnedEffect(input.GraphicsDevice);
+        {            
+            var effect = new SkinnedEffect(Game.Instance.GraphicsDevice);
 			effect.Texture = input.ReadExternalReference<Texture> () as Texture2D;
 			effect.WeightsPerVertex = input.ReadInt32 ();
 			effect.DiffuseColor = input.ReadVector3 ();

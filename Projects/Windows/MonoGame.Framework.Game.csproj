@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E955E85A-C19A-4FF5-946D-B1E629ED2F67}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Xna.Framework.Game</RootNamespace>
+    <AssemblyName>MonoGame.Framework.Game</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;SPLIT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS;SPLIT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Libs\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\MonoGame.Framework\Desktop\OpenTKGamePlatform.cs">
+      <Link>OpenTKGamePlatform.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Desktop\OpenTKGameWindow.cs">
+      <Link>OpenTKGameWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Desktop\TitleContainer.cs">
+      <Link>TitleContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\DrawableGameComponent.cs">
+      <Link>DrawableGameComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Game.cs">
+      <Link>Game.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GameComponent.cs">
+      <Link>GameComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GameComponentCollection.cs">
+      <Link>GameComponentCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GameComponentCollectionEventArgs.cs">
+      <Link>GameComponentCollectionEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GamePlatform.cs">
+      <Link>GamePlatform.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GamerServices\GamerServicesComponent.cs">
+      <Link>GamerServices\GamerServicesComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GameServiceContainer.cs">
+      <Link>GameServiceContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GameTime.cs">
+      <Link>GameTime.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GameWindow.cs">
+      <Link>GameWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\GraphicsDeviceInformation.cs">
+      <Link>GraphicsDeviceInformation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsContentManager.cs">
+      <Link>GraphicsContentManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\IDrawable.cs">
+      <Link>IDrawable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\IGameComponent.cs">
+      <Link>IGameComponent.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\IGraphicsDeviceManager.cs">
+      <Link>IGraphicsDeviceManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\IUpdateable.cs">
+      <Link>IUpdateable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\LaunchParameters.cs">
+      <Link>LaunchParameters.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\PreparingDeviceSettingsEventArgs.cs">
+      <Link>PreparingDeviceSettingsEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\MonoGame.Framework\Windows\GraphicsDeviceManager.cs">
+      <Link>GraphicsDeviceManager.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MonoGame.Framework.GamerServices.csproj">
+      <Project>{8D9AA87A-39CE-4288-A95A-0B0A30ADA2A3}</Project>
+      <Name>MonoGame.Framework.GamerServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.Graphics.csproj">
+      <Project>{14A84B2A-D9E1-4BB7-9FF0-E037BF0625F3}</Project>
+      <Name>MonoGame.Framework.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.csproj">
+      <Project>{6CBEB36E-6086-4820-B9C7-602CE8E2F258}</Project>
+      <Name>MonoGame.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.Input.Touch.csproj">
+      <Project>{F2A45C64-05CB-4FC8-A5C6-55CEADA541C3}</Project>
+      <Name>MonoGame.Framework.Input.Touch</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

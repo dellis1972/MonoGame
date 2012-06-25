@@ -32,8 +32,8 @@ namespace Microsoft.Xna.Framework.Content
         protected internal override Effect Read(ContentReader input, Effect existingInstance)
         {
             int count = input.ReadInt32();
-            
-            var effect = new Effect(input.GraphicsDevice,input.ReadBytes(count));
+            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            var effect = new Effect(device,input.ReadBytes(count));
             effect.Name = input.AssetName;
             
             return effect;

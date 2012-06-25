@@ -81,6 +81,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.Content;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -137,6 +138,7 @@ namespace Microsoft.Xna.Framework
             _services = new GameServiceContainer();
             _components = new GameComponentCollection();
             Content = new ContentManager(_services);
+            GraphicsContentManager GraphicsContent = new GraphicsContentManager(_services);            
 
             Platform = GamePlatform.Create(this);
             Platform.Activated += Platform_Activated;

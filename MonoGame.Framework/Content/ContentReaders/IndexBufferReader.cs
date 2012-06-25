@@ -46,11 +46,12 @@ namespace Microsoft.Xna.Framework.Content
     {
         protected internal override IndexBuffer Read(ContentReader input, IndexBuffer existingInstance)
         {
+            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
             var sixteenBits = input.ReadBoolean();
             var dataSize = input.ReadInt32();
             var data = input.ReadBytes(dataSize);
 
-            var buffer = new IndexBuffer(input.GraphicsDevice, 
+            var buffer = new IndexBuffer(device, 
                 sixteenBits ? IndexElementSize.SixteenBits : IndexElementSize.ThirtyTwoBits, 
                 dataSize / ( sixteenBits ? 2 : 4 ), BufferUsage.WriteOnly);
 

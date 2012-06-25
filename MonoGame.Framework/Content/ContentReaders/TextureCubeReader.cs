@@ -9,10 +9,11 @@ namespace Microsoft.Xna.Framework.Content
 		
 		protected internal override TextureCube Read(ContentReader reader, TextureCube existingInstance)
 		{
+            GraphicsDevice device =  (GraphicsDevice)reader.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
 			SurfaceFormat surfaceFormat = (SurfaceFormat)reader.ReadInt32 ();
 			int size = reader.ReadInt32 ();
 			int levels = reader.ReadInt32 ();
-			TextureCube textureCube = new TextureCube(reader.GraphicsDevice, size, levels > 1, surfaceFormat);
+			TextureCube textureCube = new TextureCube(device, size, levels > 1, surfaceFormat);
 			for (int face = 0; face < 6; face++) {
 				for (int i=0; i<levels; i++) {
 					int faceSize = reader.ReadInt32();

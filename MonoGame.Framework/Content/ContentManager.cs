@@ -59,7 +59,6 @@ namespace Microsoft.Xna.Framework.Content
 	{
 		private string _rootDirectory = string.Empty;
 		private IServiceProvider serviceProvider;
-		private IGraphicsDeviceService graphicsDeviceService;
 		protected Dictionary<string, object> loadedAssets = new Dictionary<string, object>();
 		List<IDisposable> disposableAssets = new List<IDisposable>();
 		bool disposed;
@@ -67,7 +66,7 @@ namespace Microsoft.Xna.Framework.Content
 		private static object ContentManagerLock = new object();
         private static List<ContentManager> ContentManagers = new List<ContentManager>();
 
-        private static void AddContentManager(ContentManager contentManager)
+        protected static void AddContentManager(ContentManager contentManager)
         {
             lock (ContentManagerLock)
             {
@@ -75,7 +74,7 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
 
-        private static void RemoveContentManager(ContentManager contentManager)
+        protected static void RemoveContentManager(ContentManager contentManager)
         {
             lock (ContentManagerLock)
             {
@@ -219,7 +218,7 @@ namespace Microsoft.Xna.Framework.Content
 			return stream;
 		}
 
-		protected T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
+		protected virtual T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
 		{
 			if (string.IsNullOrEmpty(assetName))
 			{
@@ -234,17 +233,7 @@ namespace Microsoft.Xna.Framework.Content
 			CurrentAssetDirectory = lastPathSeparatorIndex == -1 ? RootDirectory : assetName.Substring(0, lastPathSeparatorIndex);
 			
 			string originalAssetName = assetName;
-			object result = null;
-
-			if (this.graphicsDeviceService == null)
-			{
-				this.graphicsDeviceService = serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
-				if (this.graphicsDeviceService == null)
-				{
-					throw new InvalidOperationException("No Graphics Device Service");
-				}
-			}
-			
+			object result = null;		
 			Stream stream = null;
 			bool loadXnb = false;
 			try
@@ -256,19 +245,18 @@ namespace Microsoft.Xna.Framework.Content
             catch (ContentLoadException)
             {
 				//MonoGame try to load as a non-content file
-				
-				assetName = TitleContainer.GetFilename(Path.Combine (_rootDirectory, assetName));
-				
-                if ((typeof(T) == typeof(Texture2D)))
-				{
-					assetName = Texture2DReader.Normalize(assetName);
-				}
-				else if ((typeof(T) == typeof(SpriteFont)))
-				{
-					assetName = SpriteFontReader.Normalize(assetName);
-				}
+                assetName = TitleContainer.GetFilename(Path.Combine(_rootDirectory, assetName));
+
+                foreach (ContentManager manager in ContentManagers)
+                {
+                    if (manager != this)
+                    {
+                        result = manager.ReadAsset<T>(assetName, recordDisposableObject);
+                    }
+                }
+								                
 #if !WINRT
-				else if ((typeof(T) == typeof(Song)))
+				if ((typeof(T) == typeof(Song)))
 				{
 					assetName = SongReader.Normalize(assetName);
 				}
@@ -281,31 +269,13 @@ namespace Microsoft.Xna.Framework.Content
 					assetName = Video.Normalize(assetName);
 				}
 #endif
-                else if ((typeof(T) == typeof(Effect)))
-				{
-					assetName = EffectReader.Normalize(assetName);
-				}
+                
 	
 				if (string.IsNullOrEmpty(assetName))
 				{
 					throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
 				}
-			
-				if ((typeof(T) == typeof(Texture2D)))
-				{
-					using (Stream assetStream = TitleContainer.OpenStream(assetName))
-					{
-						Texture2D texture = Texture2D.FromStream(
-							graphicsDeviceService.GraphicsDevice, assetStream);
-						texture.Name = originalAssetName;
-						result = texture;
-					}
-				}
-				else if ((typeof(T) == typeof(SpriteFont)))
-				{
-					//result = new SpriteFont(Texture2D.FromFile(graphicsDeviceService.GraphicsDevice,assetName), null, null, null, 0, 0.0f, null, null);
-					throw new NotImplementedException();
-				}
+							
 #if !WINRT
 				else if ((typeof(T) == typeof(Song)))
 				{
@@ -320,15 +290,7 @@ namespace Microsoft.Xna.Framework.Content
 					result = new Video(assetName);
 				}
 #endif
-                else if ((typeof(T) == typeof(Effect)))
-				{
-					using (Stream assetStream = TitleContainer.OpenStream(assetName))
-					{
-						var data = new byte[assetStream.Length];
-						assetStream.Read (data, 0, (int)assetStream.Length);
-						result = new Effect(this.graphicsDeviceService.GraphicsDevice, data);
-                    }
-                }
+                
 			}
 			
 			if (loadXnb) {
@@ -437,18 +399,20 @@ namespace Microsoft.Xna.Framework.Content
 							}
 	
 							decompressedStream.Seek(0, SeekOrigin.Begin);
-							reader = new ContentReader(this, decompressedStream, this.graphicsDeviceService.GraphicsDevice, originalAssetName, version);
+							reader = new ContentReader(this, decompressedStream, originalAssetName, version);
 						}
 						else
 						{
-							reader = new ContentReader(this, stream, this.graphicsDeviceService.GraphicsDevice, originalAssetName, version);
+							reader = new ContentReader(this, stream, originalAssetName, version);
 						}
 	
 						using(reader)
 						{
 							result = reader.ReadAsset<T>();
+                            /*
                             if (result is GraphicsResource)
                                 ((GraphicsResource)result).Name = originalAssetName;
+                             */
 						}
 					}
 				}
@@ -488,7 +452,7 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
         
-        protected void ReloadAsset(string originalAssetName, object currentAsset)
+        protected virtual void ReloadAsset(string originalAssetName, object currentAsset)
         {
 			string assetName = originalAssetName;
 			if (string.IsNullOrEmpty(assetName))
@@ -500,15 +464,6 @@ namespace Microsoft.Xna.Framework.Content
 				throw new ObjectDisposedException("ContentManager");
 			}
 
-			if (this.graphicsDeviceService == null)
-			{
-				this.graphicsDeviceService = serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
-				if (this.graphicsDeviceService == null)
-				{
-					throw new InvalidOperationException("No Graphics Device Service");
-				}
-			}
-			
 			Stream stream = null;
 			//bool loadXnb = false;
 			try
@@ -522,17 +477,18 @@ namespace Microsoft.Xna.Framework.Content
 				//MonoGame try to load as a non-content file
 
 				assetName = TitleContainer.GetFilename(Path.Combine (_rootDirectory, assetName));
+
+                foreach (ContentManager manager in ContentManagers)
+                {
+                    if (manager != this)
+                    {
+                        manager.ReloadAsset(assetName, currentAsset);
+                    }
+                }
 				
-                if ((currentAsset is Texture2D))
-                {
-                    assetName = Texture2DReader.Normalize(assetName);
-                }
-                else if ((currentAsset is SpriteFont))
-                {
-                    assetName = SpriteFontReader.Normalize(assetName);
-                }
+                
 #if !WINRT
-                else if ((currentAsset is Song))
+                if ((currentAsset is Song))
                 {
                     assetName = SongReader.Normalize(assetName);
                 }
@@ -550,17 +506,7 @@ namespace Microsoft.Xna.Framework.Content
                     throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
                 }
 			
-                if ((currentAsset is Texture2D))
-                {
-                    using (Stream assetStream = OpenStream(assetName))
-                    {
-                        var asset = currentAsset as Texture2D;
-                        asset.Reload(assetStream);
-                    }
-                }
-                else if ((currentAsset is SpriteFont))
-                {
-                }
+                
 #if !WINRT
                 else if ((currentAsset is Song))
                 {

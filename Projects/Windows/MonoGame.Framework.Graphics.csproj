@@ -1,0 +1,413 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{14A84B2A-D9E1-4BB7-9FF0-E037BF0625F3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Xna.Framework.Graphics</RootNamespace>
+    <AssemblyName>MonoGame.Framework.Graphics</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;OPENGL;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;OPENGL;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Libs\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\MonoGame.Framework\Content\ContentReaders\EffectReader.cs">
+      <Link>Content\ContentReaders\EffectReader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Content\ContentReaders\SpriteFontReader.cs">
+      <Link>Content\ContentReaders\SpriteFontReader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Content\ContentReaders\Texture2DReader.cs">
+      <Link>Content\ContentReaders\Texture2DReader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ClearOptions.cs">
+      <Link>ClearOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ColorWriteChannels.cs">
+      <Link>ColorWriteChannels.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\CompareFunction.cs">
+      <Link>CompareFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\CompilerOptions.cs">
+      <Link>CompilerOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\CubeMapFace.cs">
+      <Link>CubeMapFace.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\DeviceType.cs">
+      <Link>DeviceType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\DirectionalLight.cs">
+      <Link>DirectionalLight.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\DisplayMode.cs">
+      <Link>DisplayMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\DisplayModeCollection.cs">
+      <Link>DisplayModeCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\DxtUtil.cs">
+      <Link>DxtUtil.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\AlphaTestEffect.cs">
+      <Link>Effect\AlphaTestEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\BasicEffect.cs">
+      <Link>Effect\BasicEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\ConstantBuffer.cs">
+      <Link>Effect\ConstantBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\DualTextureEffect.cs">
+      <Link>Effect\DualTextureEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\DXShader.cs">
+      <Link>Effect\DXShader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\Effect.cs">
+      <Link>Effect\Effect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectAnnotation.cs">
+      <Link>Effect\EffectAnnotation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectAnnotationCollection.cs">
+      <Link>Effect\EffectAnnotationCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectHelpers.cs">
+      <Link>Effect\EffectHelpers.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectParameter.cs">
+      <Link>Effect\EffectParameter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectParameterClass.cs">
+      <Link>Effect\EffectParameterClass.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectParameterCollection.cs">
+      <Link>Effect\EffectParameterCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectParameterType.cs">
+      <Link>Effect\EffectParameterType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectPass.cs">
+      <Link>Effect\EffectPass.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectPassCollection.cs">
+      <Link>Effect\EffectPassCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectTechnique.cs">
+      <Link>Effect\EffectTechnique.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EffectTechniqueCollection.cs">
+      <Link>Effect\EffectTechniqueCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\EnvironmentMapEffect.cs">
+      <Link>Effect\EnvironmentMapEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\IEffectFog.cs">
+      <Link>Effect\IEffectFog.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\IEffectLights.cs">
+      <Link>Effect\IEffectLights.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\IEffectMatrices.cs">
+      <Link>Effect\IEffectMatrices.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\SkinnedEffect.cs">
+      <Link>Effect\SkinnedEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Effect\SpriteEffect.cs">
+      <Link>Effect\SpriteEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsAdapter.cs">
+      <Link>GraphicsAdapter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsDevice.cs">
+      <Link>GraphicsDevice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsDeviceCapabilities.cs">
+      <Link>GraphicsDeviceCapabilities.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsDeviceInformation.cs">
+      <Link>GraphicsDeviceInformation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsDeviceStatus.cs">
+      <Link>GraphicsDeviceStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsExtensions.cs">
+      <Link>GraphicsExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsProfile.cs">
+      <Link>GraphicsProfile.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\GraphicsResource.cs">
+      <Link>GraphicsResource.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\IGraphicsDeviceService.cs">
+      <Link>IGraphicsDeviceService.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ImageEx.cs">
+      <Link>ImageEx.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Model.cs">
+      <Link>Model.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelBone.cs">
+      <Link>ModelBone.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelBoneCollection.cs">
+      <Link>ModelBoneCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelEffectCollection.cs">
+      <Link>ModelEffectCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelMesh.cs">
+      <Link>ModelMesh.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelMeshCollection.cs">
+      <Link>ModelMeshCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelMeshPart.cs">
+      <Link>ModelMeshPart.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ModelMeshPartCollection.cs">
+      <Link>ModelMeshPartCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\MultiSampleType.cs">
+      <Link>MultiSampleType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\PresentationParameters.cs">
+      <Link>PresentationParameters.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\PresentInterval.cs">
+      <Link>PresentInterval.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\RenderTarget.cs">
+      <Link>RenderTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\RenderTarget2D.cs">
+      <Link>RenderTarget2D.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\RenderTargetBinding.cs">
+      <Link>RenderTargetBinding.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\RenderTargetUsage.cs">
+      <Link>RenderTargetUsage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\ResourceType.cs">
+      <Link>ResourceType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SamplerStateCollection.cs">
+      <Link>SamplerStateCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SetDataOptions.cs">
+      <Link>SetDataOptions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteBatch.cs">
+      <Link>SpriteBatch.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteBatcher.cs">
+      <Link>SpriteBatcher.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteBatchItem.cs">
+      <Link>SpriteBatchItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteBlendMode.cs">
+      <Link>SpriteBlendMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteEffects.cs">
+      <Link>SpriteEffects.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteFont.cs">
+      <Link>SpriteFont.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SpriteSortMode.cs">
+      <Link>SpriteSortMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\Blend.cs">
+      <Link>States\Blend.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\BlendFunction.cs">
+      <Link>States\BlendFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\BlendState.cs">
+      <Link>States\BlendState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\CompareFunction.cs">
+      <Link>States\CompareFunction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\CullMode.cs">
+      <Link>States\CullMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\DepthFormat.cs">
+      <Link>States\DepthFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\DepthStencilState.cs">
+      <Link>States\DepthStencilState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\FillMode.cs">
+      <Link>States\FillMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\GLStateManager.cs">
+      <Link>States\GLStateManager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\RasterizerState.cs">
+      <Link>States\RasterizerState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\SamplerState.cs">
+      <Link>States\SamplerState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\SaveStateMode.cs">
+      <Link>States\SaveStateMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\StencilOperation.cs">
+      <Link>States\StencilOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\TextureAddressMode.cs">
+      <Link>States\TextureAddressMode.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\States\TextureFilter.cs">
+      <Link>States\TextureFilter.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\StencilOperation.cs">
+      <Link>StencilOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\SurfaceFormat.cs">
+      <Link>SurfaceFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Texture.cs">
+      <Link>Texture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Texture2D.cs">
+      <Link>Texture2D.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\TextureCollection.cs">
+      <Link>TextureCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\TextureCube.cs">
+      <Link>TextureCube.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\TextureUsage.cs">
+      <Link>TextureUsage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\BufferUsage.cs">
+      <Link>Verticies\BufferUsage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\DynamicIndexBuffer.cs">
+      <Link>Verticies\DynamicIndexBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\DynamicVertexBuffer.cs">
+      <Link>Verticies\DynamicVertexBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\IndexBuffer.cs">
+      <Link>Verticies\IndexBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\IndexElementSize.cs">
+      <Link>Verticies\IndexElementSize.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\IVertexType.cs">
+      <Link>Verticies\IVertexType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\PrimitiveType.cs">
+      <Link>Verticies\PrimitiveType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexBuffer.cs">
+      <Link>Verticies\VertexBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexColorTexture.cs">
+      <Link>Verticies\VertexColorTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexDeclaration.cs">
+      <Link>Verticies\VertexDeclaration.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexDeclarationCache.cs">
+      <Link>Verticies\VertexDeclarationCache.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexElement.cs">
+      <Link>Verticies\VertexElement.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexElementColor.cs">
+      <Link>Verticies\VertexElementColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexElementDeclaration.cs">
+      <Link>Verticies\VertexElementDeclaration.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexElementFormat.cs">
+      <Link>Verticies\VertexElementFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexElementUsage.cs">
+      <Link>Verticies\VertexElementUsage.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexPosition2ColorTexture.cs">
+      <Link>Verticies\VertexPosition2ColorTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexPositionColor.cs">
+      <Link>Verticies\VertexPositionColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexPositionColorTexture.cs">
+      <Link>Verticies\VertexPositionColorTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexPositionNormalTexture.cs">
+      <Link>Verticies\VertexPositionNormalTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Vertices\VertexPositionTexture.cs">
+      <Link>Verticies\VertexPositionTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Graphics\Viewport.cs">
+      <Link>Viewport.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Properties\AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.InternalsVisibleTo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MonoGame.Framework.csproj">
+      <Project>{6CBEB36E-6086-4820-B9C7-602CE8E2F258}</Project>
+      <Name>MonoGame.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="MonoGame.Framework.Input.Touch.csproj">
+      <Project>{F2A45C64-05CB-4FC8-A5C6-55CEADA541C3}</Project>
+      <Name>MonoGame.Framework.Input.Touch</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

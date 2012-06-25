@@ -232,6 +232,8 @@ namespace Microsoft.Xna.Framework
 
         internal void UpdateTouchPosition(ref Vector2 position)
         {
+
+
             if (this._game.Window.CurrentOrientation == DisplayOrientation.LandscapeRight)
             {
                 // we need to fudge the position
@@ -242,6 +244,10 @@ namespace Microsoft.Xna.Framework
             //Fix for ClientBounds
             position.X -= ClientBounds.X;
             position.Y -= ClientBounds.Y;
+
+			// Handle null GraphicsDevice
+			// this can happen when the user touches the screen during start up.
+			if (_game.GraphicsDevice == null) return;
 
             //Fix for Viewport
             position.X = (position.X / ClientBounds.Width) * _game.GraphicsDevice.Viewport.Width;

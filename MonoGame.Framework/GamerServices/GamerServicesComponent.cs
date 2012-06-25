@@ -71,7 +71,9 @@ non-infringement.
 using System;
 
 using Microsoft.Xna.Framework;
+#if !SPLIT
 using Microsoft.Xna.Framework.Net;
+#endif
 #endregion Statements
 
 #if !WINDOWS_PHONE
@@ -81,13 +83,20 @@ namespace MonoGame.Xna.Framework.GamerServices {
 #endif
 
 	public class GamerServicesComponent : GameComponent {
+
+        public override void Initialize()
+        {
+            
+        }
+#if !SPLIT
 		private static LocalNetworkGamer lng;
 
 		internal static LocalNetworkGamer LocalNetworkGamer { get { return lng; } set { lng = value; } }
-
+#endif
 		public GamerServicesComponent(Game game)
 			: base(game)
 		{
+            game.Exiting += new EventHandler<EventArgs>(game_Exiting);
 #if WINDOWS_PHONE
             var assembly = game.GetType().Assembly;
             if (assembly != null)
@@ -99,9 +108,15 @@ namespace MonoGame.Xna.Framework.GamerServices {
                 }
             }
 #endif
+#if !SPLIT
 			Guide.Initialise(game);
-			
+#endif			
 		}
+
+        void game_Exiting(object sender, EventArgs e)
+        {
+            // close down the nextwork session
+        }
 
 		public override void Update (GameTime gameTime)
 		{

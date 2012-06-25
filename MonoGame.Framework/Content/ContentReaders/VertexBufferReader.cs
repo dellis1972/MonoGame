@@ -34,11 +34,12 @@ namespace Microsoft.Xna.Framework.Content
     {
         protected internal override VertexBuffer Read(ContentReader input, VertexBuffer existingInstance)
         {
+            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
             var declaration = input.ReadRawObject<VertexDeclaration>();
             var vertexCount = (int)input.ReadUInt32();
             var data = input.ReadBytes(vertexCount * declaration.VertexStride);
 
-            var buffer = new VertexBuffer( input.GraphicsDevice, declaration, vertexCount, BufferUsage.WriteOnly );
+            var buffer = new VertexBuffer( device, declaration, vertexCount, BufferUsage.WriteOnly );
             buffer.SetData( data );
             return buffer;
         }

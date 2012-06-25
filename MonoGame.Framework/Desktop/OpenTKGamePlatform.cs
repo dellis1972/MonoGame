@@ -114,7 +114,7 @@ namespace Microsoft.Xna.Framework
         {
             if (!_view.Window.IsExiting)
             {
-                Net.NetworkSession.Exit();
+                base.Exit();
                 _view.Window.Exit();
             }
         }

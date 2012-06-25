@@ -198,12 +198,13 @@ namespace Microsoft.Xna.Framework
         public event EventHandler<EventArgs> AsyncRunLoopEnded;
         public event EventHandler<EventArgs> Activated;
         public event EventHandler<EventArgs> Deactivated;
+        public event EventHandler<EventArgs> Exiting;
 
 #if WINRT
         public event EventHandler<ViewStateChangedEventArgs> ViewStateChanged;
 #endif
 
-        private void Raise<TEventArgs>(EventHandler<TEventArgs> handler, TEventArgs e)
+        protected void Raise<TEventArgs>(EventHandler<TEventArgs> handler, TEventArgs e)
             where TEventArgs : EventArgs
         {
             if (handler != null)
@@ -254,7 +255,10 @@ namespace Microsoft.Xna.Framework
         /// <summary>
         /// When implemented in a derived, ends the active run loop.
         /// </summary>
-        public abstract void Exit();
+        public virtual void Exit()
+        {
+            Raise(Exiting, EventArgs.Empty);
+        }
 
         /// <summary>
         /// When implemented in a derived, starts the run loop and blocks

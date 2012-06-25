@@ -46,7 +46,8 @@ namespace Microsoft.Xna.Framework.Content
     {
         protected internal override AlphaTestEffect Read(ContentReader input, AlphaTestEffect existingInstance)
         {
-            var effect = new AlphaTestEffect(input.GraphicsDevice);
+            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            var effect = new AlphaTestEffect(device);
 
             effect.Texture = input.ReadExternalReference<Texture>() as Texture2D;
             effect.AlphaFunction = (CompareFunction)input.ReadInt32();

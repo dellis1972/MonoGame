@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F2A45C64-05CB-4FC8-A5C6-55CEADA541C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Xna.Framework.Input.Touch</RootNamespace>
+    <AssemblyName>Microsoft.Xna.Framework.Input.Touch</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;WINDOWS;SPLIT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;WINDOWS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ThirdParty\Libs\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\GestureSample.cs">
+      <Link>Input\Touch\GestureSample.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\GestureType.cs">
+      <Link>Input\Touch\GestureType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\TouchCollection.cs">
+      <Link>Input\Touch\TouchCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\TouchInfo.cs">
+      <Link>Input\Touch\TouchInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\TouchLocation.cs">
+      <Link>Input\Touch\TouchLocation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\TouchLocationState.cs">
+      <Link>Input\Touch\TouchLocationState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\TouchPanel.cs">
+      <Link>Input\Touch\TouchPanel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Input\Touch\TouchPanelCapabilities.cs">
+      <Link>Input\Touch\TouchPanelCapabilities.cs</Link>
+    </Compile>
+    <Compile Include="..\..\MonoGame.Framework\Properties\AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.InternalsVisibleTo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="MonoGame.Framework.csproj">
+      <Project>{6CBEB36E-6086-4820-B9C7-602CE8E2F258}</Project>
+      <Name>MonoGame.Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
