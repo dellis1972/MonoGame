@@ -58,7 +58,7 @@ using MonoTouch.Foundation;
 #if MONOMAC
 using MonoMac.OpenGL;
 using GLPixelFormat = MonoMac.OpenGL.PixelFormat;
-#elif WINDOWS || LINUX
+#elif WINDOWS || LINUX || WEB
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL;
 using GLPixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;

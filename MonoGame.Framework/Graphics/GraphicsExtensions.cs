@@ -5,7 +5,7 @@ using System.Text;
 
 #if MONOMAC
 using MonoMac.OpenGL;
-#elif WINDOWS || LINUX
+#elif WINDOWS || LINUX || WEB
 using OpenTK.Graphics.OpenGL;
 #elif WINRT
 #elif GLES
@@ -162,9 +162,9 @@ namespace Microsoft.Xna.Framework.Graphics
 
                 case VertexElementFormat.NormalizedShort4:
                     return VertexAttribPointerType.Short;
-                
-#if MONOMAC || WINDOWS || LINUX
-               case VertexElementFormat.HalfVector2:
+
+#if MONOMAC || WINDOWS || LINUX || WEB
+                case VertexElementFormat.HalfVector2:
                     return VertexAttribPointerType.HalfFloat;
 
                 case VertexElementFormat.HalfVector4:
@@ -371,8 +371,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			case Blend.InverseSourceAlpha:
 				return BlendingFactorSrc.OneMinusSrcAlpha;
 			case Blend.InverseSourceColor:
-#if MONOMAC || WINDOWS || LINUX
-				return (BlendingFactorSrc)All.OneMinusSrcColor;
+#if MONOMAC || WINDOWS || LINUX || WEB
+                return (BlendingFactorSrc)All.OneMinusSrcColor;
 #else
 				return BlendingFactorSrc.OneMinusSrcColor;
 #endif
@@ -383,8 +383,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			case Blend.SourceAlphaSaturation:
 				return BlendingFactorSrc.SrcAlphaSaturate;
 			case Blend.SourceColor:
-#if MONOMAC || WINDOWS || LINUX
-				return (BlendingFactorSrc)All.SrcColor;
+#if MONOMAC || WINDOWS || LINUX || WEB
+                return (BlendingFactorSrc)All.SrcColor;
 #else
 				return BlendingFactorSrc.SrcColor;
 #endif

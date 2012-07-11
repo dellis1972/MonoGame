@@ -56,7 +56,7 @@ namespace Microsoft.Xna.Framework
     internal class Threading
     {
         static int mainThreadId;
-#if ANDROID || LINUX || WINDOWS
+#if ANDROID || LINUX || WINDOWS || WEB
         static List<Action> actions = new List<Action>();
         static Mutex actionsMutex = new Mutex();
 #elif IPHONE
@@ -114,7 +114,7 @@ namespace Microsoft.Xna.Framework
 #endif
         }
 
-#if ANDROID || LINUX || WINDOWS
+#if ANDROID || LINUX || WINDOWS || WEB
         static void Add(Action action)
         {
             lock (actions)

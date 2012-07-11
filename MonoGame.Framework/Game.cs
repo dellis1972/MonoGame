@@ -213,6 +213,10 @@ namespace Microsoft.Xna.Framework
 #if ANDROID
         public static AndroidGameActivity Activity { get; set; }
 #endif
+#if WEB
+        public static OpenTK.Graphics.IGraphicsContext GraphicsContext { get; set; }
+#endif
+
         private static Game _instance = null;
         internal static Game Instance { get { return Game._instance; } }
 

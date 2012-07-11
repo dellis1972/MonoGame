@@ -1,6 +1,6 @@
 using System;
 
-#if IPHONE || WINDOWS || LINUX
+#if IPHONE || WINDOWS || LINUX || WEB
 using OpenTK.Audio.OpenAL;
 #elif MONOMAC
 using MonoMac.OpenAL;
