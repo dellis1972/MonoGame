@@ -6,7 +6,7 @@ using MonoMac.OpenGL;
 #elif WINDOWS || LINUX || WEB
 using OpenTK.Graphics.OpenGL;
 #elif PSS
-using Sce.Pss.Core.Graphics;
+using Sce.PlayStation.Core.Graphics;
 #elif WINRT
 // TODO
 #else
