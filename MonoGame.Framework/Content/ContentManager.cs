@@ -47,6 +47,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Path = System.IO.Path;
+using System.Diagnostics;
 
 #if !WINRT
 using Microsoft.Xna.Framework.Audio;
@@ -59,14 +60,15 @@ namespace Microsoft.Xna.Framework.Content
 	{
 		private string _rootDirectory = string.Empty;
 		private IServiceProvider serviceProvider;
-		protected Dictionary<string, object> loadedAssets = new Dictionary<string, object>();
-		List<IDisposable> disposableAssets = new List<IDisposable>();
-		bool disposed;
+		private IGraphicsDeviceService graphicsDeviceService;
+        private Dictionary<string, object> loadedAssets = new Dictionary<string, object>();
+		private List<IDisposable> disposableAssets = new List<IDisposable>();
+        private bool disposed;
 		
 		private static object ContentManagerLock = new object();
         private static List<ContentManager> ContentManagers = new List<ContentManager>();
 
-        protected static void AddContentManager(ContentManager contentManager)
+        private static void AddContentManager(ContentManager contentManager)
         {
             lock (ContentManagerLock)
             {
@@ -74,7 +76,7 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
 
-        protected static void RemoveContentManager(ContentManager contentManager)
+        private static void RemoveContentManager(ContentManager contentManager)
         {
             lock (ContentManagerLock)
             {
@@ -218,7 +220,7 @@ namespace Microsoft.Xna.Framework.Content
 			return stream;
 		}
 
-		protected virtual T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
+		protected T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
 		{
 			if (string.IsNullOrEmpty(assetName))
 			{
@@ -233,7 +235,17 @@ namespace Microsoft.Xna.Framework.Content
 			CurrentAssetDirectory = lastPathSeparatorIndex == -1 ? RootDirectory : assetName.Substring(0, lastPathSeparatorIndex);
 			
 			string originalAssetName = assetName;
-			object result = null;		
+			object result = null;
+
+			if (this.graphicsDeviceService == null)
+			{
+				this.graphicsDeviceService = serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+				if (this.graphicsDeviceService == null)
+				{
+					throw new InvalidOperationException("No Graphics Device Service");
+				}
+			}
+			
 			Stream stream = null;
 			bool loadXnb = false;
 			try
@@ -245,18 +257,19 @@ namespace Microsoft.Xna.Framework.Content
             catch (ContentLoadException)
             {
 				//MonoGame try to load as a non-content file
-                assetName = TitleContainer.GetFilename(Path.Combine(_rootDirectory, assetName));
+				
+				assetName = TitleContainer.GetFilename(Path.Combine (_rootDirectory, assetName));
 
-                foreach (ContentManager manager in ContentManagers)
-                {
-                    if (manager != this)
-                    {
-                        result = manager.ReadAsset<T>(assetName, recordDisposableObject);
-                    }
-                }
-								                
+				if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Texture))
+				{
+					assetName = Texture2DReader.Normalize(assetName);
+				}
+				else if ((typeof(T) == typeof(SpriteFont)))
+				{
+					assetName = SpriteFontReader.Normalize(assetName);
+				}
 #if !WINRT
-				if ((typeof(T) == typeof(Song)))
+				else if ((typeof(T) == typeof(Song)))
 				{
 					assetName = SongReader.Normalize(assetName);
 				}
@@ -269,13 +282,31 @@ namespace Microsoft.Xna.Framework.Content
 					assetName = Video.Normalize(assetName);
 				}
 #endif
-                
+                else if ((typeof(T) == typeof(Effect)))
+				{
+					assetName = EffectReader.Normalize(assetName);
+				}
 	
 				if (string.IsNullOrEmpty(assetName))
 				{
 					throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
 				}
-							
+
+				if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Texture))
+				{
+					using (Stream assetStream = TitleContainer.OpenStream(assetName))
+					{
+						Texture2D texture = Texture2D.FromStream(
+							graphicsDeviceService.GraphicsDevice, assetStream);
+						texture.Name = originalAssetName;
+						result = texture;
+					}
+				}
+				else if ((typeof(T) == typeof(SpriteFont)))
+				{
+					//result = new SpriteFont(Texture2D.FromFile(graphicsDeviceService.GraphicsDevice,assetName), null, null, null, 0, 0.0f, null, null);
+					throw new NotImplementedException();
+				}
 #if !WINRT
 				else if ((typeof(T) == typeof(Song)))
 				{
@@ -290,7 +321,15 @@ namespace Microsoft.Xna.Framework.Content
 					result = new Video(assetName);
 				}
 #endif
-                
+                else if ((typeof(T) == typeof(Effect)))
+				{
+					using (Stream assetStream = TitleContainer.OpenStream(assetName))
+					{
+						var data = new byte[assetStream.Length];
+						assetStream.Read (data, 0, (int)assetStream.Length);
+						result = new Effect(this.graphicsDeviceService.GraphicsDevice, data);
+                    }
+                }
 			}
 			
 			if (loadXnb) {
@@ -399,20 +438,20 @@ namespace Microsoft.Xna.Framework.Content
 							}
 	
 							decompressedStream.Seek(0, SeekOrigin.Begin);
-							reader = new ContentReader(this, decompressedStream, originalAssetName, version);
+							reader = new ContentReader( this, decompressedStream, this.graphicsDeviceService.GraphicsDevice, 
+                                                            originalAssetName, version, recordDisposableObject);
 						}
 						else
 						{
-							reader = new ContentReader(this, stream, originalAssetName, version);
+							reader = new ContentReader( this, stream, this.graphicsDeviceService.GraphicsDevice, 
+                                                            originalAssetName, version, recordDisposableObject);
 						}
 	
 						using(reader)
 						{
 							result = reader.ReadAsset<T>();
-                            /*
                             if (result is GraphicsResource)
                                 ((GraphicsResource)result).Name = originalAssetName;
-                             */
 						}
 					}
 				}
@@ -430,20 +469,24 @@ namespace Microsoft.Xna.Framework.Content
 			{
 				throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
 			}
-
-			if (result is IDisposable)
-			{
-				if (recordDisposableObject != null)
-					recordDisposableObject(result as IDisposable);
-				else
-					disposableAssets.Add(result as IDisposable);
-			}
-			
+		
 			CurrentAssetDirectory = null;
 			    
 			return (T)result;
 		}
-		
+
+        internal void RecordDisposable(IDisposable disposable)
+        {
+            Debug.Assert(disposable != null, "The disposable is null!");
+
+            // Be sure the system isn't accidentally recording
+            // disposable objects twice!
+            Debug.Assert(!disposableAssets.Contains(disposable), "The disposable has already been recorded!");
+
+            // Store it for disposal later.
+            disposableAssets.Add(disposable);
+        }
+
 		protected void ReloadContent()
         {
             foreach (var asset in loadedAssets)
@@ -452,7 +495,7 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
         
-        protected virtual void ReloadAsset(string originalAssetName, object currentAsset)
+        protected void ReloadAsset(string originalAssetName, object currentAsset)
         {
 			string assetName = originalAssetName;
 			if (string.IsNullOrEmpty(assetName))
@@ -464,6 +507,15 @@ namespace Microsoft.Xna.Framework.Content
 				throw new ObjectDisposedException("ContentManager");
 			}
 
+			if (this.graphicsDeviceService == null)
+			{
+				this.graphicsDeviceService = serviceProvider.GetService(typeof(IGraphicsDeviceService)) as IGraphicsDeviceService;
+				if (this.graphicsDeviceService == null)
+				{
+					throw new InvalidOperationException("No Graphics Device Service");
+				}
+			}
+			
 			Stream stream = null;
 			//bool loadXnb = false;
 			try
@@ -477,18 +529,17 @@ namespace Microsoft.Xna.Framework.Content
 				//MonoGame try to load as a non-content file
 
 				assetName = TitleContainer.GetFilename(Path.Combine (_rootDirectory, assetName));
-
-                foreach (ContentManager manager in ContentManagers)
-                {
-                    if (manager != this)
-                    {
-                        manager.ReloadAsset(assetName, currentAsset);
-                    }
-                }
 				
-                
+                if ((currentAsset is Texture2D))
+                {
+                    assetName = Texture2DReader.Normalize(assetName);
+                }
+                else if ((currentAsset is SpriteFont))
+                {
+                    assetName = SpriteFontReader.Normalize(assetName);
+                }
 #if !WINRT
-                if ((currentAsset is Song))
+                else if ((currentAsset is Song))
                 {
                     assetName = SongReader.Normalize(assetName);
                 }
@@ -506,7 +557,17 @@ namespace Microsoft.Xna.Framework.Content
                     throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
                 }
 			
-                
+                if ((currentAsset is Texture2D))
+                {
+                    using (Stream assetStream = OpenStream(assetName))
+                    {
+                        var asset = currentAsset as Texture2D;
+                        asset.Reload(assetStream);
+                    }
+                }
+                else if ((currentAsset is SpriteFont))
+                {
+                }
 #if !WINRT
                 else if ((currentAsset is Song))
                 {
