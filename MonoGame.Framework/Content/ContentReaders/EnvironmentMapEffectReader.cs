@@ -46,7 +46,8 @@ namespace Microsoft.Xna.Framework.Content
     {
         protected internal override EnvironmentMapEffect Read(ContentReader input, EnvironmentMapEffect existingInstance)
         {
-            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            IGraphicsDeviceService service = (IGraphicsDeviceService)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            GraphicsDevice device = service.GraphicsDevice;
             var effect = new EnvironmentMapEffect(device);
             effect.Texture = input.ReadExternalReference<Texture>() as Texture2D;
 			effect.EnvironmentMap = input.ReadExternalReference<TextureCube>() as TextureCube;

@@ -34,7 +34,8 @@ namespace Microsoft.Xna.Framework.Content
     {
         protected internal override VertexBuffer Read(ContentReader input, VertexBuffer existingInstance)
         {
-            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            IGraphicsDeviceService service = (IGraphicsDeviceService)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            GraphicsDevice device = service.GraphicsDevice;
             var declaration = input.ReadRawObject<VertexDeclaration>();
             var vertexCount = (int)input.ReadUInt32();
             var data = input.ReadBytes(vertexCount * declaration.VertexStride);

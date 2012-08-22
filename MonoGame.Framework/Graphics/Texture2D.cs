@@ -91,6 +91,7 @@ using Android.Graphics;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+    [System.Security.SecurityCritical()]
     public class Texture2D : Texture
     {
 		protected int width;
@@ -576,6 +577,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			this.GetData(0, null, data, 0, data.Length);
 		}
 		
+        [System.Security.SecurityCritical()] 
 		public static Texture2D FromStream(GraphicsDevice graphicsDevice, Stream stream)
 		{
             //todo: partial classes would be cleaner

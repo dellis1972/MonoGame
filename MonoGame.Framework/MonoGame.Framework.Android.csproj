@@ -398,9 +398,8 @@
     <Compile Include="Content\ContentReaders\AlphaTestEffectReader.cs" />
     <Compile Include="Graphics\Effect\AlphaTestEffect.cs" />
     <Compile Include="Graphics\Effect\EffectHelpers.cs" />
-    <Compile Include="..\Projects\Windows\MonoGame.Framework.Graphics\Content\GraphicsContentManager.cs">
-      <Link>Graphics\GraphicsContentManager.cs</Link>
-    </Compile>
+    <Compile Include="Graphics\GraphicsContentManager.cs" />
+    <Compile Include="Media\MediaQueue.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThirdParty\Lidgren.Network\Lidgren.Network.Android.csproj">

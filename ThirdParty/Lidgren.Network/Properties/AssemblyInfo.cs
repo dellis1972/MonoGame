@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -35,3 +36,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("2011.3.12.0")]
 [assembly: AssemblyFileVersion("2011.3.12.0")]
 [assembly: System.CLSCompliant(true)]
+//[assembly: System.Security.SecurityRules(System.Security.SecurityRuleSet.Level2)]
+//[assembly: System.Security.SecurityRules(System.Security.SecurityRuleSet.Level1)]
+#if WEB
+[assembly: System.Security.SecurityCritical(System.Security.SecurityCriticalScope.Everything)]
+[assembly: AllowPartiallyTrustedCallers()]
+#endif

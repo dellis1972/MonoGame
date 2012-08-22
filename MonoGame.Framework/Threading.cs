@@ -50,7 +50,7 @@ using OpenTK.Graphics.ES11;
 #else
 using OpenTK.Graphics.ES20;
 #endif
-#elif WINDOWS || LINUX
+#elif WINDOWS || LINUX || WEB
 using OpenTK.Graphics;
 using OpenTK.Platform;
 using OpenTK;
@@ -66,7 +66,7 @@ namespace Microsoft.Xna.Framework
         static Mutex actionsMutex = new Mutex();
 #elif IPHONE
         public static EAGLContext BackgroundContext;
-#elif WINDOWS || LINUX
+#elif WINDOWS || LINUX || WEB
         public static IGraphicsContext BackgroundContext;
         public static IWindowInfo WindowInfo;
 #endif
@@ -102,7 +102,7 @@ namespace Microsoft.Xna.Framework
                     EAGLContext.SetCurrentContext(BackgroundContext);
                 action();
             }
-#elif WINDOWS || LINUX
+#elif WINDOWS || LINUX || WEB
             lock (BackgroundContext)
             {
                 if (GraphicsContext.CurrentContext != BackgroundContext)

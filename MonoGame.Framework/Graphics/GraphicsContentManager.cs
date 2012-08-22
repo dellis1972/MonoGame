@@ -4,16 +4,20 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Content;
 using System.IO;
+using System.Security.Permissions;
 
 namespace Microsoft.Xna.Framework.Graphics.Content
 {
     public class GraphicsContentManager : ContentManager
     {
+        [System.Security.SecurityCritical()]
         public GraphicsContentManager(IServiceProvider serviceProvider): base(serviceProvider)
         {
+            new SecurityPermission(SecurityPermissionFlag.UnmanagedCode).Assert();
             ContentManager.AddContentManager(this);
-        }       
+        }
 
+        [System.Security.SecuritySafeCritical()]
         protected override T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
         {
             object result = null;

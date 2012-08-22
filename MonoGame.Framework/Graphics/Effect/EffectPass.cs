@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 #if MONOMAC
 using MonoMac.OpenGL;
-#elif WINDOWS || LINUX
+#elif WINDOWS || LINUX || WEB
 using OpenTK.Graphics.OpenGL;
 #elif PSS
 using Sce.PlayStation.Core.Graphics;

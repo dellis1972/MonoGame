@@ -272,8 +272,6 @@ namespace Microsoft.Xna.Framework.Graphics
                                     default:
                                         break;
                                 }
-                                // Just report the 32 bit surfaces for now
-                                // Need to decide what to do about other surface formats
                                 if (format == SurfaceFormat.Color)
                                 {
                                     modes.Add(new DisplayMode(resolution.Width, resolution.Height, (int)resolution.RefreshRate, format));

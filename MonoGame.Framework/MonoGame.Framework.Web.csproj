@@ -82,13 +82,16 @@
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;WEB;OPENGL</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MonoGame.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\ThirdParty\Libs\OpenTK.dll</HintPath>
-    </Reference>
+    <Reference Include="OpenTK, Version=1.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
@@ -182,6 +185,7 @@
     <Compile Include="Graphics\Vertices\VertexDeclarationCache.cs" />
     <Compile Include="Graphics\Vertices\VertexPositionColorTexture.cs" />
     <Compile Include="Input\GamePadDeadZone.cs" />
+    <Compile Include="Input\GamePadType.cs" />
     <Compile Include="Input\Keyboard.cs" />
     <Compile Include="Input\MouseState.cs" />
     <Compile Include="Input\Touch\TouchInfo.cs" />
@@ -391,6 +395,7 @@
     <Compile Include="Media\SongCollection.cs" />
     <Compile Include="Storage\StorageDeviceHelper.cs" />
     <Compile Include="Web\WebOpenTKGamePlatform.cs" />
+    <Compile Include="Web\WebOpenTKGameWindow.cs" />
     <Compile Include="Windows\Audio\AudioLoader.cs" />
     <Compile Include="Windows\Audio\Sound.cs" />
     <Compile Include="Windows\Content\ContentReaders\SoundEffectReader.cs" />
@@ -532,10 +537,12 @@
     <EmbeddedResource Include="Graphics\Effect\Resources\EnvironmentMapEffect.ogl.mgfxo" />
     <EmbeddedResource Include="Graphics\Effect\Resources\SkinnedEffect.ogl.mgfxo" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="MonoGame.snk" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThirdParty\Lidgren.Network\Lidgren.Network.Web.csproj">
-      <Project>{AE483C29-042E-4226-BA52-D247CE7676DA}</Project>
+      <Project>{E938D041-718B-447F-9CBF-E18350B0BF96}</Project>
       <Name>Lidgren.Network.Web</Name>
     </ProjectReference>
   </ItemGroup>

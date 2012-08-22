@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+    [System.Security.SecuritySafeCritical()]
 	public class SpriteBatch : GraphicsResource
 	{
 		SpriteBatcher _batcher;

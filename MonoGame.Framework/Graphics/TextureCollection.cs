@@ -11,6 +11,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
         private int _dirty;
 
+        [System.Security.SecuritySafeCritical()]
         internal TextureCollection(int maxTextures)
         {
             _textures = new Texture[maxTextures];

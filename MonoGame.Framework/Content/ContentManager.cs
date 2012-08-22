@@ -52,11 +52,12 @@ using System.Diagnostics;
 #if !WINRT
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using System.Security.Permissions;
 #endif
 
 namespace Microsoft.Xna.Framework.Content
 {
-	public partial class ContentManager : IDisposable
+    public partial class ContentManager : IDisposable
 	{
 		private string _rootDirectory = string.Empty;
 		private IServiceProvider serviceProvider;
@@ -68,7 +69,7 @@ namespace Microsoft.Xna.Framework.Content
 		private static object ContentManagerLock = new object();
         private static List<ContentManager> ContentManagers = new List<ContentManager>();
 
-        private static void AddContentManager(ContentManager contentManager)
+        internal static void AddContentManager(ContentManager contentManager)
         {
             lock (ContentManagerLock)
             {
@@ -100,7 +101,7 @@ namespace Microsoft.Xna.Framework.Content
 		// This destructor will run only if the Dispose method
 		// does not get called.
 		// It gives your base class the opportunity to finalize.
-		// Do not provide destructors in types derived from this class.
+		// Do not provide destructors in types derived from this class.        
 		~ContentManager()
 		{
 			// Do not re-create Dispose clean-up code here.
@@ -109,8 +110,11 @@ namespace Microsoft.Xna.Framework.Content
 			Dispose(false);
 		}
 
+        [System.Security.SecuritySafeCritical()]
 		public ContentManager(IServiceProvider serviceProvider)
 		{
+            new SecurityPermission(SecurityPermissionFlag.UnmanagedCode).Assert();
+
 			if (serviceProvider == null)
 			{
 				throw new ArgumentNullException("serviceProvider");
@@ -118,8 +122,11 @@ namespace Microsoft.Xna.Framework.Content
 			this.serviceProvider = serviceProvider;
 		}
 
+        [System.Security.SecuritySafeCritical()]
 		public ContentManager(IServiceProvider serviceProvider, string rootDirectory)
 		{
+            new SecurityPermission(SecurityPermissionFlag.UnmanagedCode).Assert();
+
 			if (serviceProvider == null)
 			{
 				throw new ArgumentNullException("serviceProvider");
@@ -151,6 +158,7 @@ namespace Microsoft.Xna.Framework.Content
 			}
 		}
 
+        [System.Security.SecuritySafeCritical()]
 		public virtual T Load<T>(string assetName)
 		{
             if (string.IsNullOrEmpty(assetName))
@@ -191,7 +199,7 @@ namespace Microsoft.Xna.Framework.Content
 			Stream stream;
 			try
             {
-				string assetPath = Path.Combine(_rootDirectory, assetName) + ".xnb";
+				string assetPath = Path.Combine(RootDirectory, assetName) + ".xnb";
                 stream = TitleContainer.OpenStream(assetPath);
 #if ANDROID
                 // Read the asset into memory in one go. This results in a ~50% reduction
@@ -220,7 +228,7 @@ namespace Microsoft.Xna.Framework.Content
 			return stream;
 		}
 
-		protected T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
+        protected virtual T ReadAsset<T>(string assetName, Action<IDisposable> recordDisposableObject)
 		{
 			if (string.IsNullOrEmpty(assetName))
 			{
@@ -289,7 +297,7 @@ namespace Microsoft.Xna.Framework.Content
 	
 				if (string.IsNullOrEmpty(assetName))
 				{
-					throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
+					throw new ContentLoadException(String.Format("Could not load " + originalAssetName + " asset! {0} {1}", RootDirectory, assetName));
 				}
 
 				if (typeof(T) == typeof(Texture2D) || typeof(T) == typeof(Texture))
@@ -467,7 +475,7 @@ namespace Microsoft.Xna.Framework.Content
 
 			if (result == null)
 			{
-				throw new ContentLoadException("Could not load " + originalAssetName + " asset!");
+				throw new ContentLoadException(String.Format("Could not load " + originalAssetName + " asset! {0} {1}", RootDirectory,assetName));
 			}
 		
 			CurrentAssetDirectory = null;
@@ -495,7 +503,7 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
         
-        protected void ReloadAsset(string originalAssetName, object currentAsset)
+		protected virtual void ReloadAsset(string originalAssetName, object currentAsset)
         {
 			string assetName = originalAssetName;
 			if (string.IsNullOrEmpty(assetName))
@@ -528,7 +536,7 @@ namespace Microsoft.Xna.Framework.Content
 			{
 				//MonoGame try to load as a non-content file
 
-				assetName = TitleContainer.GetFilename(Path.Combine (_rootDirectory, assetName));
+                assetName = TitleContainer.GetFilename(Path.Combine(RootDirectory, assetName));
 				
                 if ((currentAsset is Texture2D))
                 {
@@ -599,7 +607,11 @@ namespace Microsoft.Xna.Framework.Content
 		{
 			get
 			{
-				return _rootDirectory;
+#if WEB
+                return Path.Combine(Game.PluginRoot, _rootDirectory);
+#else
+				return  _rootDirectory;
+#endif
 			}
 			set
 			{

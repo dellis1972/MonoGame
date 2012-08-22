@@ -88,7 +88,8 @@ namespace Microsoft.Xna.Framework.Content
 		protected internal override Model Read(ContentReader reader, Model existingInstance)
 		{
 			List<ModelBone> bones = new List<ModelBone>();
-            GraphicsDevice device = (GraphicsDevice)reader.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+             IGraphicsDeviceService service =(IGraphicsDeviceService)reader.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+             GraphicsDevice device = service.GraphicsDevice;
             // Read the bone names and transforms.
             uint boneCount = reader.ReadUInt32();
             Debug.WriteLine("Bone count: {0}", boneCount);

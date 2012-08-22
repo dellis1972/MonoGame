@@ -55,6 +55,7 @@ using TextureTarget = OpenTK.Graphics.ES20.All;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+    [System.Security.SecurityCritical()]
 	public abstract class Texture : GraphicsResource
 	{
 		protected SurfaceFormat format;
@@ -161,7 +162,7 @@ namespace Microsoft.Xna.Framework.Graphics
         }
 
 #endif
-
+        [System.Security.SecuritySafeCritical()]
         public override void Dispose()
 		{
 #if DIRECTX

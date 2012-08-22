@@ -6,9 +6,11 @@ using Microsoft.Xna.Framework.Audio;
 using OpenTK.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Security;
 
 namespace Microsoft.Xna.Framework
 {
+    [SecuritySafeCritical]    
     class WebOpenTKGamePlatform : GamePlatform
     {
         private OpenALSoundController soundControllerInstance = null;
@@ -30,11 +32,13 @@ namespace Microsoft.Xna.Framework
 
         public override bool VSyncEnabled
         {
+            [SecuritySafeCritical]    
             get
             {
                 return GraphicsContext != null ? GraphicsContext.VSync : false; 
             }
-            
+
+            [SecuritySafeCritical]
             set
             {
                 if (GraphicsContext != null) GraphicsContext.VSync = value;
@@ -44,9 +48,11 @@ namespace Microsoft.Xna.Framework
 		public WebOpenTKGamePlatform(Game game)
             : base(game)
         {
+            
             this.GraphicsContext = Game.GraphicsContext;
+            this.Window = new WebOpenTKGameWindow(this.GraphicsContext);
             // Setup our OpenALSoundController to handle our SoundBuffer pools
-			soundControllerInstance = OpenALSoundController.GetInstance;
+			//soundControllerInstance = OpenALSoundController.GetInstance;
 
             keys = new List<Keys>();
 
@@ -54,6 +60,7 @@ namespace Microsoft.Xna.Framework
 
         public override GameRunBehavior DefaultRunBehavior
         {
+            [SecuritySafeCritical]
             get { return GameRunBehavior.Synchronous; }
         }
 
@@ -65,6 +72,7 @@ namespace Microsoft.Xna.Framework
             Keyboard.State = new KeyboardState(keys.ToArray());
         }
 
+        [SecuritySafeCritical]
         public override void RunLoop()
         {
             while (IsRunning)
@@ -81,21 +89,24 @@ namespace Microsoft.Xna.Framework
             
         }
 
+        [SecuritySafeCritical]
         public override void StartRunLoop()
         {
             throw new NotImplementedException();
         }
-        
+
+        [SecuritySafeCritical]
         public override void Exit()
         {
             IsRunning = false;
             base.Exit();            
         }
 
+        [SecuritySafeCritical]
         public override bool BeforeUpdate(GameTime gameTime)
         {
 			// Update our OpenAL sound buffer pools
-			soundControllerInstance.Update();
+			//soundControllerInstance.Update();
 
             // Let the touch panel update states.
             //TouchPanel.UpdateState();
@@ -103,16 +114,19 @@ namespace Microsoft.Xna.Framework
             return true;
         }
 
+        [SecuritySafeCritical]
         public override bool BeforeDraw(GameTime gameTime)
         {
             return true;
         }
 
+        [SecuritySafeCritical]
         public override void EnterFullScreen()
         {
             ResetWindowBounds(false);
         }
 
+        [SecuritySafeCritical]
         public override void ExitFullScreen()
         {
             ResetWindowBounds(false);
@@ -168,28 +182,33 @@ namespace Microsoft.Xna.Framework
             IsActive = wasActive;
         }
 
+        [SecuritySafeCritical]
         public override void EndScreenDeviceChange(string screenDeviceName, int clientWidth, int clientHeight)
         {
             
         }
 
+        [SecuritySafeCritical]
         public override void BeginScreenDeviceChange(bool willBeFullScreen)
         {
             
         }
 
+        [SecuritySafeCritical]
         public override void Log(string Message)
         {
             Console.WriteLine(Message);
         }
 
+        [SecuritySafeCritical]
         public override void Present()
         {
             base.Present();
 
             GraphicsContext.SwapBuffers();
         }
-		
+
+        [SecuritySafeCritical]
         protected override void Dispose(bool disposing)
         {
             GraphicsContext.Dispose ();

@@ -77,6 +77,7 @@ using RenderbufferStorage = OpenTK.Graphics.ES20.All;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+     [System.Security.SecuritySafeCritical()]
     public class GraphicsDevice : IDisposable
     {
         private Viewport _viewport;
@@ -276,6 +277,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 		}
 
+        [System.Security.SecuritySafeCritical()]
         public GraphicsDevice()
         {
             // Initialize the main viewport
@@ -295,20 +297,22 @@ namespace Microsoft.Xna.Framework.Graphics
             // device context is going to be reset.
             Effect.FlushCache();
 
-            // Setup extensions.
+            // Setup extensions.            
 #if OPENGL
 #if GLES
-            string[] extstring = GL.GetString(RenderbufferStorage.Extensions).Split(' ');            			
+            string extstring = GL.GetString(RenderbufferStorage.Extensions);            			
 #else
-            string[] extstring = GL.GetString(StringName.Extensions).Split(' ');	
+            string extstring = GL.GetString(StringName.Extensions);
+
 #endif
             if (extstring != null)
             {
-                extensions.AddRange(extstring);
+                extensions.AddRange(extstring.Split(' '));
                 System.Diagnostics.Debug.WriteLine("Supported extensions:");
                 foreach (string extension in extensions)
                     System.Diagnostics.Debug.WriteLine(extension);
             }
+            
 
 #endif // OPENGL
 
@@ -1422,10 +1426,16 @@ namespace Microsoft.Xna.Framework.Graphics
 
 			_vertexBuffer.VertexDeclaration.Apply (vertexOffset);
 
+			try
+			{
 			GL.DrawElements (target,
 			                 indexElementCount,
 			                 indexElementType,
 			                 indexOffsetInBytes);
+			}
+			catch(NullReferenceException)
+			{
+			}
 #elif PSS
             BindVertexBuffer(true);
             _graphics.DrawArrays(PSSHelper.ToDrawMode(primitiveType), startIndex, GetElementCountArray(primitiveType, primitiveCount));

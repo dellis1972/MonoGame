@@ -90,6 +90,7 @@ using Microsoft.Xna.Framework.GamerServices;
 
 namespace Microsoft.Xna.Framework
 {
+    
     public class Game : IDisposable
     {
         private const float DefaultTargetFramesPerSecond = 60.0f;
@@ -128,7 +129,8 @@ namespace Microsoft.Xna.Framework
 
 
         private bool _suppressDraw;
-        
+
+        [System.Security.SecuritySafeCritical()]
         public Game()
         {
             _instance = this;
@@ -223,6 +225,7 @@ namespace Microsoft.Xna.Framework
 #endif
 #if WEB
         public static OpenTK.Graphics.IGraphicsContext GraphicsContext { get; set; }
+        public static string PluginRoot { get; set; }
 #endif
 
         private static Game _instance = null;

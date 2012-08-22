@@ -40,13 +40,15 @@
 // 
 using System;
 namespace Microsoft.Xna.Framework.Graphics
-{	
+{
+    //[System.Security.SecurityCritical()]
 	public abstract class GraphicsResource : IDisposable
 	{
 		private bool disposed;
 		
 		protected GraphicsDevice graphicsDevice;
-		
+
+        //[System.Security.SecurityCritical()]
 		protected virtual void DoDisposing(EventArgs e) 
 		{
 			if (Disposing != null)
@@ -54,7 +56,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			
 			disposed = true;
 		}
-		
+
+        //[System.Security.SecurityCritical()]
 		public virtual void Dispose()
         {
 			DoDisposing(EventArgs.Empty);

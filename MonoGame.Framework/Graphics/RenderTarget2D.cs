@@ -52,6 +52,7 @@ using RenderbufferStorage = OpenTK.Graphics.ES20.All;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
+    [System.Security.SecurityCritical()]
 	public class RenderTarget2D : Texture2D
 	{
 #if GLES
@@ -71,7 +72,7 @@ namespace Microsoft.Xna.Framework.Graphics
         internal SharpDX.Direct3D11.DepthStencilView _depthStencilView;
 #elif OPENGL
 		internal uint glDepthStencilBuffer;
-        internal uint glFramebuffer;
+		internal uint glFramebuffer;
 #endif
 
 		public DepthFormat DepthStencilFormat { get; private set; }
@@ -157,6 +158,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			: this(graphicsDevice, width, height, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.DiscardContents) 
 		{}
 
+        [System.Security.SecuritySafeCritical()]
 		public override void Dispose ()
 		{
 #if DIRECTX
@@ -172,10 +174,8 @@ namespace Microsoft.Xna.Framework.Graphics
             }
 #elif OPENGL
 			GL.DeleteRenderbuffers(1, ref this.glDepthStencilBuffer);
-
 			if(this.glFramebuffer > 0)
-				GL.DeleteFramebuffers(1, ref this.glFramebuffer);
-
+  				GL.DeleteFramebuffers(1, ref this.glFramebuffer);
 #endif
             base.Dispose();
 		}

@@ -46,7 +46,8 @@ namespace Microsoft.Xna.Framework.Content
     {
         protected internal override BasicEffect Read(ContentReader input, BasicEffect existingInstance)
         {
-            GraphicsDevice device = (GraphicsDevice)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            IGraphicsDeviceService service = (IGraphicsDeviceService)input.ContentManager.ServiceProvider.GetService(typeof(IGraphicsDeviceService));
+            GraphicsDevice device = service.GraphicsDevice; 
             var effect = new BasicEffect(device);
             var texture = input.ReadExternalReference<Texture>() as Texture2D;
             if (texture != null)

@@ -67,6 +67,8 @@ non-infringement.
 #endregion License
 
 using System;
+using Microsoft.Xna.Framework.Graphics;
+using System.Security;
 
 #if WINRT
 using Windows.UI.ViewManagement;
@@ -74,6 +76,7 @@ using Windows.UI.ViewManagement;
 
 namespace Microsoft.Xna.Framework
 {
+    [SecuritySafeCritical]
     abstract class GamePlatform : IDisposable
     {
         #region
@@ -108,6 +111,7 @@ namespace Microsoft.Xna.Framework
             Game = game;
         }
 
+        [SecuritySafeCritical]
         ~GamePlatform()
         {
             Dispose(false);
@@ -128,12 +132,15 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         public Game Game
         {
-            get; private set;
+            [SecuritySafeCritical]
+            get;
+            private set;
         }
 
         private bool _isActive;
         public bool IsActive
         {
+            [SecuritySafeCritical]
             get { return _isActive; }
             internal set
             {
@@ -148,7 +155,9 @@ namespace Microsoft.Xna.Framework
         private bool _isMouseVisible;
         public bool IsMouseVisible
         {
+            [SecuritySafeCritical]
             get { return _isMouseVisible; }
+            [SecuritySafeCritical]
             set
             {
                 if (_isMouseVisible != value)
@@ -189,20 +198,25 @@ namespace Microsoft.Xna.Framework
 #else
         public GameWindow Window
         {
-            get; protected set;
+            [SecuritySafeCritical]
+            get;
+            protected set;
         }
 #endif
   
         public virtual bool VSyncEnabled
         {
+            [SecuritySafeCritical]
             get
             {
                 throw new NotImplementedException();
             }
-            set {
+            [SecuritySafeCritical]
+            set
+            {
             }
         }
-        
+       
         #endregion
 
         #region Events
@@ -243,6 +257,7 @@ namespace Microsoft.Xna.Framework
         /// IsActive to true, so derived classes should either call the base
         /// implementation or set IsActive to true by their own means.
         /// </summary>
+        [SecuritySafeCritical]
         public virtual void BeforeInitialize()
         {
             IsActive = true;
@@ -250,7 +265,9 @@ namespace Microsoft.Xna.Framework
             {
                 var graphicsDeviceManager = Game.Services.GetService(typeof(IGraphicsDeviceManager)) as IGraphicsDeviceManager;			   
                 graphicsDeviceManager.CreateDevice();
+#if ANDROID
                 Window.TouchEnabled = true;
+#endif
             }
         }
 
@@ -260,6 +277,7 @@ namespace Microsoft.Xna.Framework
         /// the run loop from starting.
         /// </summary>
         /// <returns></returns>
+        [SecuritySafeCritical]
         public virtual bool BeforeRun()
         {
             return true;
@@ -268,6 +286,7 @@ namespace Microsoft.Xna.Framework
         /// <summary>
         /// When implemented in a derived, ends the active run loop.
         /// </summary>
+        [SecuritySafeCritical]
         public virtual void Exit()
         {
             Raise(Exiting, EventArgs.Empty);
@@ -277,12 +296,14 @@ namespace Microsoft.Xna.Framework
         /// When implemented in a derived, starts the run loop and blocks
         /// until it has ended.
         /// </summary>
+        [SecuritySafeCritical]
         public abstract void RunLoop();
 
         /// <summary>
         /// When implemented in a derived, starts the run loop and returns
         /// immediately.
         /// </summary>
+        [SecuritySafeCritical]
         public abstract void StartRunLoop();
 
         /// <summary>
@@ -292,6 +313,7 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="gameTime"></param>
         /// <returns></returns>
+        [SecuritySafeCritical]
         public abstract bool BeforeUpdate(GameTime gameTime);
 
         /// <summary>
@@ -301,18 +323,21 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="gameTime"></param>
         /// <returns></returns>
+        [SecuritySafeCritical]
         public abstract bool BeforeDraw(GameTime gameTime);
 
         /// <summary>
         /// When implemented in a derived class, causes the game to enter
         /// full-screen mode.
         /// </summary>
+        [SecuritySafeCritical]
         public abstract void EnterFullScreen();
 
         /// <summary>
         /// When implemented in a derived class, causes the game to exit
         /// full-screen mode.
         /// </summary>
+        [SecuritySafeCritical]
         public abstract void ExitFullScreen();
 
         /// <summary>
@@ -321,6 +346,7 @@ namespace Microsoft.Xna.Framework
         /// </summary>
         /// <param name="value">The proposed new value of TargetElapsedTime.</param>
         /// <returns>The new value of TargetElapsedTime that will be set.</returns>
+        [SecuritySafeCritical]
         public virtual TimeSpan TargetElapsedTimeChanging(TimeSpan value)
         {
             return value;
@@ -331,7 +357,8 @@ namespace Microsoft.Xna.Framework
         /// <param name='willBeFullScreen'>
         /// Specifies whether the device will be in full-screen mode upon completion of the change.
         /// </param>
-        public abstract void BeginScreenDeviceChange (
+        [SecuritySafeCritical]
+        public abstract void BeginScreenDeviceChange(
                  bool willBeFullScreen
         );
 
@@ -347,7 +374,8 @@ namespace Microsoft.Xna.Framework
         /// <param name='clientHeight'>
         /// The new height of the game's client window.
         /// </param>
-        public abstract void EndScreenDeviceChange (
+        [SecuritySafeCritical]
+        public abstract void EndScreenDeviceChange(
                  string screenDeviceName,
                  int clientWidth,
                  int clientHeight
@@ -357,16 +385,19 @@ namespace Microsoft.Xna.Framework
         /// Gives derived classes an opportunity to take action after
         /// Game.TargetElapsedTime has been set.
         /// </summary>
-        public virtual void TargetElapsedTimeChanged() {}
+        [SecuritySafeCritical]
+        public virtual void TargetElapsedTimeChanged() { }
 
         /// <summary>
         /// MSDN: Use this method if your game is recovering from a slow-running state, and ElapsedGameTime is too large to be useful.
         /// Frame timing is generally handled by the Game class, but some platforms still handle it elsewhere. Once all platforms
         /// rely on the Game class's functionality, this method and any overrides should be removed.
         /// </summary>
-        public virtual void ResetElapsedTime() {}
+        [SecuritySafeCritical]
+        public virtual void ResetElapsedTime() { }
 
-        protected virtual void OnIsMouseVisibleChanged() {}
+        [SecuritySafeCritical]
+        protected virtual void OnIsMouseVisibleChanged() { }
 
         #endregion Methods
 
@@ -376,12 +407,14 @@ namespace Microsoft.Xna.Framework
         /// Performs application-defined tasks associated with freeing,
         /// releasing, or resetting unmanaged resources.
         /// </summary>
+        [SecuritySafeCritical]
         public void Dispose()
         {
             Dispose(true);
         }
 
-        protected virtual void Dispose(bool disposing) {}
+        [SecuritySafeCritical]
+        protected virtual void Dispose(bool disposing) { }
 		
 		/// <summary>
 		/// Log the specified Message.
@@ -390,12 +423,14 @@ namespace Microsoft.Xna.Framework
 		/// 
 		/// </param>
 		[System.Diagnostics.Conditional("DEBUG")]
-		public virtual void Log(string Message) {}		
+        [SecuritySafeCritical]
+        public virtual void Log(string Message) { }		
 			
 
         #endregion
 
-        public virtual void Present() {}
+        [SecuritySafeCritical]
+        public virtual void Present() { }
     }
 }
 

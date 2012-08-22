@@ -81,6 +81,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		GCHandle _indexHandle;
 #endif
 
+        [System.Security.SecurityCritical()]
 		public SpriteBatcher (GraphicsDevice device)
 		{
             _device = device;
