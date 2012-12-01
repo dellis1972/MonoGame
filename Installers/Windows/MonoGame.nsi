@@ -13,7 +13,6 @@ SetCompressor /SOLID /FINAL lzma
 !include "InstallOptions.nsh"
 
 !define MUI_ICON "${FrameworkPath}Installers\monogame.ico"
-
 !define MUI_UNICON "${FrameworkPath}Installers\monogame.ico"
 
 Name '${APPNAME} ${VERSION} (BETA)'
@@ -30,21 +29,28 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "© Copyright MonoGame 201
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
 
+
+
+
 ;Interface Configuration
 
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "${FrameworkPath}Installers\monogame.bmp"
 !define MUI_ABORTWARNING
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${FrameworkPath}Installers\panel.bmp"
+
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_COMPONENTS
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
 ;Languages
 
 !insertmacro MUI_LANGUAGE "English"
-!insertmacro MUI_PAGE_COMPONENTS
-!insertmacro MUI_PAGE_INSTFILES
-
-!insertmacro MUI_UNPAGE_CONFIRM
-!insertmacro MUI_UNPAGE_INSTFILES
 
 ;--------------------------------
 
@@ -84,7 +90,7 @@ Section "MonoGame Core Components" ;No components page, name is not important
   File '..\..\MonoGame.Framework\bin\Release\MonoGame.Framework.Windows8.dll'
   File /nonfatal '..\..\MonoGame.Framework\bin\Release\MonoGame.Framework.Windows8.xml'
   File '..\..\ThirdParty\Libs\SharpDX\Windows 8 Metro\*.dll'
-  File '..\..\ThirdParty\Libs\SharpDX\Windows 8 Metro\*xml'
+  File '..\..\ThirdParty\Libs\SharpDX\Windows 8 Metro\*.xml'
 
   ; Install Windows Phone ARM Assemblies
   SetOutPath '$PROGRAMFILES\${APPNAME}\v${VERSION}\Assemblies\WindowsPhone\ARM'
@@ -101,7 +107,7 @@ Section "MonoGame Core Components" ;No components page, name is not important
   SetOutPath '$PROGRAMFILES\${APPNAME}\v${VERSION}\Assemblies\WindowsPhone'
 
   File /r '..\..\ThirdParty\Libs\SharpDX\Windows Phone\*.dll'
-  File /r '..\..\ThirdParty\Libs\SharpDX\Windows Phone\*xml'  
+  File /r '..\..\ThirdParty\Libs\SharpDX\Windows Phone\*.xml'  
 
   IfFileExists $WINDIR\SYSWOW64\*.* Is64bit Is32bit
   Is32bit:

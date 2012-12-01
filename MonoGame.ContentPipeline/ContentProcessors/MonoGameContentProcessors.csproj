@@ -60,6 +60,10 @@
     <Reference Include="NAudio.WindowsMediaFormat">
       <HintPath>..\..\ThirdParty\Libs\NAudio\NAudio.WindowsMediaFormat.dll</HintPath>
     </Reference>
+    <Reference Include="PVRTexLibC, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\PVRTexLibC.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>..\..\ThirdParty\Libs\SharpDX\Windows\SharpDX.dll</HintPath>
     </Reference>
@@ -178,10 +182,6 @@
     <ProjectReference Include="..\..\Tools\MP3Compression\yeti.wmfsdk\yeti.wmfsdk.csproj">
       <Project>{FECB5BEB-AB05-454A-BB14-6A554E897274}</Project>
       <Name>yeti.wmfsdk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Tools\PVRTexLibC\PVRTexLibC.vcxproj">
-      <Project>{7CC59D82-06E1-4BA7-8644-2552CBC34316}</Project>
-      <Name>PVRTexLibC</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

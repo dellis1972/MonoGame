@@ -90,7 +90,7 @@ namespace MonoDevelop.MonoGame
             //HACK: workaround for MD not local-copying package references
             foreach (var projectReference in References)
             {
-                if (projectReference.Package != null && projectReference.Package.Name == "monogame")
+                if (projectReference.Package != null && projectReference.Package.Name.StartsWith("monogame"))
                 {
                     if (projectReference.ReferenceType == ReferenceType.Gac)
                     {
