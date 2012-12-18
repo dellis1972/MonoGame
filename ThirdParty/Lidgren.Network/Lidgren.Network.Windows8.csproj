@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{09E8AD59-0AE0-4DDD-853B-424DE919D6C4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lidgren.Network.Windows8</RootNamespace>
+    <AssemblyName>Lidgren.Network.Windows8</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Encryption\INetEncryption.cs">
+    </Compile>
+    <Compile Include="Encryption\NetBlockEncryptionBase.cs">
+    </Compile>
+    <Compile Include="Encryption\NetXorEncryption.cs">
+    </Compile>
+    <Compile Include="NamespaceDoc.cs">
+    </Compile>
+    <Compile Include="NetBigInteger.cs">
+    </Compile>
+    <Compile Include="NetBitVector.cs">
+    </Compile>
+    <Compile Include="NetBitWriter.cs">
+    </Compile>
+    <Compile Include="NetClient.cs">
+    </Compile>
+    <Compile Include="NetConnection.cs">
+    </Compile>
+    <Compile Include="NetConnection.Handshake.cs">
+    </Compile>
+    <Compile Include="NetConnection.Latency.cs">
+    </Compile>
+    <Compile Include="NetConnection.MTU.cs">
+    </Compile>
+    <Compile Include="NetConnectionStatistics.cs">
+    </Compile>
+    <Compile Include="NetConnectionStatus.cs">
+    </Compile>
+    <Compile Include="NetConstants.cs">
+    </Compile>
+    <Compile Include="NetDeliveryMethod.cs">
+    </Compile>
+    <Compile Include="NetException.cs">
+    </Compile>
+    <Compile Include="NetFragmentationHelper.cs">
+    </Compile>
+    <Compile Include="NetFragmentationInfo.cs">
+    </Compile>
+    <Compile Include="NetIncomingMessage.cs">
+    </Compile>
+    <Compile Include="NetIncomingMessage.Peek.cs">
+    </Compile>
+    <Compile Include="NetIncomingMessage.Read.cs">
+    </Compile>
+    <Compile Include="NetIncomingMessage.Write.cs">
+    </Compile>
+    <Compile Include="NetIncomingMessageType.cs">
+    </Compile>
+    <Compile Include="NetMessageType.cs">
+    </Compile>
+    <Compile Include="NetNatIntroduction.cs">
+    </Compile>
+    <Compile Include="NetOutgoingMessage.cs">
+    </Compile>
+    <Compile Include="NetOutgoingMessage.Write.cs">
+    </Compile>
+    <Compile Include="NetPeer.cs">
+    </Compile>
+    <Compile Include="NetPeer.Discovery.cs">
+    </Compile>
+    <Compile Include="NetPeer.Fragmentation.cs">
+    </Compile>
+    <Compile Include="NetPeer.Internal.cs">
+    </Compile>
+    <Compile Include="NetPeer.LatencySimulation.cs">
+    </Compile>
+    <Compile Include="NetPeer.Logging.cs">
+    </Compile>
+    <Compile Include="NetPeer.MessagePools.cs">
+    </Compile>
+    <Compile Include="NetPeer.Send.cs">
+    </Compile>
+    <Compile Include="NetPeerConfiguration.cs">
+    </Compile>
+    <Compile Include="NetPeerStatistics.cs">
+    </Compile>
+    <Compile Include="NetPeerStatus.cs">
+    </Compile>
+    <Compile Include="NetQueue.cs">
+    </Compile>
+    <Compile Include="NetRandom.cs">
+    </Compile>
+    <Compile Include="NetReceiverChannelBase.cs">
+    </Compile>
+    <Compile Include="NetReliableOrderedReceiver.cs">
+    </Compile>
+    <Compile Include="NetReliableSenderChannel.cs">
+    </Compile>
+    <Compile Include="NetReliableSequencedReceiver.cs">
+    </Compile>
+    <Compile Include="NetReliableUnorderedReceiver.cs">
+    </Compile>
+    <Compile Include="NetSenderChannelBase.cs">
+    </Compile>
+    <Compile Include="NetSendResult.cs">
+    </Compile>
+    <Compile Include="NetServer.cs">
+    </Compile>
+    <Compile Include="NetStoredReliableMessage.cs">
+    </Compile>
+    <Compile Include="NetTime.cs">
+    </Compile>
+    <Compile Include="NetTuple.cs">
+    </Compile>
+    <Compile Include="NetUnreliableSenderChannel.cs">
+    </Compile>
+    <Compile Include="NetUnreliableSequencedReceiver.cs">
+    </Compile>
+    <Compile Include="NetUnreliableUnorderedReceiver.cs">
+    </Compile>
+    <Compile Include="NetUPnP.cs">
+    </Compile>
+    <Compile Include="NetUtility.cs">
+    </Compile>
+    <Compile Include="PlatformSocket.cs">
+    </Compile>
+    <Compile Include="SenderChannelBase.cs">
+    </Compile>
+    <Compile Include="System.Net.Sockets\SocketError.cs" />
+    <Compile Include="System.Net.Sockets\SocketException.cs" />
+    <Compile Include="System.Net.Sockets\SocketShutdown.cs" />
+    <Compile Include="System.Net\AddressFamily.cs" />
+    <Compile Include="System.Net\Dns.cs" />
+    <Compile Include="System.Net\EndPoint.cs" />
+    <Compile Include="System.Net\IPAddress.cs" />
+    <Compile Include="System.Net\IPEndPoint.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System.Net\IPHostEntry.cs" />
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
+    <VisualStudioVersion>11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
