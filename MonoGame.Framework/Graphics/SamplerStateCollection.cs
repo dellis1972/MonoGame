@@ -48,6 +48,10 @@ using System.Collections.Generic;
 using MonoMac.OpenGL;
 #elif WINDOWS || LINUX
 using OpenTK.Graphics.OpenGL;
+#elif EMBEDDED
+using OpenTK.Graphics.ES20;
+using TextureUnit = OpenTK.Graphics.ES20.TextureUnit;
+using TextureTarget = OpenTK.Graphics.ES20.TextureTarget;
 #elif GLES
 using OpenTK.Graphics.ES20;
 using TextureUnit = OpenTK.Graphics.ES20.All;
