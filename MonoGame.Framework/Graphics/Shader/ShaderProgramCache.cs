@@ -10,13 +10,13 @@ using OpenTK.Graphics.OpenGL;
 #elif EMBEDDED
 using OpenTK.Graphics.ES20;
 using GL = OpenTK.Graphics.ES20.GL;
-#elif PSS
+#elif PSM
 using Sce.PlayStation.Core.Graphics;
 #elif WINRT
 
 #else
 using OpenTK.Graphics.ES20;
-#if IPHONE || ANDROID
+#if IOS || ANDROID
 using ActiveUniformType = OpenTK.Graphics.ES20.All;
 using ShaderType = OpenTK.Graphics.ES20.All;
 using ProgramParameter = OpenTK.Graphics.ES20.All;
@@ -37,9 +37,15 @@ namespace Microsoft.Xna.Framework.Graphics
     /// It will be responsible for linking the programs under OpenGL if they have not been linked
     /// before. If an existing link exists it will be resused.
     /// </summary>
-    internal class ShaderProgramCache
+    internal class ShaderProgramCache : IDisposable
     {
         private readonly Dictionary<int, ShaderProgramInfo> _programCache = new Dictionary<int, ShaderProgramInfo>();
+        bool disposed;
+
+        ~ShaderProgramCache()
+        {
+            Dispose(true);
+        }
 
         /// <summary>
         /// Clear the program cache releasing all shader programs.
@@ -88,18 +94,18 @@ namespace Microsoft.Xna.Framework.Graphics
             GraphicsExtensions.CheckGLError();
 
             GL.AttachShader(program, vertexShader.GetShaderHandle());
-            GraphicsExtensions.LogGLError("VertexShaderCache.Link(), GL.AttachShader");
+            GraphicsExtensions.CheckGLError();
 
             GL.AttachShader(program, pixelShader.GetShaderHandle());
-            GraphicsExtensions.LogGLError("VertexShaderCache.Link(), GL.AttachShader");
+            GraphicsExtensions.CheckGLError();
 
             //vertexShader.BindVertexAttributes(program);
 
             GL.LinkProgram(program);
-            GraphicsExtensions.LogGLError("VertexShaderCache.Link(), GL.LinkProgram");
+            GraphicsExtensions.CheckGLError();
 
             GL.UseProgram(program);
-            GraphicsExtensions.LogGLError("VertexShaderCache.Link(), GL.UseProgram");
+            GraphicsExtensions.CheckGLError();
 
             vertexShader.GetVertexAttributeLocations(program);
 
@@ -129,6 +135,21 @@ namespace Microsoft.Xna.Framework.Graphics
             _programCache.Add(vertexShader.HashKey | pixelShader.HashKey, info);             
         }
 
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                Clear();
+                disposed = true;
+            }
+        }
     }
 }
 

@@ -20,13 +20,13 @@ using ColorPointerType = OpenTK.Graphics.ES20.All;
 using NormalPointerType = OpenTK.Graphics.ES20.All;
 using TexCoordPointerType = OpenTK.Graphics.ES20.All;
 using TextureTarget = OpenTK.Graphics.ES20.TextureTarget;
-#elif PSS
+#elif PSM
 using Sce.PlayStation.Core.Graphics;
 #elif WINRT
 // TODO
 #else
 using OpenTK.Graphics.ES20;
-#if IPHONE || ANDROID
+#if IOS || ANDROID
 using PixelInternalFormat = OpenTK.Graphics.ES20.All;
 using PixelFormat = OpenTK.Graphics.ES20.All;
 using PixelType = OpenTK.Graphics.ES20.All;
@@ -52,7 +52,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		
 #if WINRT
 
-#elif PSS
+#elif PSM
 		//TODO
 #else
 		PixelInternalFormat glInternalFormat;
@@ -68,12 +68,12 @@ namespace Microsoft.Xna.Framework.Graphics
 
 #if WINRT
 
-#elif PSS
+#elif PSM
 			//TODO
 #else
 			this.glTarget = TextureTarget.TextureCubeMap;
 
-#if IPHONE || ANDROID
+#if IOS || ANDROID
 			GL.GenTextures(1, ref this.glTexture);
 #else
 			GL.GenTextures(1, out this.glTexture);
@@ -103,7 +103,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				if (glFormat == (PixelFormat)All.CompressedTextureFormats) {
 					throw new NotImplementedException();
 				} else {
-#if IPHONE || ANDROID
+#if IOS || ANDROID
 					GL.TexImage2D (target, 0, (int)glInternalFormat, size, size, 0, glFormat, glType, IntPtr.Zero);
 #else
 					GL.TexImage2D (target, 0, glInternalFormat, size, size, 0, glFormat, glType, IntPtr.Zero);
@@ -114,7 +114,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			
 			if (mipMap)
 			{
-#if IPHONE || ANDROID || EMBEDDED
+#if IOS || ANDROID || EMBEDDED
 				GL.GenerateMipmap(TextureTarget.TextureCubeMap);
 #else
 				GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.GenerateMipmap, (int)All.True);
@@ -190,7 +190,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			
 #if WINRT
 
-#elif PSS
+#elif PSM
 			//TODO
 #else
 			GL.BindTexture (TextureTarget.TextureCubeMap, this.glTexture);
@@ -207,7 +207,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			dataHandle.Free ();
 		}
 		
-#if !WINRT && !PSS
+#if !WINRT && !PSM
 		private TextureTarget GetGLCubeFace(CubeMapFace face) {
 			switch (face) {
 			case CubeMapFace.PositiveX: return TextureTarget.TextureCubeMapPositiveX;

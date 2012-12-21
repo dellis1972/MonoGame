@@ -1,12 +1,11 @@
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
 	internal class MojoShader
     {
-#if IPHONE
+#if IOS
 		const string mojoshader_dll = "__Internal";
 #elif WINDOWS
 		const string mojoshader_dll = "libmojoshader_32.dll";

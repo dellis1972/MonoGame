@@ -51,17 +51,19 @@ namespace Microsoft.Xna.Framework.Graphics
 {
 	internal class SpriteBatcher
 	{
-		private const int InitialBatchSize = 256;
-		private const int InitialVertexArraySize = 256;
+#warning Magic numbers? How i set this on my game?        
+		private const int InitialBatchSize = 10000;
+		private const int InitialVertexArraySize = 10000;
+        
 		List<SpriteBatchItem> _batchItemList;
 		Queue<SpriteBatchItem> _freeBatchItemQueue;
 
         GraphicsDevice _device;
   
         ushort[] _index;
-        VertexPosition2ColorTexture[] _vertexArray;
+        VertexPositionColorTexture[] _vertexArray;
   
-        static readonly VertexFormat[] _vertexFormat = new VertexFormat[] { VertexFormat.Float2, VertexFormat.UByte4N, VertexFormat.Float2 };
+        static readonly VertexFormat[] _vertexFormat = new VertexFormat[] { VertexFormat.Float3, VertexFormat.UByte4N, VertexFormat.Float2 };
         
 		public SpriteBatcher (GraphicsDevice device)
 		{
@@ -81,7 +83,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 _index[i * 6 + 5] = (ushort)(i * 4 + 2);
             }
 
-            _vertexArray = new VertexPosition2ColorTexture[4 * InitialVertexArraySize];
+            _vertexArray = new VertexPositionColorTexture[4 * InitialVertexArraySize];
 		}
 		
 		public SpriteBatchItem CreateBatchItem()
@@ -157,8 +159,7 @@ namespace Microsoft.Xna.Framework.Graphics
             vertexBuffer.SetIndices(_index, 0, 0, 6 * InitialVertexArraySize);
             _device._graphics.SetVertexBuffer(0, vertexBuffer);
             vertexBuffer.SetVertices(_vertexArray, 0, 0, index);
-            
-            
+                        
             startIndex = index = 0;
             
             //Draw each batch in the sprite batch (based on texture changes)
@@ -173,6 +174,16 @@ namespace Microsoft.Xna.Framework.Graphics
                     startIndex = index;
                     tex = item.Texture;
                     
+#warning is the correct place?
+#warning im not sure about this equivalence
+                    
+                    // Set the SpriteSamplerState
+                    if (_device.SamplerStates[0]==SamplerState.PointClamp)
+                        tex._texture2D.SetFilter(TextureFilterMode.Disabled);
+                    else if (_device.SamplerStates[0]==SamplerState.LinearClamp)
+                        tex._texture2D.SetFilter(TextureFilterMode.Linear);
+                    else if (_device.SamplerStates[0]==SamplerState.AnisotropicClamp)
+                        tex._texture2D.SetFilter(TextureFilterMode.Nearest);
                     _device._graphics.SetTexture(0, tex._texture2D);
                 }
                 index += 4;
@@ -203,7 +214,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 _index[i * 6 + 5] = (ushort)(i * 4 + 2);
             }
 
-            _vertexArray = new VertexPosition2ColorTexture[4 * newCount];
+            _vertexArray = new VertexPositionColorTexture[4 * newCount];
 		}
         
 		void DrawVertexArray ( int start, int end )
@@ -214,9 +225,8 @@ namespace Microsoft.Xna.Framework.Graphics
             var vertexCount = end - start;
 
 #warning this should be applied somewhere else
-            _device._graphics.Enable(EnableMode.Blend);
-            _device._graphics.SetBlendFunc(BlendFuncMode.Add, BlendFuncFactor.SrcAlpha, BlendFuncFactor.OneMinusSrcAlpha);
-            
+            _device._graphics.Enable(EnableMode.Blend);  
+            _device._graphics.SetBlendFunc(BlendFuncMode.Add, BlendFuncFactor.One, BlendFuncFactor.OneMinusSrcAlpha);
             _device._graphics.DrawArrays(DrawMode.Triangles, start / 2 * 3, vertexCount / 2 * 3);
 		}
 	}

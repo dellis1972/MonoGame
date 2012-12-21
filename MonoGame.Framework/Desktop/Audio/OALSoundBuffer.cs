@@ -1,6 +1,6 @@
 using System;
 
-#if IPHONE || WINDOWS || LINUX || EMBEDDED
+#if IOS || WINDOWS || LINUX || EMBEDDED
 using OpenTK.Audio.OpenAL;
 #elif MONOMAC
 using MonoMac.OpenAL;
