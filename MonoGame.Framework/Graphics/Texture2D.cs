@@ -55,6 +55,7 @@ using MonoTouch.CoreGraphics;
 using MonoTouch.Foundation;
 #endif
 
+#if OPENGL
 #if MONOMAC
 using MonoMac.OpenGL;
 using GLPixelFormat = MonoMac.OpenGL.PixelFormat;
@@ -79,8 +80,6 @@ using NormalPointerType = OpenTK.Graphics.ES20.All;
 using TexCoordPointerType = OpenTK.Graphics.ES20.All;
 using TextureTarget = OpenTK.Graphics.ES20.TextureTarget;
 using GLPixelFormat = OpenTK.Graphics.ES20.PixelFormat;
-#elif PSM
-using PssTexture2D = Sce.PlayStation.Core.Graphics.Texture2D;
 #elif GLES
 using OpenTK.Graphics.ES20;
 using GLPixelFormat = OpenTK.Graphics.ES20.All;
@@ -91,7 +90,9 @@ using PixelInternalFormat = OpenTK.Graphics.ES20.All;
 using PixelType = OpenTK.Graphics.ES20.All;
 using PixelStoreParameter = OpenTK.Graphics.ES20.All;
 using ErrorCode = OpenTK.Graphics.ES20.All;
-
+#endif
+#elif PSM
+using PssTexture2D = Sce.PlayStation.Core.Graphics.Texture2D;
 #endif
 
 using Microsoft.Xna.Framework.Content;

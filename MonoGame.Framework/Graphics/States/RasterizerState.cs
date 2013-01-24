@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 
+#if OPENGL
 #if MONOMAC
 using MonoMac.OpenGL;
 #elif WINDOWS || LINUX
@@ -21,13 +22,14 @@ using NormalPointerType = OpenTK.Graphics.ES20.All;
 using TexCoordPointerType = OpenTK.Graphics.ES20.All;
 using TextureTarget = OpenTK.Graphics.ES20.TextureTarget;
 using GLStencilFunction = OpenTK.Graphics.ES20.StencilFunction;
-#elif PSM
-using Sce.PlayStation.Core.Graphics;
 #elif GLES
 using OpenTK.Graphics.ES20;
 using EnableCap = OpenTK.Graphics.ES20.All;
 using FrontFaceDirection = OpenTK.Graphics.ES20.All;
 using CullFaceMode = OpenTK.Graphics.ES20.All;
+#endif
+#elif PSM
+using Sce.PlayStation.Core.Graphics;
 #endif
 
 namespace Microsoft.Xna.Framework.Graphics
@@ -181,7 +183,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 desc.IsDepthClipEnabled = true;
 
                 // Create the state.
-                _state = new SharpDX.Direct3D11.RasterizerState(GraphicsDevice._d3dDevice, ref desc);
+                _state = new SharpDX.Direct3D11.RasterizerState(GraphicsDevice._d3dDevice, desc);
             }
 
             Debug.Assert(GraphicsDevice == device, "The state was created for a different device!");
