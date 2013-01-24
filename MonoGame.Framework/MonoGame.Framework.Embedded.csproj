@@ -166,6 +166,8 @@
     <Compile Include="Graphics\PresentationParameters.cs" />
     <Compile Include="Graphics\PresentInterval.cs" />
     <Compile Include="Graphics\RenderTarget2D.cs" />
+    <Compile Include="Graphics\ResourceCreatedEventArgs.cs" />
+    <Compile Include="Graphics\ResourceDestroyedEventArgs.cs" />
     <Compile Include="Graphics\Shader\ShaderProgramCache.cs" />
     <Compile Include="Graphics\SpriteBatch.cs" />
     <Compile Include="Graphics\SpriteBatcher.cs" />

@@ -21,6 +21,7 @@ using BufferUsageHint = OpenTK.Graphics.ES20.All;
 using Sce.PlayStation.Core.Graphics;
 using PssVertexBuffer = Sce.PlayStation.Core.Graphics.VertexBuffer;
 #endif
+#endif
 
 namespace Microsoft.Xna.Framework.Graphics
 {

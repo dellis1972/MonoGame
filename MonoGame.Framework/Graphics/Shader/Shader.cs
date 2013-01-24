@@ -17,6 +17,7 @@ using ShaderType = OpenTK.Graphics.ES20.All;
 using ShaderParameter = OpenTK.Graphics.ES20.All;
 using TextureUnit = OpenTK.Graphics.ES20.All;
 using TextureTarget = OpenTK.Graphics.ES20.All;
+#endif
 #elif DIRECTX
 using SharpDX;
 using SharpDX.Direct3D;

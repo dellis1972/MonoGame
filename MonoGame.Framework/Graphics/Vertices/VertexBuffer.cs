@@ -136,7 +136,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
         public void GetData<T> (int offsetInBytes, T[] data, int startIndex, int elementCount, int vertexStride) where T : struct
         {
-#if GLES
+#if GLES || EMBEDDED
             // Buffers are write-only on OpenGL ES 1.1 and 2.0.  See the GL_OES_mapbuffer extension for more information.
             // http://www.khronos.org/registry/gles/extensions/OES/OES_mapbuffer.txt
             throw new NotSupportedException("Vertex buffers are write-only on OpenGL ES platforms");
@@ -149,58 +149,56 @@ namespace Microsoft.Xna.Framework.Graphics
                 throw new NotSupportedException ("This VertexBuffer was created with a usage type of BufferUsage.WriteOnly. Calling GetData on a resource that was created with BufferUsage.WriteOnly is not supported.");
 			if ((elementCount * vertexStride) > (VertexCount * VertexDeclaration.VertexStride))
                 throw new ArgumentOutOfRangeException ("The vertex stride is larger than the vertex buffer.");
-
+#endif
 #if DIRECTX
-            if (_isDynamic)
-            {
-                throw new NotImplementedException();
-            }
-            else
-            {
-                var deviceContext = GraphicsDevice._d3dContext;
-                
-                // Copy the texture to a staging resource
-                var stagingDesc = _buffer.Description;
-                stagingDesc.BindFlags = SharpDX.Direct3D11.BindFlags.None;
-                stagingDesc.CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.Read | SharpDX.Direct3D11.CpuAccessFlags.Write;
-                stagingDesc.Usage = SharpDX.Direct3D11.ResourceUsage.Staging;
-                stagingDesc.OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None;
-                var stagingBuffer = new SharpDX.Direct3D11.Buffer(GraphicsDevice._d3dDevice, stagingDesc);
-                
-                lock (GraphicsDevice._d3dContext)
-                    deviceContext.CopyResource(_buffer, stagingBuffer);
+			if (_isDynamic)
+			{
+				throw new NotImplementedException();
+			}
+			else
+			{
+				var deviceContext = GraphicsDevice._d3dContext;
 
-                int TsizeInBytes = SharpDX.Utilities.SizeOf<T>();
-                var dataHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
-                var startBytes = startIndex * vertexStride;
-                var dataPtr = (IntPtr)(dataHandle.AddrOfPinnedObject().ToInt64() + startBytes);
-                SharpDX.DataPointer DataPointer = new SharpDX.DataPointer(dataPtr, data.Length * TsizeInBytes);
+				// Copy the texture to a staging resource
+				var stagingDesc = _buffer.Description;
+				stagingDesc.BindFlags = SharpDX.Direct3D11.BindFlags.None;
+				stagingDesc.CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.Read | SharpDX.Direct3D11.CpuAccessFlags.Write;
+				stagingDesc.Usage = SharpDX.Direct3D11.ResourceUsage.Staging;
+				stagingDesc.OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None;
+				var stagingBuffer = new SharpDX.Direct3D11.Buffer(GraphicsDevice._d3dDevice, stagingDesc);
 
-                lock (GraphicsDevice._d3dContext)
-                {
-                    // Map the staging resource to a CPU accessible memory
-                    var box = deviceContext.MapSubresource(stagingBuffer, 0, SharpDX.Direct3D11.MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
+				lock (GraphicsDevice._d3dContext)
+					deviceContext.CopyResource(_buffer, stagingBuffer);
 
-                    if (vertexStride == TsizeInBytes)
-                    {
-                        SharpDX.Utilities.CopyMemory(dataPtr, box.DataPointer, vertexStride*data.Length);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < data.Length; i++)
-                            SharpDX.Utilities.CopyMemory(dataPtr + i * TsizeInBytes, box.DataPointer + i * vertexStride, TsizeInBytes);
-                    }
+				int TsizeInBytes = SharpDX.Utilities.SizeOf<T>();
+				var dataHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
+				var startBytes = startIndex * vertexStride;
+				var dataPtr = (IntPtr)(dataHandle.AddrOfPinnedObject().ToInt64() + startBytes);
+				SharpDX.DataPointer DataPointer = new SharpDX.DataPointer(dataPtr, data.Length * TsizeInBytes);
 
-                    // Make sure that we unmap the resource in case of an exception
-                    deviceContext.UnmapSubresource(stagingBuffer, 0);
-                }
-#if IOS || ANDROID || EMBEDDED
-                stagingBuffer.Dispose();
-            }
+				lock (GraphicsDevice._d3dContext)
+				{
+					// Map the staging resource to a CPU accessible memory
+					var box = deviceContext.MapSubresource(stagingBuffer, 0, SharpDX.Direct3D11.MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
+
+					if (vertexStride == TsizeInBytes)
+					{
+						SharpDX.Utilities.CopyMemory(dataPtr, box.DataPointer, vertexStride * data.Length);
+					}
+					else
+					{
+						for (int i = 0; i < data.Length; i++)
+							SharpDX.Utilities.CopyMemory(dataPtr + i * TsizeInBytes, box.DataPointer + i * vertexStride, TsizeInBytes);
+					}
+
+					// Make sure that we unmap the resource in case of an exception
+					deviceContext.UnmapSubresource(stagingBuffer, 0);
+				}
+			}
+#elif GLES || EMBEDDED
 #elif PSM
             throw new NotImplementedException();
 #else
-
             if (Threading.IsOnUIThread())
             {
                 GetBufferData(offsetInBytes, data, startIndex, elementCount, vertexStride);
@@ -210,7 +208,6 @@ namespace Microsoft.Xna.Framework.Graphics
                 Threading.BlockOnUIThread (() => GetBufferData(offsetInBytes, data, startIndex, elementCount, vertexStride));
             }
 
-#endif
 #endif
         }
 
