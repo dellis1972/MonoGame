@@ -25,9 +25,9 @@
 
 	<target name="build" description="Build MonoGame Release" depends="checkos">
 
-		<call target="buildwindows"/>		
-		<call target="buildlinux"/>		
-		<call target="buildandroid" />
+	<call target="buildwindows"/>		
+	<call target="buildlinux"/>		
+	<call target="buildandroid" />
     <call target="buildwindows8" />
     <call target="buildwindowsphone" />
     <call target="buildmac" />
@@ -37,10 +37,16 @@
     <call target="buildtools"/>		
     <call target="buildcontentprocessor"/>	
 	   
-	  <nant buildfile="ProjectTemplates/MonoDevelop/MonoDevelop.MonoGame/default.build" target="build" />
+	<nant buildfile="ProjectTemplates/MonoDevelop/MonoDevelop.MonoGame/default.build" target="build" />
     <nant buildfile="ProjectTemplates/VisualStudio2010/default.build" target="build" />
 
     <call target="buildtests"/>
+    
+    <if test="${os == 'Win32NT'}">
+      <if test="${file::exists('C:\Program Files (x86)\NSIS\makensis.exe')}">
+    	<nant buildfile="Installers/default.build" target="build" />
+      </if>
+    </if>
   </target>
 
   <target name="buildpsm" description="Build Play Station Mobile" depends="clean">
