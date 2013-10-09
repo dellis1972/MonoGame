@@ -204,9 +204,9 @@ namespace MonoGame.Tools.Pipeline
             if (OnProjectLoading != null)
                 OnProjectLoading();
 
-#if SHIPPING
+//#if SHIPPING
             try
-#endif
+//#endif
             {
                 _actionStack.Clear();
                 _project = new PipelineProject();
@@ -224,13 +224,14 @@ namespace MonoGame.Tools.Pipeline
                 History.Default.StartupProject = projectFilePath;
                 History.Default.Save();
             }
-#if SHIPPING
+//#if SHIPPING
             catch (Exception e)
             {
-                _view.ShowError("Open Project", "Failed to open project!");
+				File.WriteAllText ("/Users/dean/error.log", e.ToString ());
+				_view.ShowError("Open Project", string.Format ("Failed to open project! {0}", e.Message));
                 return;
             }
-#endif
+//#endif
 
             UpdateTree();
 
@@ -382,7 +383,6 @@ namespace MonoGame.Tools.Pipeline
         {
             try
             {
-                // Prepare the process.
                 _buildProcess = _view.CreateProcess(FindMGCB(), commands);
                 _buildProcess.StartInfo.WorkingDirectory = Path.GetDirectoryName(_project.OriginalPath);
                 _buildProcess.StartInfo.CreateNoWindow = true;

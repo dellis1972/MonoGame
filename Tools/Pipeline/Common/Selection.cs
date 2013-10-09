@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace MonoGame.Tools.Pipeline
 {
-    internal delegate void SelectionModified(Selection selection, object source);
+    public delegate void SelectionModified(Selection selection, object source);
 
-    internal class Selection : IEnumerable<IProjectItem>
+    public class Selection : IEnumerable<IProjectItem>
     {
         private readonly List<IProjectItem> _list;
 

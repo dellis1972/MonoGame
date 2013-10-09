@@ -1,0 +1,6 @@
+﻿/outputDir:bin
+/intermediateDir:obj
+/platform:Windows
+/profile:Reach
+
+/build:ShipDiffuse.tga

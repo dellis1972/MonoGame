@@ -7,14 +7,14 @@ using System.Diagnostics;
 
 namespace MonoGame.Tools.Pipeline
 {
-    enum AskResult
+    public enum AskResult
     {
         Yes,
         No,
         Cancel
     }
 
-    interface IView
+     public interface IView
     {
         void Attach(IController controller);
 

@@ -10,6 +10,11 @@ using System.Windows.Forms;
 #if XWT
 using Xwt;
 #endif
+#if GTK
+using Gtk;
+using Pipeline.MacOS;
+using IgeMacIntegration;
+#endif
 
 namespace MonoGame.Tools.Pipeline
 {
@@ -56,6 +61,34 @@ namespace MonoGame.Tools.Pipeline
             new PipelineController(view, model);   
 			view.Show();
             Application.Run();
+#endif
+#if GTK
+			Application.Init ();
+			var win = new Gtk.Window ("Pipeline");
+			win.SetFlag(WidgetFlags.Toplevel);
+			win.SetPosition(WindowPosition.Center);
+			win.Name = "MonoGame Content Pipeline";
+			win.Title = "Pipeline";
+			win.SetIconFromFile("App.ico");
+			win.SetSizeRequest (800,600);
+
+			var view = new MainView(win);
+			if (args != null && args.Length > 0)
+			{
+				var projectFilePath = string.Join(" ", args);
+				view.OpenProjectPath =  System.IO.Path.GetFullPath (projectFilePath);
+			}
+
+			MainView.CreateControllers (view);
+
+			win.Add (view);
+			win.DeleteEvent += (o, a) => {
+				if (view.Exit())
+					Application.Quit();
+			};
+			view.BuildUI();
+			win.ShowAll ();
+			Application.Run ();
 #endif
         }
     }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using MGCB;
 using Microsoft.Xna.Framework.Content.Pipeline;
@@ -229,6 +230,7 @@ namespace MonoGame.Tools.Pipeline
 
             var commands = new string[]
                 {
+				"/platform:iOS",
                     string.Format("/@:{0}", projectFilePath),
                 };
             parser.Parse(commands);

@@ -3,13 +3,13 @@ using System.Linq;
 
 namespace MonoGame.Tools.Pipeline
 {
-    internal interface IProjectAction
+    public interface IProjectAction
     {
         void Do();
         void Undo();
     }
 
-    internal delegate void CanUndoRedoChanged(bool canUndo, bool canRedo);
+    public delegate void CanUndoRedoChanged(bool canUndo, bool canRedo);
 
     partial class PipelineController
     {                

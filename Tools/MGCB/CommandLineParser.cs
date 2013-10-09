@@ -272,8 +272,8 @@ namespace MGCB
                         throw new Exception("$if is invalid outside of a response file.");
 
                     var words = arg.Substring(4).Split('=');
-                    var name = words[0];
-                    var value = words[1];
+					var name = words[0].Trim();
+					var value = words[1].Trim();
 
                     var condition = new Tuple<string, string>(name, value);
                     ifstack.Push(condition);
@@ -305,13 +305,33 @@ namespace MGCB
                     lines.Insert(offset, string.Format("# End:{0}", file));
 
                     continue;
-                }                
-                
+                } else
+                  AddProperty (arg);
+
                 output.Add(arg);
             }
 
             return output.ToArray();
         }
+
+		private void AddProperty(string arg)
+		{
+			if (arg.StartsWith ("/")) {
+
+				// Parse an optional argument.
+				char[] separators = { ':' };
+
+				var split = arg.Substring (1).Split (separators, 2, StringSplitOptions.None);
+
+				var name = split [0];
+				var value = (split.Length > 1) ? split [1] : "true";
+
+				MemberInfo member;
+
+				if (_optionalOptions.TryGetValue(name.ToLowerInvariant(), out member))
+					_properties [name.Trim()] = value.Trim();
+			}
+		}
 
         private bool ParseArgument(string arg)
         {

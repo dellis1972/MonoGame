@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5BA775CF-9F9B-4FD1-AA17-D38F1FA0DFFB}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Pipeline.MacOS</RootNamespace>
+    <AssemblyName>Pipeline</AssemblyName>
+    <StartupObject>MonoGame.Tools.Pipeline.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;MACOS;SHIPPING;GTK</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <DefineConstants>MACOS;SHIPPING;GTK</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>..\..\..\..\..\..\..\..\..\..\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>..\..\..\..\..\..\..\..\..\..\Applications\Xamarin Studio.app\Contents\Resources\lib\monodevelop\bin\MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="MainView.cs" />
+    <Compile Include="gtk-gui\Pipeline.MacOS.MainView.cs" />
+    <Compile Include="..\..\Common\ActionStack.cs">
+      <Link>Common\ActionStack.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ContentFolder.cs">
+      <Link>Common\ContentFolder.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ContentItem.cs">
+      <Link>Common\ContentItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ContentItem.Importer.cs">
+      <Link>Common\ContentItem.Importer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ContentItem.Processor.cs">
+      <Link>Common\ContentItem.Processor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ContentItemState.cs">
+      <Link>Common\ContentItemState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ContentItemTemplate.cs">
+      <Link>Common\ContentItemTemplate.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\CustomPropertyDescriptors.cs">
+      <Link>Common\CustomPropertyDescriptors.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\IController.cs">
+      <Link>Common\IController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\IProjectItem.cs">
+      <Link>Common\IProjectItem.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\IProjectObserver.cs">
+      <Link>Common\IProjectObserver.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\IView.cs">
+      <Link>Common\IView.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineController.cs">
+      <Link>Common\PipelineController.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineController.ExcludeAction.cs">
+      <Link>Common\PipelineController.ExcludeAction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineController.IncludeAction.cs">
+      <Link>Common\PipelineController.IncludeAction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineController.NewAction.cs">
+      <Link>Common\PipelineController.NewAction.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineProject.cs">
+      <Link>Common\PipelineProject.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineProjectParser.cs">
+      <Link>Common\PipelineProjectParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\PipelineTypes.cs">
+      <Link>Common\PipelineTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\ProjectState.cs">
+      <Link>Common\ProjectState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Selection.cs">
+      <Link>Common\Selection.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\StringExtensions.cs">
+      <Link>Common\StringExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Common\Util.cs">
+      <Link>Common\Util.cs</Link>
+    </Compile>
+    <Compile Include="PropertyGrid.cs" />
+    <Compile Include="..\..\Common\History.cs">
+      <Link>Common\History.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Program.cs">
+      <Link>Program.cs</Link>
+    </Compile>
+    <Compile Include="IgeMacIntegration.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MonoGame.Framework\MonoGame.Framework.MacOS.csproj">
+      <Project>{36C538E6-C32A-4A8D-A39C-566173D7118E}</Project>
+      <Name>MonoGame.Framework.MacOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\MonoGame.Framework.Content.Pipeline\MonoGame.Framework.Content.Pipeline.MacOS.csproj">
+      <Project>{A6C47073-8FF9-4997-BA3A-BA257CC88CFE}</Project>
+      <Name>MonoGame.Framework.Content.Pipeline.MacOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\MGCB\MGCB.MacOS.csproj">
+      <Project>{4243474D-4D2E-6361-4F53-4D4743422E4D}</Project>
+      <Name>MGCB.MacOS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\App.ico">
+      <Link>App.ico</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
