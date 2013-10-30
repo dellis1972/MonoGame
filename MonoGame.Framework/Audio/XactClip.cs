@@ -147,6 +147,15 @@ namespace Microsoft.Xna.Framework.Audio
 				return events[0].IsPaused; 
 			} 
 		}
+
+		internal void Apply3D (AudioListener listener, AudioEmitter emitter)
+		{
+			for (int i=0; i<events.Length; i++) {
+				var clip = events [i] as EventPlayWave;
+				if (clip != null)
+					clip.wave.Apply3D (listener, emitter);
+			}
+		}
 	}
 }
 

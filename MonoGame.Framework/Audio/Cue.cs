@@ -162,9 +162,11 @@ namespace Microsoft.Xna.Framework.Audio
 		}
 		
 		public void Apply3D(AudioListener listener, AudioEmitter emitter) {
-			
+			for (int i=0; i< sounds.Length; i++) {
+				sounds [i].Apply3D (listener, emitter);
+			}
 		}
-		
+
 		public bool IsDisposed { get { return false; } }
 		
 		

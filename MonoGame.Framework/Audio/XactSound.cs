@@ -152,6 +152,16 @@ namespace Microsoft.Xna.Framework.Audio
 				}
 			}
 		}
+
+		internal void Apply3D(AudioListener listener, AudioEmitter emitter) {
+			if (complexSound) {
+				foreach (XactClip clip in soundClips) {
+					clip.Apply3D (listener, emitter);
+				}
+			} else {
+				wave.Apply3D (listener, emitter);
+			}
+		}
 		
 	}
 }
