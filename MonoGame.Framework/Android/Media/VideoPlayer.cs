@@ -87,19 +87,26 @@ namespace Microsoft.Xna.Framework.Media
         {	
 			_video = video;
 
-            _video.Player.SetDisplay(_game.Window.Holder);
+            //_video.Player.SetDisplay(_game.Window.Holder);
             _video.Player.Start();
-
-            _state = MediaState.Playing;
+	    _video.Player.Completion += Player_Completion;
+	    _state = MediaState.Playing;
             AndroidGamePlatform.IsPlayingVdeo = true;
         }
 
+	void Player_Completion (object sender, EventArgs e)
+	{
+		Stop ();
+	}
+
         public void Stop()
         {
+		
             _video.Player.Stop();
-			_state = MediaState.Stopped;
+	    _video.Player.Completion -= Player_Completion;
+	    _state = MediaState.Stopped;
             AndroidGamePlatform.IsPlayingVdeo = false;
-           _video.Player.SetDisplay(null);
+           //_video.Player.SetDisplay(null);
         }
 
         public bool IsLooped

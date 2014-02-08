@@ -166,7 +166,6 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
                 case TargetPlatform.WindowsPhone8:
                 case TargetPlatform.WindowsStoreApp:
                 case TargetPlatform.Ouya:
-                case TargetPlatform.Android:
                 case TargetPlatform.Linux: 
                 case TargetPlatform.MacOSX:
                 case TargetPlatform.NativeClient:
@@ -174,6 +173,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 					context.Logger.LogMessage ("Detected {0} using DXT Compression", context.TargetPlatform);
 				    CompressDxt(content, generateMipmaps);
 				    break;
+		case TargetPlatform.Android:
                 case TargetPlatform.iOS:
 					context.Logger.LogMessage ("Detected {0} using PVRTC Compression", context.TargetPlatform);
                     CompressPvrtc(content, generateMipmaps, premultipliedAlpha);

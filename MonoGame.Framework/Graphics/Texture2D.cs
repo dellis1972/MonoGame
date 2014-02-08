@@ -211,6 +211,13 @@ namespace Microsoft.Xna.Framework.Graphics
                         case SurfaceFormat.RgbaPvrtc4Bpp:
                             imageSize = (Math.Max(this.width, 8) * Math.Max(this.height, 8) * 4 + 7) / 8;
                             break;
+			case SurfaceFormat.RgbaATCExplicitAlpha:
+			case SurfaceFormat.RgbaATCInterpolatedAlpha:
+			    imageSize = ((this.Width + 3) / 4) * ((this.height + 3) / 4) * 16;
+			    break;
+			case SurfaceFormat.RgbaS3tcDxt1:
+			case SurfaceFormat.RgbaS3tcDxt3:
+			case SurfaceFormat.RgbaS3tcDxt5:
                         case SurfaceFormat.RgbEtc1:
                         case SurfaceFormat.Dxt1:
                         case SurfaceFormat.Dxt1a:
@@ -1095,7 +1102,7 @@ namespace Microsoft.Xna.Framework.Graphics
             if (this.glTexture < 0)
             {
 #if IOS || ANDROID
-                GL.GenTextures(1, ref this.glTexture);
+                GL.GenTextures(1, out this.glTexture);
 #else
                 GL.GenTextures(1, out this.glTexture);
 #endif
@@ -1129,12 +1136,12 @@ namespace Microsoft.Xna.Framework.Graphics
 			int framebufferId = -1;
             int renderBufferID = -1;
             
-			GL.GenFramebuffers(1, ref framebufferId);
+			GL.GenFramebuffers(1, out framebufferId);
             GraphicsExtensions.CheckGLError();
             GL.BindFramebuffer(All.Framebuffer, framebufferId);
             GraphicsExtensions.CheckGLError();
             //renderBufferIDs = new int[currentRenderTargets];
-            GL.GenRenderbuffers(1, ref renderBufferID);
+            GL.GenRenderbuffers(1, out renderBufferID);
             GraphicsExtensions.CheckGLError();
 
             // attach the texture to FBO color attachment point

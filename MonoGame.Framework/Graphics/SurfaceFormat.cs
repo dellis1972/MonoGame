@@ -78,6 +78,15 @@ namespace Microsoft.Xna.Framework.Graphics
 		RgbaPvrtc2Bpp = 52,
 		RgbaPvrtc4Bpp = 53,
 
+	        // S3TC texture compression (Android)
+	        RgbaS3tcDxt1 = 0x83F1,
+	        RgbaS3tcDxt3 = 0x83F2,
+	        RgbaS3tcDxt5 = 0x83F3,
+
+		// ATC/Atitc compression (Android)
+		RgbaATCExplicitAlpha =  0x8C93,
+		RgbaATCInterpolatedAlpha = 0x87EE,
+
 		// Ericcson Texture Compression (Android)
 		RgbEtc1 = 60,
 

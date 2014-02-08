@@ -83,6 +83,8 @@ namespace Microsoft.Xna.Framework.Media
 				return _fileName;
 			}
 		}
+
+	    public TimeSpan Duration { get;private set;}
 		
 		internal static string Normalize(string FileName)
 		{
@@ -106,7 +108,7 @@ namespace Microsoft.Xna.Framework.Media
 			}
 			
 			// Concat the file name with valid extensions
-			return Path.Combine(path, TryFindAnyCased(file, files, ".3gp", ".mkv", ".mp4", ".ts", ".webm"));
+			return Path.Combine(path, TryFindAnyCased(file, files, ".3gp", ".m4v", ".mkv", ".mp4", ".ts", ".webm"));
 		}
 		
 		private static string TryFindAnyCased(string search, string[] arr, params string[] extensions)
@@ -122,13 +124,20 @@ namespace Microsoft.Xna.Framework.Media
 		internal void Prepare()
 		{
             Player = new Android.Media.MediaPlayer();
+	    Player.SetAudioStreamType (Android.Media.Stream.Music);
+	    Player.SetDisplay (Game.Instance.Window.Holder);
 			if (Player != null )
 			{
 				var afd = Game.Activity.Assets.OpenFd(_fileName);
 				if (afd != null)
 				{
-		            Player.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);						
-		            Player.Prepare();
+					try {
+						Player.SetDataSource (afd.FileDescriptor, afd.StartOffset, afd.Length);
+						Player.Prepare ();
+						Duration = new TimeSpan (0, 0, 0, 0, Player.Duration);
+					} catch (Exception e) {
+						System.Diagnostics.Debug.WriteLine (e.ToString ());
+					}
 				}
 			}
 		}

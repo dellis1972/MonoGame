@@ -150,7 +150,7 @@ namespace Microsoft.Xna.Framework.Graphics
             {
 
 #if GLES
-			GL.GenRenderbuffers(1, ref glDepthBuffer);
+			GL.GenRenderbuffers(1, out glDepthBuffer);
 #else
 			GL.GenRenderbuffers(1, out glDepthBuffer);
 #endif
@@ -172,7 +172,7 @@ namespace Microsoft.Xna.Framework.Graphics
 					GL.RenderbufferStorage(GLRenderbuffer, glDepthFormat, this.width, this.height);
 					GraphicsExtensions.CheckGLError();
 #if GLES
-					GL.GenRenderbuffers(1, ref glStencilBuffer);
+					GL.GenRenderbuffers(1, out glStencilBuffer);
 #else
 					GL.GenRenderbuffers(1, out glStencilBuffer);
 #endif

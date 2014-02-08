@@ -67,6 +67,12 @@ namespace Microsoft.Xna.Framework
 #if ANDROID
         static List<Action> actions = new List<Action>();
         static Mutex actionsMutex = new Mutex();
+
+	internal static void ResetThread(int threadid) {
+		if (mainThreadId != threadid)
+			mainThreadId = threadid;
+	}
+
 #elif IOS
         public static EAGLContext BackgroundContext;
 #elif WINDOWS || LINUX

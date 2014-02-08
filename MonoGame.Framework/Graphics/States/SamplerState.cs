@@ -80,7 +80,7 @@ namespace Microsoft.Xna.Framework.Graphics
 #if GLES
 			if (GraphicsCapabilities.SupportsTextureFilterAnisotropic)
             {
-                GL.GetFloat(GetPNameMaxTextureMaxAnisotropy, ref SamplerState.MaxTextureMaxAnisotropy);
+                GL.GetFloat(GetPNameMaxTextureMaxAnisotropy, out SamplerState.MaxTextureMaxAnisotropy);
             }
 #else
             GL.GetFloat(GetPNameMaxTextureMaxAnisotropy, out SamplerState.MaxTextureMaxAnisotropy);

@@ -405,13 +405,13 @@ namespace Microsoft.Xna.Framework.Graphics
             
 #if OPENGL
 #if GLES
-            GL.GetInteger(All.MaxTextureImageUnits, ref MaxTextureSlots);
+            GL.GetInteger(All.MaxTextureImageUnits, out MaxTextureSlots);
             GraphicsExtensions.CheckGLError();
 
-            GL.GetInteger(All.MaxVertexAttribs, ref MaxVertexAttributes);
+            GL.GetInteger(All.MaxVertexAttribs, out MaxVertexAttributes);
             GraphicsExtensions.CheckGLError();
 
-            GL.GetInteger(All.MaxTextureSize, ref _maxTextureSize);
+            GL.GetInteger(All.MaxTextureSize, out _maxTextureSize);
             GraphicsExtensions.CheckGLError();
 #elif OPENGL
             GL.GetInteger(GetPName.MaxTextureImageUnits, out MaxTextureSlots);
@@ -1274,7 +1274,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 
 #if GLES
-			GL.Clear((uint)bufferMask);
+			GL.Clear(bufferMask);
             GraphicsExtensions.CheckGLError();
 #else
 			GL.Clear(bufferMask);
@@ -1738,7 +1738,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				if (this.glRenderTargetFrameBuffer == 0)
 				{
 #if GLES
-                    GL.GenFramebuffers(1, ref this.glRenderTargetFrameBuffer);
+                    GL.GenFramebuffers(1, out this.glRenderTargetFrameBuffer);
 #else
                     GL.GenFramebuffers(1, out this.glRenderTargetFrameBuffer);
 #endif

@@ -610,6 +610,10 @@ namespace Microsoft.Xna.Framework.Graphics
 				glInternalFormat = PixelInternalFormat.CompressedRgbaPvrtc4Bppv1Img;
 				glFormat = (PixelFormat)All.CompressedTextureFormats;
 				break;
+			case SurfaceFormat.RgbaATCExplicitAlpha:
+				glInternalFormat = PixelInternalFormat.AtcRgbaExplicitAlphaAmd;
+				glFormat = (PixelFormat)All.CompressedTextureFormats;
+				break;
 #endif
 			default:
 				throw new NotSupportedException();
@@ -725,7 +729,7 @@ namespace Microsoft.Xna.Framework.Graphics
         {
             var prevTexture = 0;
 #if GLES
-            GL.GetInteger(GetPName.TextureBinding2D, ref prevTexture);
+            GL.GetInteger(GetPName.TextureBinding2D, out prevTexture);
 #else
             GL.GetInteger(GetPName.TextureBinding2D, out prevTexture);
 #endif
