@@ -729,7 +729,7 @@ namespace Microsoft.Xna.Framework.Graphics
         {
             var prevTexture = 0;
 #if GLES
-            GL.GetInteger(GetPName.TextureBinding2D, out prevTexture);
+            GL.GetInteger(GetPName.TextureBinding2D, ref prevTexture);
 #else
             GL.GetInteger(GetPName.TextureBinding2D, out prevTexture);
 #endif

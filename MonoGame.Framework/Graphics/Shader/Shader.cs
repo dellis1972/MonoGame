@@ -212,7 +212,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
             var compiled = 0;
 #if GLES
-			GL.GetShader(_shaderHandle, ShaderParameter.CompileStatus, out compiled);
+			GL.GetShader(_shaderHandle, ShaderParameter.CompileStatus, ref compiled);
 #else
             GL.GetShader(_shaderHandle, ShaderParameter.CompileStatus, out compiled);
 #endif
@@ -222,12 +222,12 @@ namespace Microsoft.Xna.Framework.Graphics
 #if GLES
                 string log = "";
                 int length = 0;
-				GL.GetShader(_shaderHandle, ShaderParameter.InfoLogLength, out length);
+				GL.GetShader(_shaderHandle, ShaderParameter.InfoLogLength, ref length);
                 GraphicsExtensions.CheckGLError();
                 if (length > 0)
                 {
                     var logBuilder = new StringBuilder(length);
-					GL.GetShaderInfoLog(_shaderHandle, length, out length, logBuilder);
+					GL.GetShaderInfoLog(_shaderHandle, length, ref length, logBuilder);
                     GraphicsExtensions.CheckGLError();
                     log = logBuilder.ToString();
                 }
@@ -253,7 +253,7 @@ namespace Microsoft.Xna.Framework.Graphics
         {
             for (int i = 0; i < _attributes.Length; ++i)
             {
-                _attributes[i].location = GL.GetAttribLocation(program, new System.Text.StringBuilder(_attributes[i].name));
+                _attributes[i].location = GL.GetAttribLocation(program, _attributes[i].name);
                 GraphicsExtensions.CheckGLError();
             }
         }
@@ -273,7 +273,7 @@ namespace Microsoft.Xna.Framework.Graphics
             // Assign the texture unit index to the sampler uniforms.
             foreach (var sampler in Samplers)
             {
-                var loc = GL.GetUniformLocation(program, new System.Text.StringBuilder(sampler.name));
+                var loc = GL.GetUniformLocation(program, sampler.name);
                 GraphicsExtensions.CheckGLError();
                 if (loc != -1)
                 {

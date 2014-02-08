@@ -271,7 +271,7 @@ namespace Microsoft.Xna.Framework.Graphics
             // uniform again and apply the state.
             if (_program != program)
             {
-                var location = GL.GetUniformLocation(program, new System.Text.StringBuilder(_name));
+                var location = GL.GetUniformLocation(program, _name);
                 GraphicsExtensions.CheckGLError();
                 if (location == -1)
                     return;

@@ -111,7 +111,7 @@ namespace Microsoft.Xna.Framework.Graphics
             var linked = 0;
 
 #if GLES
-			GL.GetProgram(program, ProgramParameter.LinkStatus, out linked);
+			GL.GetProgram(program, ProgramParameter.LinkStatus, ref linked);
 #else
             GL.GetProgram(program, ProgramParameter.LinkStatus, out linked);
 #endif
@@ -127,7 +127,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
             ShaderProgramInfo info;
             info.program = program;
-            info.posFixupLoc = GL.GetUniformLocation(program, new System.Text.StringBuilder("posFixup"));
+            info.posFixupLoc = GL.GetUniformLocation(program, "posFixup");
 
             _programCache.Add(vertexShader.HashKey | pixelShader.HashKey, info);             
         }
