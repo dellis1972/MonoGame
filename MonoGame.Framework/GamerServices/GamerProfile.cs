@@ -129,5 +129,13 @@ namespace Microsoft.Xna.Framework.GamerServices
         */
 
 	#endregion
-	}
+
+        public float Reputation { get; set; }
+
+        public string Motto { get; set; }
+
+        public float GamerScore { get; set;}
+
+        public RegionInfo Region { get; set; }
+    }
 }

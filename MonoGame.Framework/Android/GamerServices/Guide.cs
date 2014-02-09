@@ -395,6 +395,21 @@ namespace Microsoft.Xna.Framework.GamerServices
 			set;
 		}
 		#endregion
-		
-	}
+
+
+        public static void DelayNotifications(TimeSpan delay)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void ShowGamerCard(PlayerIndex playerIndex, Gamer gamer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static void ShowPlayers(PlayerIndex playerIndex)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

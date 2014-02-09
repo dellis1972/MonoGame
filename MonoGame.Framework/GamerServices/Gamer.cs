@@ -150,5 +150,15 @@ namespace Microsoft.Xna.Framework.GamerServices
             }
         }
         #endregion
+
+        public static Gamer GetFromGamertag(string m_gamertag)
+        {
+            throw new NotImplementedException();
+        }
+
+        public GamerProfile GetProfile()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

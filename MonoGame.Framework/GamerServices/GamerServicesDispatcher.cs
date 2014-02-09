@@ -65,5 +65,10 @@ namespace Microsoft.Xna.Framework.GamerServices
 		{
 			return InstallingTitleUpdate != null;
 		}
+
+        public static void Initialize(GameServiceContainer gameServiceContainer)
+        {
+            
+        }
     }
 }
