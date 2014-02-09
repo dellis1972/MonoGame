@@ -60,16 +60,8 @@ namespace Microsoft.Xna.Framework.Audio
 		//Defer loading because some programs load soundbanks before wavebanks
 		private void Load ()
 		{	
-#if !ANDROID
 			using (Stream soundbankstream = TitleContainer.OpenStream(filename))
 			{
-#else
-				using (var fileStream = Game.Activity.Assets.Open(filename))
-			{
-				MemoryStream soundbankstream = new MemoryStream();
-				fileStream.CopyTo(soundbankstream);
-				soundbankstream.Position = 0;
-#endif
 				using(BinaryReader soundbankreader = new BinaryReader (soundbankstream))
 				{
 	            

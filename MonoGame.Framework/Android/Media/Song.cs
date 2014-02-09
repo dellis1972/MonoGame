@@ -54,7 +54,7 @@ namespace Microsoft.Xna.Framework.Media
 
         private void Prepare()
         {
-            var afd = Game.Activity.Assets.OpenFd(_name);
+            var afd = TitleContainer.OpenFd(_name);
             if (afd != null)
             {
                 _androidPlayer.Reset();

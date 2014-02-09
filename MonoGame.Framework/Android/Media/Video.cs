@@ -96,7 +96,7 @@ namespace Microsoft.Xna.Framework.Media
                 file = FileName.Substring(index + 1, FileName.Length - index - 1);
                 path = FileName.Substring(0, index);
             }
-            string[] files = Game.Activity.Assets.List(path);
+            string[] files = TitleContainer.List(path);
 
             if (Contains(file, files))
                 return FileName;
@@ -128,7 +128,7 @@ namespace Microsoft.Xna.Framework.Media
 	    Player.SetDisplay (Game.Instance.Window.Holder);
 			if (Player != null )
 			{
-				var afd = Game.Activity.Assets.OpenFd(_fileName);
+				var afd = TitleContainer.OpenFd(_fileName);
 				if (afd != null)
 				{
 					try {

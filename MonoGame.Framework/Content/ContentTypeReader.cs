@@ -107,7 +107,7 @@ namespace Microsoft.Xna.Framework.Content
             string[] files = null;
             if (!filesInFolders.TryGetValue(path, out files))
             {
-                files = Game.Activity.Assets.List(path);
+                files = TitleContainer.List(path);
                 filesInFolders[path] = files;
             }
 

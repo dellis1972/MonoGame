@@ -111,16 +111,8 @@ namespace Microsoft.Xna.Framework.Audio
 		{
 			//Read the xact settings file
 			//Credits to alisci01 for initial format documentation
-#if !ANDROID
 			using (var stream = TitleContainer.OpenStream(settingsFile))
 			{
-#else
-			using (var fileStream = Game.Activity.Assets.Open(settingsFile))
-			{
-				MemoryStream stream = new MemoryStream();
-				fileStream.CopyTo(stream);
-				stream.Position = 0;
-#endif
 				using (var reader = new BinaryReader(stream)) {
 					uint magic = reader.ReadUInt32 ();
 					if (magic != 0x46534758) { //'XGFS'

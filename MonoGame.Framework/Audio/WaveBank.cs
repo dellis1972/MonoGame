@@ -111,16 +111,7 @@ namespace Microsoft.Xna.Framework.Audio
 			// Check for windows-style directory separator character
 			nonStreamingWaveBankFilename = nonStreamingWaveBankFilename.Replace(notSeparator, separator);
 
-#if !ANDROID
             BinaryReader reader = new BinaryReader(TitleContainer.OpenStream(nonStreamingWaveBankFilename));
-#else 
-			Stream stream = Game.Activity.Assets.Open(nonStreamingWaveBankFilename);
-			MemoryStream ms = new MemoryStream();
-			stream.CopyTo( ms );
-			stream.Close();
-			ms.Position = 0;
-			BinaryReader reader = new BinaryReader(ms);
-#endif
 			reader.ReadBytes(4);
 
             wavebankheader.Version = reader.ReadInt32();

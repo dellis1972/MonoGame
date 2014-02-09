@@ -39,7 +39,16 @@
 // #endregion License
 // 
 using System;
+using System.Collections.Generic;
 using System.IO;
+#if ANDROID
+using Android.App;
+using Android.Content.PM;
+using Java.Util.Zip;
+using System.Collections.Generic;
+using Android.Content.Res;
+using Android.OS;
+#endif
 
 #if WINRT
 using System.Threading.Tasks;
@@ -122,7 +131,7 @@ namespace Microsoft.Xna.Framework
 
             return stream;
 #elif ANDROID
-            return Game.Activity.Assets.Open(safeName);
+            return OpenStreamInternal(safeName);
 #elif IOS
             var absolutePath = Path.Combine(Location, safeName);
             if (SupportRetina)
@@ -154,8 +163,174 @@ namespace Microsoft.Xna.Framework
             // Replace Windows path separators with local path separators
             name = name.Replace('\\', Path.DirectorySeparatorChar);
 #endif
+
+#if ANDROID
+            name = name.ToLower();
+#endif
             return name;
         }
+
+
+#if ANDROID
+
+        enum AssetLocationEnum { Assets, External}
+
+        static Dictionary<string, AssetLocationEnum> assets = new Dictionary<string, AssetLocationEnum>();
+
+
+        internal static void InitActivity()
+        {
+            using (var stream = Game.Activity.Assets.Open("resourcelist"))
+            {
+                using (var sr = new StreamReader(stream))
+                {
+                    string line;
+                    while((line = sr.ReadLine()) != null) {
+                       string[] item = line.Split(new char[1] { ',' });
+                       assets.Add(item[0], (AssetLocationEnum)Enum.Parse(typeof(AssetLocationEnum), item[1]));
+                    }
+                }
+            }
+        }
+
+
+        internal static Stream OpenStreamInternal(string safeName)
+        {
+            MemoryStream ms;
+            try
+            {
+                if (!assets.ContainsKey(safeName))
+                    return null;
+
+                if (assets[safeName] == AssetLocationEnum.Assets)
+                {
+                    using (var s = Game.Activity.Assets.Open(safeName))
+                    {
+                        if (s != null)
+                        {
+                            ms = new MemoryStream();
+                            s.CopyTo(ms);
+                            ms.Seek(0, SeekOrigin.Begin);
+                            return ms;
+                        }
+                    }
+                }
+                else
+                {
+                    return OpenExpansionStream(safeName);
+                }
+            }
+            catch(Java.IO.IOException)
+            {
+                // not in assets try an external source
+            }
+
+            return null;
+        }
+
+        internal static Android.Content.Res.AssetFileDescriptor OpenFd(string safeName)
+        {
+            try
+            {
+                return Game.Activity.Assets.OpenFd(safeName);
+            }
+            catch (Java.IO.IOException)
+            {
+                // not in assets try external source
+            }
+            return null;
+        }
+
+        internal static string[] List(string path)
+        {
+            return Game.Activity.Assets.List(path);
+        }
+
+        static string expansionPath = null;
+        
+        static string ExpansionPath
+        {
+            get
+            {
+                if (expansionPath == null)
+                {
+                    Activity activity = Game.Activity;
+
+                    ApplicationInfo ainfo = activity.ApplicationInfo;
+                    PackageInfo pinfo = activity.PackageManager.GetPackageInfo(ainfo.PackageName, PackageInfoFlags.MetaData);
+
+                    var dir = "/mnt/sdcard/Download";
+                    // Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+                    //dir = "/mnt/sdcard";
+                    expansionPath = Path.Combine(
+                        dir,
+                        "Android",
+                        "obb",
+#if !PACKAGE
+ "test",
+#else
+                        ainfo.PackageName,
+#endif
+ String.Format("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName));
+                }
+                return expansionPath;
+            }
+        }
+
+        static ZipFile expansionFile = null;
+
+        static AssetFileDescriptor OpenExpansionFd(string assetsPath)
+        {
+            AssetFileDescriptor fd = null;
+            try
+            {
+                if (expansionFile == null)
+                    expansionFile = new ZipFile(ExpansionPath);
+                using (ZipEntry ze = expansionFile.GetEntry(assetsPath.ToLower()))
+                {
+                    ParcelFileDescriptor pfd = ParcelFileDescriptor.Open(new Java.IO.File(ze.Name), ParcelFileMode.ReadOnly);
+                     var s = expansionFile.GetInputStream(ze);
+                     fd = new AssetFileDescriptor(pfd, s.Position, s.Length);
+                }
+                return fd;
+            } catch
+            {
+                return null;
+            }
+        }
+
+        static Stream OpenExpansionStream(string assetsPath)
+        {
+            Stream stream = null;
+            try
+            {
+                if (expansionFile == null)
+                    expansionFile = new ZipFile(ExpansionPath);
+                using (ZipEntry ze = expansionFile.GetEntry(assetsPath.ToLower()))
+                {
+                    stream = expansionFile.GetInputStream(ze);
+
+                    MemoryStream mstream = new MemoryStream((int)ze.Size);
+
+                    stream.CopyTo(mstream);
+
+                    mstream.Seek(0, SeekOrigin.Begin);
+
+                    stream.Close();
+                    stream = mstream;
+                }
+                return stream;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                throw new FileNotFoundException("The content file was not found in exapnsions.");
+            }
+        }
+
+#endif
+
+        
     }
 }
 

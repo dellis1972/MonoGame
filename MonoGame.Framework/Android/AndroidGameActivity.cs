@@ -18,7 +18,19 @@ namespace Microsoft.Xna.Framework
 	[CLSCompliant (false)]
 	public class AndroidGameActivity : Activity
 	{
-		public static Game Game { get; set; }
+        static Game game = null;
+
+        public static Game Game { 
+            get { return game; }
+            set
+            {
+                if (game != null)
+                    throw new InvalidOperationException("Game Object has already been set");
+                game = value;
+                if (game != null)
+                    TitleContainer.InitActivity();
+            }
+        }
 
 		private OrientationListener o;
 		private ScreenReceiver screenReceiver;

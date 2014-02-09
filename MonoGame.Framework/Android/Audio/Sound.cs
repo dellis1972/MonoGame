@@ -110,7 +110,7 @@ namespace Microsoft.Xna.Framework.Audio
 
         public Sound(string filename, float volume, bool looping)
         {
-            using (AssetFileDescriptor fd = Game.Activity.Assets.OpenFd(filename))
+            using (AssetFileDescriptor fd = TitleContainer.OpenFd(filename))
                 _soundId = s_soundPool.Load(fd.FileDescriptor, fd.StartOffset, fd.Length, 1);
 
             this.Looping = looping;
