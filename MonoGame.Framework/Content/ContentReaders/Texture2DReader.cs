@@ -51,7 +51,7 @@ namespace Microsoft.Xna.Framework.Content
 
 		internal static string Normalize (string fileName)
 		{
-			return Normalize (fileName, supportedExtensions);
+			return Normalize (fileName, supportedExtensions, ".png");
 		}
 
 		protected internal override Texture2D Read (ContentReader reader, Texture2D existingInstance)

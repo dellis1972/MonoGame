@@ -1,6 +1,6 @@
-#if DEBUG
-#define TIMING
-#endif
+//#if DEBUG
+//#define TIMING
+//#endif
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -250,24 +250,29 @@ namespace Microsoft.Xna.Framework
 		{
 			if (token.IsCancellationRequested)
 				return;
+			
+				curUpdateTime = DateTime.Now;
+				if (prevUpdateTime.Ticks != 0) {
+					var t = (curUpdateTime - prevUpdateTime).TotalSeconds;
+					updateEventArgs.Time = t < 0 ? 0 : t;
+				}
+				try {
+					UpdateFrameInternal (updateEventArgs);
+				} catch (Content.ContentLoadException) {
+					// ignore it..
+				}
 
-			curUpdateTime = DateTime.Now;
-			if (prevUpdateTime.Ticks != 0) {
-				var t = (curUpdateTime - prevUpdateTime).TotalSeconds;
-				updateEventArgs.Time = t < 0 ? 0 : t;
-			}
+				prevUpdateTime = curUpdateTime;
 
-			UpdateFrameInternal (updateEventArgs);
-			prevUpdateTime = curUpdateTime;
+				curRenderTime = DateTime.Now;
+				if (prevRenderTime.Ticks == 0) {
+					var t = (curRenderTime - prevRenderTime).TotalSeconds;
+					renderEventArgs.Time = t < 0 ? 0 : t;
+				}
 
-			curRenderTime = DateTime.Now;
-			if (prevRenderTime.Ticks == 0) {
-				var t = (curRenderTime - prevRenderTime).TotalSeconds;
-				renderEventArgs.Time = t < 0 ? 0 : t;
-			}
-
-			RenderFrameInternal (renderEventArgs);
-			prevRenderTime = curRenderTime;
+				RenderFrameInternal (renderEventArgs);
+				prevRenderTime = curRenderTime;
+			
 		}
 
 		void RenderFrameInternal (FrameEventArgs e)

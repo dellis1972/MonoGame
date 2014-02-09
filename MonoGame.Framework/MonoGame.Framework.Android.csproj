@@ -449,6 +449,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\..\Android.Play.ExpansionLibrary\System.IO.Compression.Zip\System.IO.Compression.Zip.csproj">
+      <Project>{6064da47-9606-45e5-b87e-13765e4be628}</Project>
+      <Name>System.IO.Compression.Zip</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ThirdParty\Lidgren.Network\Lidgren.Network.Android.csproj">
       <Project>{565129E0-4EE5-4F6F-B403-C3484C9740BE}</Project>
       <Name>Lidgren.Network.Android</Name>

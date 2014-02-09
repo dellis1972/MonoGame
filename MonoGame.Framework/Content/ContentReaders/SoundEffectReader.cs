@@ -60,7 +60,7 @@ namespace Microsoft.Xna.Framework.Content
 
         internal static string Normalize(string fileName)
         {
-            return Normalize(fileName, supportedExtensions);
+            return Normalize(fileName, supportedExtensions, ".mp3");
         }
 
 		protected internal override SoundEffect Read(ContentReader input, SoundEffect existingInstance)

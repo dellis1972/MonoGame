@@ -24,8 +24,6 @@ namespace Microsoft.Xna.Framework
             get { return game; }
             set
             {
-                if (game != null)
-                    throw new InvalidOperationException("Game Object has already been set");
                 game = value;
                 if (game != null)
                     TitleContainer.InitActivity();
@@ -78,11 +76,10 @@ namespace Microsoft.Xna.Framework
 
 		protected override void OnPause ()
 		{
-			base.OnPause ();
-			Game.Window.Pause ();
+			((AndroidGamePlatform)Game.Platform).Pause ();
 			if (Paused != null)
 				Paused (this, EventArgs.Empty);
-
+			base.OnPause ();
 		}
 
 		public static event EventHandler Resumed;
@@ -96,7 +93,6 @@ namespace Microsoft.Xna.Framework
 			if (deviceManager == null)
 				return;
 			(deviceManager as GraphicsDeviceManager).ForceSetFullScreen ();
-			Game.Window.Resume ();
 		}
 
 		protected override void OnDestroy ()

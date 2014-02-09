@@ -58,7 +58,7 @@ namespace Microsoft.Xna.Framework.Content
 
         internal static string Normalize(string fileName)
         {
-            return Normalize(fileName, supportedExtensions);
+            return Normalize(fileName, supportedExtensions, ".mp4");
         }
 
         protected internal override Video Read(ContentReader input, Video existingInstance)

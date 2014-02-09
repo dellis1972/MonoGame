@@ -92,7 +92,7 @@ namespace Microsoft.Xna.Framework.Content
 
         #region Internal Static Helper Methods
 #if ANDROID
-        internal static string Normalize(string fileName, string[] extensions)
+        internal static string Normalize(string fileName, string[] extensions, string defaultExtension)
         {
             int index = fileName.LastIndexOf(Path.DirectorySeparatorChar);
             string path = string.Empty;
@@ -118,7 +118,7 @@ namespace Microsoft.Xna.Framework.Content
 			// for it first.
 			string file2 = files.FirstOrDefault(s => extensions.Any(ext => s.ToLower() == (file.ToLower() + ext)));
 			if (String.IsNullOrEmpty(file2))
-				return null;
+				return Path.Combine(path, file + defaultExtension);
             return Path.Combine(path, file2);
         }
 #else

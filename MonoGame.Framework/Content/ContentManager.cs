@@ -191,7 +191,7 @@ namespace Microsoft.Xna.Framework.Content
 			}
 		}
 
-		public virtual T Load<T> (string assetName) 
+		public virtual T Load<T> (string assetName)
 		{
 			if (string.IsNullOrEmpty (assetName)) {
 				throw new ArgumentNullException ("assetName");
@@ -211,7 +211,7 @@ namespace Microsoft.Xna.Framework.Content
 			}
 			// Load the asset.
 			result = ReadAsset<T> (assetName, null);
-			
+
 			loadedAssets[assetName] = result;
 			return result;
 		}
@@ -222,16 +222,6 @@ namespace Microsoft.Xna.Framework.Content
 			try {
 				string assetPath = Path.Combine (RootDirectory, assetName) + ".xnb";
 				stream = TitleContainer.OpenStream (assetPath);
-
-#if ANDROID
-				// Read the asset into memory in one go. This results in a ~50% reduction
-				// in load times on Android due to slow Android asset streams.
-				MemoryStream memStream = new MemoryStream ();
-				stream.CopyTo (memStream);
-				memStream.Seek (0, SeekOrigin.Begin);
-				stream.Close ();
-				stream = memStream;
-#endif
 			} catch (FileNotFoundException fileNotFound) {
 				throw new ContentLoadException ("The content file was not found.", fileNotFound);
 			}
@@ -270,23 +260,50 @@ namespace Microsoft.Xna.Framework.Content
 				//try load it traditionally
 				stream = OpenStream (assetName);
 
-				// Try to load as XNB file
-				try {
-					using (BinaryReader xnbReader = new BinaryReader (stream)) {
-						using (ContentReader reader = GetContentReaderFromXnb (assetName, ref stream, xnbReader, recordDisposableObject)) {
-							result = reader.ReadAsset<T> ();
-							if (result is GraphicsResource)
-								((GraphicsResource)result).Name = originalAssetName;
+				if (stream != null) {
+
+					// Try to load as XNB file
+					try {
+						using (BinaryReader xnbReader = new BinaryReader (stream)) {
+							using (ContentReader reader = GetContentReaderFromXnb (assetName, ref stream, xnbReader, recordDisposableObject)) {
+								result = reader.ReadAsset<T> ();
+								if (result is GraphicsResource)
+									((GraphicsResource)result).Name = originalAssetName;
+							}
+						}
+					} finally {
+						if (stream != null) {
+							stream.Dispose ();
 						}
 					}
-				} finally {
-					if (stream != null) {
-						stream.Dispose ();
+				} else {
+					// try a raw asset
+					assetName = TitleContainer.GetFilename (Path.Combine (RootDirectory, assetName));
+
+					assetName = Normalize<T> (assetName);
+
+					if (string.IsNullOrEmpty (assetName)) {
+						throw new ContentLoadException ("Could not load " + originalAssetName + " asset as a non-content file!");
+					}
+
+					try {
+						result = ReadRawAsset<T> (assetName, originalAssetName);
+					} catch {
+						return (T)result;
+					}
+
+					// Because Raw Assets skip the ContentReader step, they need to have their
+					// disopsables recorded here. Doing it outside of this catch will 
+					// result in disposables being logged twice.
+					if (result is IDisposable) {
+						if (recordDisposableObject != null)
+							recordDisposableObject (result as IDisposable);
+						else
+							disposableAssets.Add (result as IDisposable);
 					}
 				}
 			} catch (ContentLoadException ex) {
 				//MonoGame try to load as a non-content file
-
 				assetName = TitleContainer.GetFilename (Path.Combine (RootDirectory, assetName));
 
 				assetName = Normalize<T> (assetName);
@@ -295,7 +312,11 @@ namespace Microsoft.Xna.Framework.Content
 					throw new ContentLoadException ("Could not load " + originalAssetName + " asset as a non-content file!", ex);
 				}
 
-				result = ReadRawAsset<T> (assetName, originalAssetName);
+				try {
+					result = ReadRawAsset<T> (assetName, originalAssetName);
+				} catch {
+					return (T)result;
+				}
 
 				// Because Raw Assets skip the ContentReader step, they need to have their
 				// disopsables recorded here. Doing it outside of this catch will 
@@ -338,6 +359,7 @@ namespace Microsoft.Xna.Framework.Content
 
 		protected virtual object ReadRawAsset<T> (string assetName, string originalAssetName)
 		{
+			System.Diagnostics.Debug.WriteLine (string.Format("ReadRawAsset {0}", typeof(T)));
 			if (typeof (T) == typeof (Texture2D) || typeof (T) == typeof (Texture)) {
 				using (Stream assetStream = TitleContainer.OpenStream (assetName)) {
 					Texture2D texture = Texture2D.FromStream (
@@ -392,13 +414,12 @@ namespace Microsoft.Xna.Framework.Content
 			// The next int32 is the length of the XNB file
 			int xnbLength = xnbReader.ReadInt32 ();
 
-            ContentReader reader;
-            if (compressed)
-            {
-                //decompress the xnb
-                //thanks to ShinAli (https://bitbucket.org/alisci01/xnbdecompressor)
-                int compressedSize = xnbLength - 14;
-                int decompressedSize = xnbReader.ReadInt32();
+			ContentReader reader;
+			if (compressed) {
+				//decompress the xnb
+				//thanks to ShinAli (https://bitbucket.org/alisci01/xnbdecompressor)
+				int compressedSize = xnbLength - 14;
+				int decompressedSize = xnbReader.ReadInt32 ();
 
 				MemoryStream decompressedStream = new MemoryStream (decompressedSize);
 
@@ -450,9 +471,9 @@ namespace Microsoft.Xna.Framework.Content
 					if (block_size == 0 || frame_size == 0)
 						break;
 
-                    dec.Decompress(stream, block_size, decompressedStream, frame_size);
-                    pos += block_size;
-                    decodedBytes += frame_size;
+					dec.Decompress (stream, block_size, decompressedStream, frame_size);
+					pos += block_size;
+					decodedBytes += frame_size;
 
 					// reset the position of the input just incase the bit buffer
 					// read in some unused bytes

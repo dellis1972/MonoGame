@@ -44,9 +44,10 @@ using System.IO;
 #if ANDROID
 using Android.App;
 using Android.Content.PM;
-using Java.Util.Zip;
 using System.Collections.Generic;
 using Android.Content.Res;
+using System.Linq;
+using System.IO.Compression.Zip;
 using Android.OS;
 #endif
 
@@ -165,7 +166,7 @@ namespace Microsoft.Xna.Framework
 #endif
 
 #if ANDROID
-            name = name.ToLower();
+            //name = name.ToLower();
 #endif
             return name;
         }
@@ -175,22 +176,25 @@ namespace Microsoft.Xna.Framework
 
         enum AssetLocationEnum { Assets, External}
 
-        static Dictionary<string, AssetLocationEnum> assets = new Dictionary<string, AssetLocationEnum>();
+        static Dictionary<string, AssetLocationEnum> assets = new Dictionary<string, AssetLocationEnum>(StringComparer.OrdinalIgnoreCase);
 
 
         internal static void InitActivity()
         {
-            using (var stream = Game.Activity.Assets.Open("resourcelist"))
-            {
-                using (var sr = new StreamReader(stream))
-                {
-                    string line;
-                    while((line = sr.ReadLine()) != null) {
-                       string[] item = line.Split(new char[1] { ',' });
-                       assets.Add(item[0], (AssetLocationEnum)Enum.Parse(typeof(AssetLocationEnum), item[1]));
-                    }
-                }
-            }
+		try {
+			assets.Clear ();
+			using (var stream = Game.Activity.Assets.Open ("resourcelist.txt")) {
+				using (var sr = new StreamReader (stream)) {
+					string line;
+					while ((line = sr.ReadLine ()) != null) {
+						string[] item = line.Split (new char[1] { ',' });
+						assets.Add (item[0].Replace("\\","/"), (AssetLocationEnum)Enum.Parse (typeof (AssetLocationEnum), item[1]));
+					}
+				}
+			}
+		} catch {
+			// no resource list... hmm.
+		}
         }
 
 
@@ -199,12 +203,14 @@ namespace Microsoft.Xna.Framework
             MemoryStream ms;
             try
             {
-                if (!assets.ContainsKey(safeName))
-                    return null;
-
-                if (assets[safeName] == AssetLocationEnum.Assets)
+		var sn = safeName.Replace ("\\", "/");
+		KeyValuePair<string, AssetLocationEnum> kvp = assets.Where (x => string.Compare(x.Key,sn, StringComparison.OrdinalIgnoreCase)== 0).FirstOrDefault ();
+		if (kvp.Key == null)
+			return null;
+		
+                if (kvp.Value == AssetLocationEnum.Assets)
                 {
-                    using (var s = Game.Activity.Assets.Open(safeName))
+                    using (var s = Game.Activity.Assets.Open(kvp.Key))
                     {
                         if (s != null)
                         {
@@ -217,7 +223,7 @@ namespace Microsoft.Xna.Framework
                 }
                 else
                 {
-                    return OpenExpansionStream(safeName);
+			return OpenExpansionStream (kvp.Key);
                 }
             }
             catch(Java.IO.IOException)
@@ -232,7 +238,16 @@ namespace Microsoft.Xna.Framework
         {
             try
             {
-                return Game.Activity.Assets.OpenFd(safeName);
+		var sn = safeName.Replace ("\\", "/");
+		KeyValuePair<string, AssetLocationEnum> kvp = assets.Where (x => string.Compare(x.Key,sn, StringComparison.OrdinalIgnoreCase)== 0).FirstOrDefault ();
+		if (kvp.Key == null)
+			return null;
+
+		if (kvp.Value == AssetLocationEnum.Assets) {
+			return Game.Activity.Assets.OpenFd (kvp.Key);
+		} else {
+			return OpenExpansionFd (kvp.Key);
+		}
             }
             catch (Java.IO.IOException)
             {
@@ -243,7 +258,9 @@ namespace Microsoft.Xna.Framework
 
         internal static string[] List(string path)
         {
-            return Game.Activity.Assets.List(path);
+
+	    var external = assets.Where (x => x.Key.StartsWith (path) && x.Value == AssetLocationEnum.External).Select (x => x.Key).ToArray();
+            return Game.Activity.Assets.List(path).Concat(external).ToArray();
         }
 
         static string expansionPath = null;
@@ -273,7 +290,7 @@ namespace Microsoft.Xna.Framework
 #endif
  String.Format("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName));
                 }
-                return expansionPath;
+		return "/mnt/sdcard/Download/test.zip";// expansionPath;
             }
         }
 
@@ -281,22 +298,25 @@ namespace Microsoft.Xna.Framework
 
         static AssetFileDescriptor OpenExpansionFd(string assetsPath)
         {
-            AssetFileDescriptor fd = null;
             try
             {
+		    
                 if (expansionFile == null)
                     expansionFile = new ZipFile(ExpansionPath);
-                using (ZipEntry ze = expansionFile.GetEntry(assetsPath.ToLower()))
-                {
-                    ParcelFileDescriptor pfd = ParcelFileDescriptor.Open(new Java.IO.File(ze.Name), ParcelFileMode.ReadOnly);
-                     var s = expansionFile.GetInputStream(ze);
-                     fd = new AssetFileDescriptor(pfd, s.Position, s.Length);
-                }
-                return fd;
+
+		var entry = expansionFile.GetAllEntries ().Where (x => string.Compare (x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault ();
+		if (entry != null) {
+			ParcelFileDescriptor pfd = ParcelFileDescriptor.Open (
+			   new Java.IO.File (entry.ZipFileName), ParcelFileMode.ReadOnly);
+
+			return new AssetFileDescriptor (pfd, entry.FileOffset, entry.FileSize);
+		}
+                
             } catch
             {
                 return null;
             }
+	    return null;
         }
 
         static Stream OpenExpansionStream(string assetsPath)
@@ -305,20 +325,15 @@ namespace Microsoft.Xna.Framework
             try
             {
                 if (expansionFile == null)
-                    expansionFile = new ZipFile(ExpansionPath);
-                using (ZipEntry ze = expansionFile.GetEntry(assetsPath.ToLower()))
-                {
-                    stream = expansionFile.GetInputStream(ze);
+			expansionFile = new ZipFile (ExpansionPath);
+		var entry = expansionFile.GetAllEntries ().Where (x => string.Compare (x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault ();
+		if (entry != null) {
 
-                    MemoryStream mstream = new MemoryStream((int)ze.Size);
-
-                    stream.CopyTo(mstream);
-
-                    mstream.Seek(0, SeekOrigin.Begin);
-
-                    stream.Close();
-                    stream = mstream;
-                }
+			MemoryStream mstream = new MemoryStream ();
+			expansionFile.ExtractFile (entry, mstream);
+			mstream.Seek (0, SeekOrigin.Begin);
+			stream = mstream;
+		}
                 return stream;
             }
             catch (Exception ex)

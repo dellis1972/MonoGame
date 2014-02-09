@@ -93,7 +93,7 @@ namespace Microsoft.Xna.Framework
         {
             System.Diagnostics.Debug.Assert(Game.Activity != null, "Must set Game.Activity before creating the Game instance");
             AndroidGameActivity.Game = game;
-            AndroidGameActivity.Paused += Activity_Paused;
+	    AndroidGameActivity.Paused += Activity_Paused;
             AndroidGameActivity.Resumed += Activity_Resumed;
 
             Window = new AndroidGameWindow(Game.Activity, game);
@@ -197,6 +197,11 @@ namespace Microsoft.Xna.Framework
             Game.graphicsDeviceManager.ResetClientBounds();
         }
 
+	public void Pause ()
+	{
+		Activity_Paused (this, EventArgs.Empty);
+	}
+
         // EnterForeground
         void Activity_Resumed(object sender, EventArgs e)
         {
@@ -218,6 +223,7 @@ namespace Microsoft.Xna.Framework
         {
             if (IsActive)
             {
+		    System.Diagnostics.Debug.WriteLine ("Platform.Paused !!!");
                 IsActive = false;
 				_MediaPlayer_PrevState = MediaPlayer.State;
                 Window.Pause();

@@ -16,7 +16,7 @@ namespace Microsoft.Xna.Framework.Content
 		
 		public static string Normalize(string FileName)
 		{
-            return ContentTypeReader.Normalize(FileName, supportedExtensions);
+            return ContentTypeReader.Normalize(FileName, supportedExtensions, ".fxg");
 		}
 		
 		private static string TryFindAnyCased(string search, string[] arr, params string[] extensions)
