@@ -36,8 +36,7 @@ namespace Microsoft.Xna.Framework
 		object lockObject = new object ();
 
 		bool surfaceAvailable;
-		bool surfaceChanged;
-
+		
 		int surfaceWidth;
 		int surfaceHeight;
 
@@ -45,7 +44,6 @@ namespace Microsoft.Xna.Framework
 		bool glContextAvailable;
 		bool lostglContext;
 		private bool isPaused;
-		ManualResetEvent pauseSignal;
 		System.Diagnostics.Stopwatch stopWatch;
 		double tick = 0;
 
@@ -86,7 +84,6 @@ namespace Microsoft.Xna.Framework
 			lock (lockObject) {
 				surfaceWidth = Width;
 				surfaceHeight = Height;
-				surfaceChanged = true;
 			}
 		}
 
@@ -207,11 +204,6 @@ namespace Microsoft.Xna.Framework
 #endif
 							if (token.IsCancellationRequested)
 								return;
-
-							pauseSignal.Reset ();
-							pauseSignal.WaitOne ((int)t);
-							if (!isPaused)
-								pauseSignal.Set ();
 						}
 					}
 				}
@@ -566,7 +558,7 @@ namespace Microsoft.Xna.Framework
 		/// <summary>The visibility of the window. Always returns true.</summary>
 		/// <value></value>
 		/// <exception cref="T:System.ObjectDisposed">The instance has been disposed</exception>
-		public new virtual bool Visible
+		public virtual bool Visible
 		{
 			get
 			{

@@ -44,7 +44,6 @@ using System.IO;
 #if ANDROID
 using Android.App;
 using Android.Content.PM;
-using System.Collections.Generic;
 using Android.Content.Res;
 using System.Linq;
 using System.IO.Compression.Zip;
