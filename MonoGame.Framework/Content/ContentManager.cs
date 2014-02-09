@@ -392,13 +392,13 @@ namespace Microsoft.Xna.Framework.Content
 			// The next int32 is the length of the XNB file
 			int xnbLength = xnbReader.ReadInt32 ();
 
-			ContentReader reader;
-			if (compressed) {
-				//decompress the xnb
-				//thanks to ShinAli (https://bitbucket.org/alisci01/xnbdecompressor)
-				int compressedSize = xnbLength - 14;
-				int decompressedSize = xnbReader.ReadInt32 ();
-				int newFileSize = decompressedSize + 10;
+            ContentReader reader;
+            if (compressed)
+            {
+                //decompress the xnb
+                //thanks to ShinAli (https://bitbucket.org/alisci01/xnbdecompressor)
+                int compressedSize = xnbLength - 14;
+                int decompressedSize = xnbReader.ReadInt32();
 
 				MemoryStream decompressedStream = new MemoryStream (decompressedSize);
 
@@ -450,9 +450,9 @@ namespace Microsoft.Xna.Framework.Content
 					if (block_size == 0 || frame_size == 0)
 						break;
 
-					int lzxRet = dec.Decompress (stream, block_size, decompressedStream, frame_size);
-					pos += block_size;
-					decodedBytes += frame_size;
+                    dec.Decompress(stream, block_size, decompressedStream, frame_size);
+                    pos += block_size;
+                    decodedBytes += frame_size;
 
 					// reset the position of the input just incase the bit buffer
 					// read in some unused bytes

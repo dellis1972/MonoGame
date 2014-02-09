@@ -63,10 +63,10 @@ namespace Microsoft.Xna.Framework
     internal class Threading
     {
         static int mainThreadId;
-        static int currentThreadId;
+        //static int currentThreadId;
 #if ANDROID
         static List<Action> actions = new List<Action>();
-        static Mutex actionsMutex = new Mutex();
+        //static Mutex actionsMutex = new Mutex();
 
 	internal static void ResetThread(int threadid) {
 		if (mainThreadId != threadid)

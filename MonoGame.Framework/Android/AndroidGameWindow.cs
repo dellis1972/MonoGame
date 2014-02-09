@@ -308,6 +308,13 @@ namespace Microsoft.Xna.Framework
 			{
 				throw new System.NotImplementedException ();
 			}
+
+            private set 
+            {
+                if (ScreenDeviceNameChanged != null)
+                    ScreenDeviceNameChanged (null, EventArgs.Empty);
+                throw new System.NotImplementedException ();
+            }
 		}
 
 
@@ -317,12 +324,12 @@ namespace Microsoft.Xna.Framework
 			{
 				return clientBounds;
 			}
-			internal set
-			{
-				clientBounds = value;
-				//if(ClientSizeChanged != null)
-				//    ClientSizeChanged(this, EventArgs.Empty);
-			}
+            internal set
+            {
+                clientBounds = value;
+                if(ClientSizeChanged != null)
+                    ClientSizeChanged(this, EventArgs.Empty);
+            }
 		}
 
 		public bool AllowUserResizing
@@ -433,6 +440,7 @@ namespace Microsoft.Xna.Framework
 		}
 
 		public event EventHandler<EventArgs> OrientationChanged;
+
 		public event EventHandler ClientSizeChanged;
 		public event EventHandler ScreenDeviceNameChanged;
 
