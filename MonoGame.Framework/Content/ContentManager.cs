@@ -359,7 +359,6 @@ namespace Microsoft.Xna.Framework.Content
 
 		protected virtual object ReadRawAsset<T> (string assetName, string originalAssetName)
 		{
-			System.Diagnostics.Debug.WriteLine (string.Format("ReadRawAsset {0}", typeof(T)));
 			if (typeof (T) == typeof (Texture2D) || typeof (T) == typeof (Texture)) {
 				using (Stream assetStream = TitleContainer.OpenStream (assetName)) {
 					Texture2D texture = Texture2D.FromStream (

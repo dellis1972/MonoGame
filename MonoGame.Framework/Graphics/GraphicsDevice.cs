@@ -283,8 +283,13 @@ namespace Microsoft.Xna.Framework.Graphics
         internal int MaxVertexAttributes;        
         internal List<string> _extensions = new List<string>();
         internal int _maxTextureSize = 0;
+
+#if IOS || ANDROID
+        // this is an egregious hack. I honestly don't know another way to do this.
+        public float ShaderMipBias = 0;
 #endif
-        
+#endif
+
         internal int MaxTextureSlots;
 
 #if WINDOWS_STOREAPP
@@ -460,6 +465,10 @@ namespace Microsoft.Xna.Framework.Graphics
 
             Textures = new TextureCollection (MaxTextureSlots);
 			SamplerStates = new SamplerStateCollection (MaxTextureSlots);
+
+#if ANDROID
+            this.ShaderMipBias = -1.0f;
+#endif
 
         }
 

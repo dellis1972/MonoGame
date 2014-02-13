@@ -178,6 +178,26 @@ namespace Microsoft.Xna.Framework.Graphics
 #if OPENGL
             _glslCode = System.Text.Encoding.ASCII.GetString(shaderBytecode);
 
+#if IOS || ANDROID
+
+            if (device.ShaderMipBias != 0)
+            {
+                // replace texture line with a new one that has a lod bias in it.
+                int texture2DLocation = _glslCode.IndexOf("texture2D");
+                while (texture2DLocation != -1)
+                {
+                    // find last bracket from current location of texture2D
+                    int lastBracket = _glslCode.IndexOf(")", texture2DLocation);
+                    _glslCode = _glslCode.Insert(lastBracket, ", " + device.ShaderMipBias.ToString("F", System.Globalization.CultureInfo.InvariantCulture));
+
+                    texture2DLocation = _glslCode.IndexOf("texture2D", lastBracket);
+                }
+
+                //device.ShaderMipBias = 0;
+            }
+
+#endif
+
             HashKey = MonoGame.Utilities.Hash.ComputeHash(shaderBytecode);
 
             var attributeCount = (int)reader.ReadByte();
