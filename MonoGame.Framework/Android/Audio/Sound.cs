@@ -83,9 +83,13 @@ namespace Microsoft.Xna.Framework.Audio
         }
 
         public int Play()
-        {            
+        {
             if (_soundId == 0)
-                return -1;                            
+            {
+                Load();
+                if (_soundId == 0)
+                    return -1;
+            }     
 
             float panRatio = (this.Pan + 1.0f) / 2.0f;
             float volumeTotal = SoundEffect.MasterVolume * this.Volume;
@@ -110,18 +114,26 @@ namespace Microsoft.Xna.Framework.Audio
 
         string _filename = null;
 
+        void Load()
+        {
+            using (AssetFileDescriptor fd = TitleContainer.OpenFd(_filename))
+            {
+                if (fd != null)
+                    s_soundPool.LoadAsync(fd.FileDescriptor, fd.StartOffset, fd.Length, 1).ContinueWith((t) =>
+                    {
+                        if (t.IsCompleted)
+                            _soundId = t.Result;
+                    });
+            }
+        }
+
         public Sound(string filename, float volume, bool looping)
         {
             _filename = filename;
             this.Looping = looping;
             this.Volume = volume;
-            using (AssetFileDescriptor fd = TitleContainer.OpenFd(_filename))
-            {
-                if (fd != null)
-                    s_soundPool.LoadAsync(fd.FileDescriptor, fd.StartOffset, fd.Length, 1).ContinueWith((t) => { 
-                        _soundId = t.Result; 
-                    });
-            }
+            this._soundId = 0;
+            //Load();
         }
 
         public Sound(byte[] audiodata, float volume, bool looping)

@@ -202,6 +202,15 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        internal static void Close()
+        {
+            if (expansionFile != null)
+            {
+                expansionFile.Close();
+                expansionFile.Dispose();
+            }
+        }
+
 
         internal static Stream OpenStreamInternal(string safeName)
         {

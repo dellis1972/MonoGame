@@ -74,6 +74,13 @@ namespace Microsoft.Xna.Framework
 		private bool _contextWasLost = false;
 		private IResumeManager _resumer;
 		private bool _isResuming;
+        private bool _stopping = false;
+        private object lockobject = new object();
+
+        public bool Stopping
+        {
+            get { return _stopping; }
+        }
 
 		public bool TouchEnabled
 		{
@@ -211,16 +218,23 @@ namespace Microsoft.Xna.Framework
 			Threading.Run ();
 
 			if (_game != null) {
-				if (!_isResuming && _game.Platform.IsActive && !ScreenReceiver.ScreenLocked) //Only call draw if an update has occured
-				{
-					_game.Tick ();
-				} else if (_game.GraphicsDevice != null) {
-					_game.GraphicsDevice.Clear (Color.Black);
-					if (_isResuming && _resumer != null) {
-						_resumer.Draw ();
-					}
-					_game.Platform.Present ();
-				}
+                lock (lockobject)
+                {
+                    if (!_isResuming && _game.Platform.IsActive && !ScreenReceiver.ScreenLocked) //Only call draw if an update has occured
+                    {
+                        if (!_stopping)
+                            _game.Tick();
+                    }
+                    else if (_game.GraphicsDevice != null)
+                    {
+                        _game.GraphicsDevice.Clear(Color.Black);
+                        if (_isResuming && _resumer != null)
+                        {
+                            _resumer.Draw();
+                        }
+                        _game.Platform.Present();
+                    }
+                }
 			}
 		}
 
@@ -460,9 +474,28 @@ namespace Microsoft.Xna.Framework
 			Android.Util.Log.Debug ("MonoGame", "AndroidGameWindow.SurfaceCreated: surfaceFrame = " + holder.SurfaceFrame.ToString ());
 		}
 
+        protected override void OnStopped(EventArgs eventArgs)
+        {
+            base.OnStopped(eventArgs);
+            Sound.PauseAll();
+            Media.MediaPlayer.Stop();
+            Microsoft.Xna.Framework.Content.ContentManager.ClearGraphicsContent();
+            Game.Activity.RunOnUiThread(() =>
+            {
+                Game.Activity.Finish();
+            });
+        }
+
 		internal void Close ()
 		{
-			
+            lock (lockobject)
+            {
+                if (!_stopping)
+                {
+                    _stopping = true;
+                    Stop();
+                }
+            }
 		}
 	}
 }

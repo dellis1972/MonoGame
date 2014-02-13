@@ -103,7 +103,7 @@ namespace Microsoft.Xna.Framework
 		public static bool IsPlayingVdeo { get; set; }
 		private bool _exiting = false;
 
-		public override void Exit ()
+        public override void Exit ()
 		{
 			//TODO: Fix this
 			try {
@@ -111,10 +111,9 @@ namespace Microsoft.Xna.Framework
 					_exiting = true;
 					AndroidGameActivity.Paused -= Activity_Paused;
 					AndroidGameActivity.Resumed -= Activity_Resumed;
+                    Window.Close();
 					Game.DoExiting ();
-					Net.NetworkSession.Exit ();
-					Game.Activity.Finish ();
-					Window.Close ();
+                    Net.NetworkSession.Exit ();					                
 				}
 			} catch {
 			}

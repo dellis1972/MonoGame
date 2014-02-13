@@ -66,6 +66,13 @@ namespace Microsoft.Xna.Framework
 			RequestWindowFeature (WindowFeatures.NoTitle);
 		}
 
+        public override void Finish()
+        {
+            TitleContainer.Close();
+            base.Finish();
+            
+        }
+
 		public static event EventHandler Paused;
 
 		public override void OnConfigurationChanged (Android.Content.Res.Configuration newConfig)

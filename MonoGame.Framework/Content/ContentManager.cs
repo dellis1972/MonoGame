@@ -116,6 +116,29 @@ namespace Microsoft.Xna.Framework.Content
 			}
 		}
 
+        internal static void ClearGraphicsContent()
+        {
+            lock (ContentManagerLock)
+            {
+                // Reload the graphic assets of each content manager. Also take the
+                // opportunity to prune the list of any finalized content managers.
+                for (int i = ContentManagers.Count - 1; i >= 0; --i)
+                {
+                    var contentRef = ContentManagers[i];
+                    if (contentRef.IsAlive)
+                    {
+                        var contentManager = (ContentManager)contentRef.Target;
+                        if (contentManager != null)
+                            contentManager.ClearAssets();
+                    }
+                    else
+                    {
+                        ContentManagers.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
 		internal static void ReloadGraphicsContent ()
 		{
 			lock (ContentManagerLock) {
@@ -510,6 +533,11 @@ namespace Microsoft.Xna.Framework.Content
 		{
 			get { return loadedAssets; }
 		}
+
+        protected virtual void ClearAssets()
+        {
+            LoadedAssets.Clear();
+        }
 
 		protected virtual void ReloadGraphicsAssets ()
 		{

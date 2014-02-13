@@ -1,5 +1,5 @@
 //#if DEBUG
-#define TIMING
+//#define TIMING
 //#endif
 using System;
 using System.Collections.Generic;
@@ -44,6 +44,7 @@ namespace Microsoft.Xna.Framework
 		bool glContextAvailable;
 		bool lostglContext;
 		private bool isPaused;
+        private bool isExited = false;
 		System.Diagnostics.Stopwatch stopWatch;
 		double tick = 0;
 
@@ -145,7 +146,10 @@ namespace Microsoft.Xna.Framework
 			avgFps = 1;
 #endif
 			updates = 0;
-			renderTask = Task.Factory.StartNew (() => { RenderLoop (cts.Token); }, cts.Token);
+            renderTask = Task.Factory.StartNew(() => { RenderLoop(cts.Token); }, cts.Token)
+                .ContinueWith((t) => {
+                    OnStopped(EventArgs.Empty);
+                }) ;
 		}
 
 		public virtual void Run (double updatesPerSecond)
@@ -178,9 +182,12 @@ namespace Microsoft.Xna.Framework
 
 		public void Stop ()
 		{
+            Log.Verbose("AndroidGameView", "Stop() Called!!!!!");
 			EnsureUndisposed ();
-			if (cts != null)
-				cts.Cancel ();
+            if (cts != null)
+            {
+                cts.Cancel();                
+            }
 		}
 
 		FrameEventArgs renderEventArgs = new FrameEventArgs ();
@@ -205,16 +212,17 @@ namespace Microsoft.Xna.Framework
 #if TIMING
 							Log.Verbose ("AndroidGameView", "took {0:F2}ms, should take {1:F2}ms, sleeping for {2:F2}", stopWatch.Elapsed.TotalMilliseconds - tick, updates, t);
 #endif
-							GC.Collect ();
 							if (token.IsCancellationRequested)
 								return;
 						}
 					}
 				}
+                Log.Verbose("AndroidGameView", "RenderLoop exited");
 			} catch (Exception ex) {
 				Log.Error ("AndroidGameView", ex.ToString ());
 			} finally {
 				lock (lockObject) {
+                    isExited = true;
 					cts = null;
 					if (glSurfaceAvailable)
 						DestroyGLSurface ();
@@ -483,7 +491,7 @@ namespace Microsoft.Xna.Framework
 				// we want to wait until we have a valid surface
 				// this is not called from the UI thread but on
 				// the background rendering thread
-				while (true) {
+				while (!cts.IsCancellationRequested) {
 					//Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable {0} IsPaused {1} ThreadID {2}", glSurfaceAvailable, isPaused, Thread.CurrentThread.ManagedThreadId);
 					if (glSurfaceAvailable && (isPaused || !surfaceAvailable)) {
 						// Surface we are using needs to go away
@@ -539,12 +547,16 @@ namespace Microsoft.Xna.Framework
 						// a surfaceCreated event or some other 
 						// event from the ISurfaceHolderCallback
 						// so we can create a new GL surface.
+                        if (cts.IsCancellationRequested)
+                            break;
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable entering wait state");
 						Monitor.Wait (lockObject);
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable exiting wait state");
 						continue;
 					}
 				}
+                Log.Verbose("AndroidGameView", "IsGLSurfaceAvailable exited!!!!!");
+                return false;
 			}
 		}
 
@@ -562,6 +574,11 @@ namespace Microsoft.Xna.Framework
 		{
 		
 		}
+
+        protected virtual void OnStopped(EventArgs eventArgs)
+        {
+
+        }
 
 		#region Properties
 
