@@ -12,6 +12,7 @@ using Android.Views;
 using Android.Widget;
 
 using Microsoft.Xna.Framework.Input.Touch;
+using Android.Views.InputMethods;
 
 namespace Microsoft.Xna.Framework
 {
@@ -110,7 +111,19 @@ namespace Microsoft.Xna.Framework
 			Game = null;
 			base.OnDestroy ();
 		}
-	}
+
+        public void ShowKeyboard()
+        {
+            InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
+            manager.ShowSoftInput(Game.Window, ShowFlags.Implicit, null);
+        }
+
+        public void HideKeyboard()
+        {
+            InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
+            manager.HideSoftInputFromInputMethod(Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
+        }
+    }
 
 	[CLSCompliant (false)]
 	public static class ActivityExtensions
