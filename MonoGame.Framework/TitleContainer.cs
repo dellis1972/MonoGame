@@ -204,8 +204,12 @@ namespace Microsoft.Xna.Framework
             {
 		var sn = safeName.Replace ("\\", "/");
 		KeyValuePair<string, AssetLocationEnum> kvp = assets.Where (x => string.Compare(x.Key,sn, StringComparison.OrdinalIgnoreCase)== 0).FirstOrDefault ();
-		if (kvp.Key == null)
-			return null;
+		if (kvp.Key == null) {
+			if (assets.Count == 0) {
+				kvp = new KeyValuePair<string, AssetLocationEnum> (safeName,AssetLocationEnum.Assets);
+			} else
+				return null;
+		}
 		
                 if (kvp.Value == AssetLocationEnum.Assets)
                 {

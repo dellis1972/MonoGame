@@ -1,5 +1,5 @@
 //#if DEBUG
-//#define TIMING
+#define TIMING
 //#endif
 using System;
 using System.Collections.Generic;
@@ -82,6 +82,7 @@ namespace Microsoft.Xna.Framework
 		public void SurfaceChanged (ISurfaceHolder holder, global::Android.Graphics.Format format, int width, int height)
 		{
 			lock (lockObject) {
+				Log.Verbose ("AndroidGameView", "SurfaceChanged");
 				surfaceWidth = Width;
 				surfaceHeight = Height;
 			}
@@ -90,6 +91,7 @@ namespace Microsoft.Xna.Framework
 		public void SurfaceCreated (ISurfaceHolder holder)
 		{
 			lock (lockObject) {
+				Log.Verbose ("AndroidGameView", "SurfaceCreated");
 				surfaceWidth = Width;
 				surfaceHeight = Height;
 				surfaceAvailable = true;
@@ -100,6 +102,7 @@ namespace Microsoft.Xna.Framework
 		public void SurfaceDestroyed (ISurfaceHolder holder)
 		{
 			lock (lockObject) {
+				Log.Verbose ("AndroidGameView", "SurfaceDestroyed");
 				surfaceAvailable = false;
 				Monitor.PulseAll (lockObject);
 				while (glSurfaceAvailable) {
@@ -202,6 +205,7 @@ namespace Microsoft.Xna.Framework
 #if TIMING
 							Log.Verbose ("AndroidGameView", "took {0:F2}ms, should take {1:F2}ms, sleeping for {2:F2}", stopWatch.Elapsed.TotalMilliseconds - tick, updates, t);
 #endif
+							GC.Collect ();
 							if (token.IsCancellationRequested)
 								return;
 						}
@@ -316,6 +320,7 @@ namespace Microsoft.Xna.Framework
 
 		protected void DestroyGLContext ()
 		{
+			Log.Verbose ("AndroidGameView", "DestroyGLContext");
 			if (eglContext != null) {
 				if (!egl.EglDestroyContext (eglDisplay, eglContext))
 					throw new Exception ("Could not destroy EGL context" + GetErrorAsString ());
@@ -335,16 +340,20 @@ namespace Microsoft.Xna.Framework
 		{
 			if (!(eglSurface == null || eglSurface == EGL10.EglNoSurface)) {
 				if (!egl.EglMakeCurrent (eglDisplay, EGL10.EglNoSurface,
-							EGL10.EglNoSurface, EGL10.EglNoContext))
-					throw new Exception ("Could not unbind EGL surface" + GetErrorAsString ());
+							EGL10.EglNoSurface, EGL10.EglNoContext)) {
+					Log.Verbose("AndroidGameView", "Could not unbind EGL surface" + GetErrorAsString ());
+				}
 
-				if (!egl.EglDestroySurface (eglDisplay, eglSurface))
-					throw new Exception ("Could not destroy EGL surface" + GetErrorAsString ());
+				if (!egl.EglDestroySurface (eglDisplay, eglSurface)) {
+					Log.Verbose("AndroidGameView", "Could not destroy EGL surface" + GetErrorAsString ());
+				}
 			}
+			eglSurface = null;
 		}
 
 		protected virtual void DestroyGLSurface ()
 		{
+			Log.Verbose ("AndroidGameView", "DestroyGLSurface");
 			DestroyGLSurfaceInternal ();
 			glSurfaceAvailable = false;
 			Monitor.PulseAll (lockObject);
@@ -352,6 +361,7 @@ namespace Microsoft.Xna.Framework
 
 		protected void CreateGLContext ()
 		{
+			Log.Verbose ("AndroidGameView", "CreateGLContext");
 			lostglContext = false;
 
 			egl = EGLContext.EGL.JavaCast<IEGL10> ();
@@ -430,8 +440,10 @@ namespace Microsoft.Xna.Framework
 
 		protected void CreateGLSurface ()
 		{
+
 			if (!glSurfaceAvailable)
 				try {
+					Log.Verbose ("AndroidGameView", "CreateGLSurface");
 					// If there is an existing surface, destroy the old one
 					DestroyGLSurfaceInternal ();
 
@@ -484,8 +496,9 @@ namespace Microsoft.Xna.Framework
 						if (glContextAvailable && !lostglContext) {
 							try {
 								CreateGLSurface ();
-							} catch (Exception) {
+							} catch (Exception ex) {
 								// We failed to create the surface for some reason
+								Log.Verbose ("AndroidGameView", ex.ToString ());
 							}
 						}
 
@@ -498,6 +511,7 @@ namespace Microsoft.Xna.Framework
 								// objects and re-create one.
 								DestroyGLContext ();
 								contextLost = true;
+								Log.Verbose ("AndroidGameView", "ContentLostInternal");
 								ContextLostInternal ();
 							}
 
@@ -507,7 +521,8 @@ namespace Microsoft.Xna.Framework
 							if (!loaded && glContextAvailable)
 								OnLoad (EventArgs.Empty);
 
-							if (contextLost) {
+							if (contextLost && glContextAvailable) {
+								Log.Verbose ("AndroidGameView", "ContentSetInternal");
 								// we lost the gl context, we need to let the programmer
 								// know so they can re-create textures etc.
 								ContextSetInternal ();
@@ -517,7 +532,7 @@ namespace Microsoft.Xna.Framework
 
 					// If we have a GL surface we can continue 
 					// rednering
-					if (glSurfaceAvailable && !isPaused) {
+					if (glSurfaceAvailable) {
 						return true;
 					} else {
 						// if we dont we need to wait until we get
@@ -526,6 +541,7 @@ namespace Microsoft.Xna.Framework
 						// so we can create a new GL surface.
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable entering wait state");
 						Monitor.Wait (lockObject);
+						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable exiting wait state");
 						continue;
 					}
 				}

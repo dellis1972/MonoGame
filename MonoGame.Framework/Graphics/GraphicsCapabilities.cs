@@ -57,49 +57,49 @@ namespace Microsoft.Xna.Framework.Graphics
     /// current graphics device. A very useful thread for investigating GL extenion names
     /// http://stackoverflow.com/questions/3881197/opengl-es-2-0-extensions-on-android-devices
     /// </summary>
-    internal static class GraphicsCapabilities
+    public static class GraphicsCapabilities
     {
         /// <summary>
         /// Whether the device fully supports non power-of-two textures, including
         /// mip maps and wrap modes other than CLAMP_TO_EDGE
         /// </summary>
-        internal static bool SupportsNonPowerOfTwo { get; private set; }
+        public static bool SupportsNonPowerOfTwo { get; private set; }
 
         /// <summary>
         /// Whether the device supports anisotropic texture filtering
         /// </summary>
-		internal static bool SupportsTextureFilterAnisotropic { get; private set; }
+	public static bool SupportsTextureFilterAnisotropic { get; private set; }
 
-		internal static bool SupportsDepth24 { get; private set; }
+	public static bool SupportsDepth24 { get; private set; }
 
-		internal static bool SupportsPackedDepthStencil { get; private set; }
+	public static bool SupportsPackedDepthStencil { get; private set; }
 
-		internal static bool SupportsDepthNonLinear { get; private set; }
+	public static bool SupportsDepthNonLinear { get; private set; }
 
         /// <summary>
         /// Gets the support for DXT1
         /// </summary>
-        internal static bool SupportsDxt1 { get; private set; }
+	public static bool SupportsDxt1 { get; private set; }
 
         /// <summary>
         /// Gets the support for S3TC (DXT1, DXT3, DXT5)
         /// </summary>
-        internal static bool SupportsS3tc { get; private set; }
+	public static bool SupportsS3tc { get; private set; }
 
         /// <summary>
         /// Gets the support for PVRTC
         /// </summary>
-        internal static bool SupportsPvrtc { get; private set; }
+	public static bool SupportsPvrtc { get; private set; }
 
         /// <summary>
         /// Gets the support for ETC1
         /// </summary>
-        internal static bool SupportsEtc1 { get; private set; }
+	public static bool SupportsEtc1 { get; private set; }
 
         /// <summary>
         /// Gets the support for ATITC
         /// </summary>
-        internal static bool SupportsAtitc { get; private set; }
+	public static bool SupportsAtitc { get; private set; }
 
         internal static void Initialize(GraphicsDevice device)
         {

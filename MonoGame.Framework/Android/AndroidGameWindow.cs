@@ -156,6 +156,11 @@ namespace Microsoft.Xna.Framework
 #endif
 		protected override void OnContextLost (EventArgs e)
 		{
+			// DeviceResetting events
+			_game.graphicsDeviceManager.OnDeviceResetting (EventArgs.Empty);
+			_game.GraphicsDevice.OnDeviceResetting ();
+
+			Android.Util.Log.Debug ("MonoGame", "AndroidGameWindow.DestroyGLSurface");
 			_contextWasLost = true;
 		}
 
@@ -188,17 +193,6 @@ namespace Microsoft.Xna.Framework
 			}
 
 			MakeCurrent ();
-		}
-
-		protected override void DestroyGLSurface ()
-		{
-			// DeviceResetting events
-			_game.graphicsDeviceManager.OnDeviceResetting (EventArgs.Empty);
-			_game.GraphicsDevice.OnDeviceResetting ();
-
-			Android.Util.Log.Debug ("MonoGame", "AndroidGameWindow.DestroyFrameBuffer");
-
-			base.DestroyGLSurface ();
 		}
 
 		#region AndroidGameView Methods
