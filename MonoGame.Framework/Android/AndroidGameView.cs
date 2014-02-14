@@ -186,7 +186,11 @@ namespace Microsoft.Xna.Framework
 			EnsureUndisposed ();
             if (cts != null)
             {
-                cts.Cancel();                
+                cts.Cancel();
+                lock (lockObject)
+                {
+                    Monitor.PulseAll(lockObject);
+                }
             }
 		}
 
@@ -228,6 +232,7 @@ namespace Microsoft.Xna.Framework
 						DestroyGLSurface ();
 					if (glContextAvailable) {
 						DestroyGLContext ();
+                        ContextLostInternal ();
 					}
 				}
 			}

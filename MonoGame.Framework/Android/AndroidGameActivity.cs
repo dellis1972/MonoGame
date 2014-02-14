@@ -33,6 +33,7 @@ namespace Microsoft.Xna.Framework
 
 		private OrientationListener o;
 		private ScreenReceiver screenReceiver;
+        private bool keyboardVisible = false;
 
 		private bool _AutoPauseAndResumeMediaPlayer = true;
 		public bool AutoPauseAndResumeMediaPlayer
@@ -115,13 +116,14 @@ namespace Microsoft.Xna.Framework
         public void ShowKeyboard()
         {
             InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
-            manager.ShowSoftInput(Game.Window, ShowFlags.Implicit, null);
+            keyboardVisible = manager.ShowSoftInput(Game.Window, ShowFlags.Implicit, null);
         }
 
         public void HideKeyboard()
         {
             InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
             manager.HideSoftInputFromInputMethod(Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
+            keyboardVisible = false;
         }
     }
 

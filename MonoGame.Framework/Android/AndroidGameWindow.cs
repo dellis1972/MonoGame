@@ -167,7 +167,7 @@ namespace Microsoft.Xna.Framework
 			_game.graphicsDeviceManager.OnDeviceResetting (EventArgs.Empty);
 			_game.GraphicsDevice.OnDeviceResetting ();
 
-			Android.Util.Log.Debug ("MonoGame", "AndroidGameWindow.DestroyGLSurface");
+			Android.Util.Log.Debug ("MonoGame", "AndroidGameWindow.OnContextLost");
 			_contextWasLost = true;
 		}
 
@@ -477,9 +477,12 @@ namespace Microsoft.Xna.Framework
         protected override void OnStopped(EventArgs eventArgs)
         {
             base.OnStopped(eventArgs);
+            Game.Instance.DoExiting();
             Sound.PauseAll();
             Media.MediaPlayer.Stop();
             Microsoft.Xna.Framework.Content.ContentManager.ClearGraphicsContent();
+
+            Net.NetworkSession.Exit();		
             Game.Activity.RunOnUiThread(() =>
             {
                 Game.Activity.Finish();
