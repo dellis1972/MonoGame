@@ -53,9 +53,9 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Android\AndroidGameView.cs">
+    <None Include="Android\AndroidGameView.cs">
       <SubType>Code</SubType>
-    </Compile>
+    </None>
     <Compile Include="GamerServices\GamerServicesDispatcher.cs" />
     <Compile Include="GamerServices\LeaderboardEntry.cs" />
     <Compile Include="GamerServices\LeaderboardIdentity.cs" />

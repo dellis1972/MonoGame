@@ -411,7 +411,7 @@ namespace Microsoft.Xna.Framework.Graphics
                         GL.PixelStore(PixelStoreParameter.UnpackAlignment, 4);
                     }
 
-#if !ANDROID1
+#if !ANDROID
                     GL.Finish();
                     GraphicsExtensions.CheckGLError();
 #endif
@@ -430,7 +430,7 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
 
 #if OPENGL
-#if !ANDROID1
+#if !ANDROID
                 // Required to make sure that any texture uploads on a thread are completed
                 // before the main thread tries to use the texture.
                 GL.Finish();

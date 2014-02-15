@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 using Android.App;
 using Android.Content;
 using Android.Hardware;
@@ -11,29 +12,23 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
+
 using Microsoft.Xna.Framework.Input.Touch;
 using Android.Views.InputMethods;
+
 
 namespace Microsoft.Xna.Framework
 {
 	[CLSCompliant (false)]
 	public class AndroidGameActivity : Activity
 	{
-        static Game game = null;
+		public static Game Game { get; set; }
 
-        public static Game Game { 
-            get { return game; }
-            set
-            {
-                game = value;
-                if (game != null)
-                    TitleContainer.InitActivity();
-            }
-        }
 
 		private OrientationListener o;
 		private ScreenReceiver screenReceiver;
-        private bool keyboardVisible = false;
+		private  bool keyboardVisible;
+
 
 		private bool _AutoPauseAndResumeMediaPlayer = true;
 		public bool AutoPauseAndResumeMediaPlayer
@@ -41,6 +36,7 @@ namespace Microsoft.Xna.Framework
 			get { return _AutoPauseAndResumeMediaPlayer; }
 			set { _AutoPauseAndResumeMediaPlayer = value; }
 		}
+
 
 		/// <summary>
 		/// OnCreate called when the activity is launched from cold or after the app
@@ -57,13 +53,16 @@ namespace Microsoft.Xna.Framework
 				o.Enable ();
 			}
 
+
 			IntentFilter filter = new IntentFilter ();
 			filter.AddAction (Intent.ActionScreenOff);
 			filter.AddAction (Intent.ActionScreenOn);
 			filter.AddAction (Intent.ActionUserPresent);
 
+
 			screenReceiver = new ScreenReceiver ();
 			RegisterReceiver (screenReceiver, filter);
+
 
 			RequestWindowFeature (WindowFeatures.NoTitle);
 		}
@@ -77,32 +76,40 @@ namespace Microsoft.Xna.Framework
 
 		public static event EventHandler Paused;
 
+
 		public override void OnConfigurationChanged (Android.Content.Res.Configuration newConfig)
 		{
 			// we need to refresh the viewport here.			
 			base.OnConfigurationChanged (newConfig);
 		}
 
+
 		protected override void OnPause ()
 		{
-			((AndroidGamePlatform)Game.Platform).Pause ();
+			base.OnPause ();
 			if (Paused != null)
 				Paused (this, EventArgs.Empty);
-			base.OnPause ();
+
+
 		}
 
+
 		public static event EventHandler Resumed;
+		
 		protected override void OnResume ()
 		{
 			base.OnResume ();
 			if (Resumed != null)
 				Resumed (this, EventArgs.Empty);
 
+
 			var deviceManager = (IGraphicsDeviceManager)Game.Services.GetService (typeof (IGraphicsDeviceManager));
 			if (deviceManager == null)
 				return;
 			(deviceManager as GraphicsDeviceManager).ForceSetFullScreen ();
+			Game.Window.RequestFocus ();
 		}
+
 
 		protected override void OnDestroy ()
 		{
@@ -113,19 +120,20 @@ namespace Microsoft.Xna.Framework
 			base.OnDestroy ();
 		}
 
-        public void ShowKeyboard()
-        {
-            InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
-            keyboardVisible = manager.ShowSoftInput(Game.Window, ShowFlags.Implicit, null);
-        }
+		public void ShowKeyboard ()
+		{
+			InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+			keyboardVisible = manager.ShowSoftInput (Game.Window, ShowFlags.Implicit, null);
+		}
 
-        public void HideKeyboard()
-        {
-            InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
-            manager.HideSoftInputFromInputMethod(Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
-            keyboardVisible = false;
-        }
-    }
+		public void HideKeyboard ()
+		{
+			InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+			manager.HideSoftInputFromInputMethod (Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
+			keyboardVisible = false;
+		}
+	}
+
 
 	[CLSCompliant (false)]
 	public static class ActivityExtensions
@@ -140,4 +148,6 @@ namespace Microsoft.Xna.Framework
 		}
 	}
 
+
 }
+
