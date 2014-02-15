@@ -112,10 +112,8 @@ namespace Microsoft.Xna.Framework
 				{
 					_exiting = true;
 					AndroidGameActivity.Paused -= Activity_Paused;
-					AndroidGameActivity.Resumed -= Activity_Resumed;
-					Game.DoExiting();
-                    Net.NetworkSession.Exit();
-               	    Game.Activity.Finish();
+					AndroidGameActivity.Resumed -= Activity_Resumed;					
+                    Net.NetworkSession.Exit();               	    
 				    Window.Close();
 				}
             }
@@ -255,6 +253,15 @@ namespace Microsoft.Xna.Framework
             catch (Exception ex)
             {
                 Android.Util.Log.Error("Error in swap buffers", ex.ToString());
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+            {
+                Window.Dispose();
             }
         }
     }

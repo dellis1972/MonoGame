@@ -370,6 +370,12 @@ namespace Microsoft.Xna.Framework
             _touchManager.OnTouchEvent(e);
             return true;
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);            
+            Game.Activity.Finish();            
+        }        
         
         public string ScreenDeviceName 
 		{

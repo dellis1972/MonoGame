@@ -22,7 +22,15 @@ namespace Microsoft.Xna.Framework
 	[CLSCompliant (false)]
 	public class AndroidGameActivity : Activity
 	{
-		public static Game Game { get; set; }
+        static Game game;
+		public static Game Game {
+            get { return game; }
+            set
+            {
+                game = value;
+                TitleContainer.InitActivity();
+            }
+        }
 
 
 		private OrientationListener o;
@@ -114,23 +122,39 @@ namespace Microsoft.Xna.Framework
 		protected override void OnDestroy ()
 		{
 			UnregisterReceiver (screenReceiver);
-			if (Game != null)
-				Game.Dispose ();
+            if (keyboardVisible)
+                HideKeyboard();
+            if (Game != null)
+            {
+                Game.DoExiting();
+                Game.Dispose();
+            }
 			Game = null;
 			base.OnDestroy ();
 		}
 
+        bool wasalreadyvisible = false;
+
 		public void ShowKeyboard ()
 		{
-			InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
-			keyboardVisible = manager.ShowSoftInput (Game.Window, ShowFlags.Implicit, null);
+            if (!keyboardVisible)
+            {
+                InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
+                keyboardVisible = manager.ShowSoftInput(Game.Window, ShowFlags.Implicit, null);
+            }
+            else
+                wasalreadyvisible = true;
 		}
 
 		public void HideKeyboard ()
 		{
-			InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
-			manager.HideSoftInputFromInputMethod (Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
-			keyboardVisible = false;
+            if (keyboardVisible && !wasalreadyvisible)
+            {
+                InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
+                manager.HideSoftInputFromWindow(Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
+                keyboardVisible = false;
+            }
+            if (wasalreadyvisible) wasalreadyvisible = false;
 		}
 	}
 
