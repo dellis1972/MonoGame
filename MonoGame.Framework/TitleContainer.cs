@@ -177,12 +177,39 @@ namespace Microsoft.Xna.Framework
 
         static Dictionary<string, AssetLocationEnum> assets = new Dictionary<string, AssetLocationEnum>(StringComparer.OrdinalIgnoreCase);
 
-
-        internal static void InitActivity()
+	internal static IEnumerable<string> GetAssets (Android.Content.Res.AssetManager mgr, string path)
+	{
+		var list = mgr.List (path);
+		if (list != null) {
+			foreach (var item in list) {
+				if (!item.Contains (".")) {
+					var data = GetAssets (mgr, path + "/" + item);
+					if (data != null && data.Count () > 0) {
+						foreach (var i in data) {
+							yield return i;
+						}
+					}
+				} else yield return path + "/" + item;					
+			}
+		}
+	}
+        public  static void InitActivity()
         {
             try
             {
                 assets.Clear();
+		var internalAssets = GetAssets (Game.Activity.Assets, "Content");
+		foreach (var a in internalAssets) {
+			assets.Add (a.Replace ("\\", "/"), AssetLocationEnum.Assets);
+		}
+
+		if (ExpansionPath != null) {
+			var zip = new ZipFile (ExpansionPath);
+			foreach (var z in zip.GetAllEntries ()) {
+				assets.Add (z.FilenameInZip.Replace ("\\", "/"), AssetLocationEnum.External);
+			}
+		}
+		    /*
                 using (var stream = Game.Activity.Assets.Open("resourcelist.txt"))
                 {
                     using (var sr = new StreamReader(stream))
@@ -194,7 +221,7 @@ namespace Microsoft.Xna.Framework
                             assets.Add(item[0].Replace("\\", "/"), (AssetLocationEnum)Enum.Parse(typeof(AssetLocationEnum), item[1]));
                         }
                     }
-                }
+                }*/
             }
             catch
             {
@@ -279,7 +306,6 @@ namespace Microsoft.Xna.Framework
 
         internal static string[] List(string path)
         {
-
             var external = assets.Where(x => x.Key.StartsWith(path) && x.Value == AssetLocationEnum.External).Select(x => x.Key).ToArray();
             return Game.Activity.Assets.List(path).Concat(external).ToArray();
         }
@@ -292,26 +318,25 @@ namespace Microsoft.Xna.Framework
             {
                 if (expansionPath == null)
                 {
-                    Activity activity = Game.Activity;
+                    ApplicationInfo ainfo = Game.Activity.ApplicationInfo;
+		    PackageInfo pinfo = Game.Activity.PackageManager.GetPackageInfo (ainfo.PackageName, PackageInfoFlags.MetaData);
 
-                    ApplicationInfo ainfo = activity.ApplicationInfo;
-                    PackageInfo pinfo = activity.PackageManager.GetPackageInfo(ainfo.PackageName, PackageInfoFlags.MetaData);
-
-                    var dir = "/mnt/sdcard/Download";
-                    // Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
-                    //dir = "/mnt/sdcard";
+		    var dir = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
                     expansionPath = Path.Combine(
                         dir,
                         "Android",
                         "obb",
-#if !PACKAGE
- "test",
-#else
                         ainfo.PackageName,
+			 String.Format("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName));
+			if (!File.Exists(expansionPath)) {
+#if DEBUG
+				expansionPath = "/mnt/sdcard/Downloads/test.zip";
+#else
+				expansionPath = null;
 #endif
- String.Format("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName));
+			}
                 }
-                return "/mnt/sdcard/Downloads/test.zip";// expansionPath;
+                return expansionPath;
             }
         }
 
@@ -321,6 +346,8 @@ namespace Microsoft.Xna.Framework
         {
             try
             {
+		    if (ExpansionPath == null)
+			    return null;
 
                 if (expansionFile == null)
                     expansionFile = new ZipFile(ExpansionPath);
@@ -347,6 +374,8 @@ namespace Microsoft.Xna.Framework
             Stream stream = null;
             try
             {
+		    if (ExpansionPath == null)
+			    return null;
                 if (expansionFile == null)
                     expansionFile = new ZipFile(ExpansionPath);
                 var entry = expansionFile.GetAllEntries().Where(x => string.Compare(x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
