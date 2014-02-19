@@ -18,9 +18,9 @@ namespace MonoGameContentProcessors.Processors
         {
             // Fallback if we aren't buiding for iOS.
             var platform = ContentHelper.GetMonoGamePlatform();
-            if (platform != MonoGamePlatform.iOS)
+            if (platform != MonoGamePlatform.iOS && platform != MonoGamePlatform.Android)
                 return base.Process(input, context);
-
+            
             SpriteFontContent content = base.Process(input, context);
             FieldInfo TextureField = typeof(SpriteFontContent).GetField("texture", BindingFlags.Instance | BindingFlags.NonPublic);
             Texture2DContent texture = (Texture2DContent)TextureField.GetValue(content);
@@ -31,11 +31,11 @@ namespace MonoGameContentProcessors.Processors
             // or even Process is tricky. This works for now, but should be replaced when the content pipeline
             // moves a bit further
 
-            var texWidth = ContentHelper.NextPOT(texture.Faces[0][0].Width);
-            var texHeight = ContentHelper.NextPOT(texture.Faces[0][0].Height);
+            var texWidth = texture.Faces[0][0].Width;
+            var texHeight = texture.Faces[0][0].Height;
 
             // Resize to square, power of two if necessary.
-            if (texWidth != texHeight || texture.Faces[0][0].Width != texture.Faces[0][0].Height || texWidth != texture.Faces[0][0].Width || texHeight != texture.Faces[0][0].Height)
+            if (texWidth != texHeight)
             {
                 texHeight = texWidth = Math.Max(texHeight, texWidth);
                 var resizedBitmap = (BitmapContent)Activator.CreateInstance(typeof(PixelBitmapContent<Color>), new object[] { texWidth, texHeight });
@@ -44,13 +44,21 @@ namespace MonoGameContentProcessors.Processors
 
                 texture.Faces[0].Clear();
                 texture.Faces[0].Add(resizedBitmap);
-                
-                context.Logger.LogImportantMessage(string.Format("Resized font texture {0} to {1}x{2}", input.Name, resizedBitmap.Width, resizedBitmap.Height));
             }
             else
                 texture.ConvertBitmapType(typeof(PixelBitmapContent<Color>));
 
-            MGTextureProcessor.ConvertToPVRTC(texture, 1, true, MGCompressionMode.PVRTCFourBitsPerPixel);
+            if (platform == MonoGamePlatform.iOS)
+                MGTextureProcessor.ConvertToPVRTC(texture, 1, true, MGCompressionMode.PVRTCFourBitsPerPixel);
+            else
+            {
+                //var p = new TextureProcessor();
+                //p.TextureFormat = TextureProcessorOutputFormat.DxtCompressed;
+                //texture = (Texture2DContent)p.Process(texture, context);
+                MGTextureProcessor.ConvertToATC(texture, 1, true, context);
+            }
+                
+                
 
             return content; 
 

@@ -12,6 +12,8 @@ namespace MonoGameContentProcessors.Content
     {
         PVRTCTwoBitsPerPixel,
         PVRTCFourBitsPerPixel,
+        ATCExplicitAlpha,
+        S3TC,
         NoCompression
     }
 
@@ -63,16 +65,16 @@ namespace MonoGameContentProcessors.Content
 
             switch(_bpp)
             {
+                case MGCompressionMode.ATCExplicitAlpha:
                 case MGCompressionMode.PVRTCFourBitsPerPixel:
                     format = SurfaceFormat.Dxt5;
-                    break;
+                    break;                
                 case MGCompressionMode.PVRTCTwoBitsPerPixel:
                     format = SurfaceFormat.Dxt3;
                     break;
                 case MGCompressionMode.NoCompression:
                     format = SurfaceFormat.Color;
-                    break;
-
+                    break;                    
                 default:
                     format = SurfaceFormat.Dxt5;
                     break;
