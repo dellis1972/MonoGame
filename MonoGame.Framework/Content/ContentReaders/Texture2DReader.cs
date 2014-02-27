@@ -36,8 +36,6 @@ namespace Microsoft.Xna.Framework.Content
 {
 	internal class Texture2DReader : ContentTypeReader<Texture2D>
 	{
-		internal static bool createtexture = true;
-
 		internal Texture2DReader ()
 		{
 			// Do nothing
@@ -115,7 +113,7 @@ namespace Microsoft.Xna.Framework.Content
 					if (GraphicsCapabilities.SupportsS3tc)
 						convertedFormat = SurfaceFormat.RgbaS3tcDxt3;
 					if (GraphicsCapabilities.SupportsAtitc)
-						convertedFormat = SurfaceFormat.RgbaATCExplicitAlpha;
+                        convertedFormat = SurfaceFormat.RgbaATCExplicitAlpha;
 					break;
 				case SurfaceFormat.Dxt3:
 					if (!GraphicsCapabilities.SupportsS3tc)
@@ -124,10 +122,12 @@ namespace Microsoft.Xna.Framework.Content
 				case SurfaceFormat.Dxt5:
 					if (GraphicsCapabilities.SupportsPvrtc)
 						convertedFormat = SurfaceFormat.RgbaPvrtc4Bpp;
-					if (GraphicsCapabilities.SupportsS3tc)
+					else if (GraphicsCapabilities.SupportsS3tc)
 						convertedFormat = SurfaceFormat.RgbaS3tcDxt5;
-					if (GraphicsCapabilities.SupportsAtitc)
-						convertedFormat = SurfaceFormat.RgbaATCExplicitAlpha;
+					else if (GraphicsCapabilities.SupportsAtitc)
+                        convertedFormat = SurfaceFormat.RgbaATCExplicitAlpha;
+                    else 
+                        convertedFormat = SurfaceFormat.Color;
 					break;
 #else
 				case SurfaceFormat.Dxt1:
@@ -146,7 +146,7 @@ namespace Microsoft.Xna.Framework.Content
 					break;
 			}
 
-			if (existingInstance == null && createtexture)
+			if (existingInstance == null)
 				texture = new Texture2D (reader.GraphicsDevice, width, height, levelCountOutput > 1, convertedFormat);
 			else
 				texture = existingInstance;
@@ -154,10 +154,7 @@ namespace Microsoft.Xna.Framework.Content
 			for (int level=0; level < levelCount; level++) {
 				int levelDataSizeInBytes = (reader.ReadInt32 ());
 				byte[] levelData = reader.ReadBytes (levelDataSizeInBytes);
-
-				if (!createtexture)
-					continue;
-
+				
 				int levelWidth = width >> level;
 				int levelHeight = height >> level;
 
@@ -176,11 +173,11 @@ namespace Microsoft.Xna.Framework.Content
 						break;
 #endif
 					case SurfaceFormat.Dxt3:
-						if (!GraphicsCapabilities.SupportsS3tc && convertedFormat == SurfaceFormat.Color && createtexture)
+						if (!GraphicsCapabilities.SupportsS3tc && convertedFormat == SurfaceFormat.Color)
 							levelData = DxtUtil.DecompressDxt3 (levelData, levelWidth, levelHeight);
 						break;
 					case SurfaceFormat.Dxt5:
-						if (!GraphicsCapabilities.SupportsS3tc && convertedFormat == SurfaceFormat.Color && createtexture)
+						if (!GraphicsCapabilities.SupportsS3tc && convertedFormat == SurfaceFormat.Color)
 							levelData = DxtUtil.DecompressDxt5 (levelData, levelWidth, levelHeight);
 						break;
 #endif
@@ -249,8 +246,7 @@ namespace Microsoft.Xna.Framework.Content
 						}
 						break;
 				}
-				if (createtexture)
-					texture.SetData (level, null, levelData, 0, levelData.Length);
+				texture.SetData (level, null, levelData, 0, levelData.Length);
 			}
 
 			return texture;
@@ -265,23 +261,19 @@ namespace MonoGame.Framework.Content
 	{
 		protected internal override Texture2D Read (ContentReader input, Texture2D existingInstance)
 		{
+            var pvrtc = input.ReadString();
+            var s3tc = input.ReadString();
+            var atitc = input.ReadString();
 			if (GraphicsCapabilities.SupportsPvrtc) {
-				return input.ReadObject<Texture2D> (existingInstance);
+                return input.ContentManager.Load<Texture2D>(pvrtc);
 			}
 			if (GraphicsCapabilities.SupportsS3tc) {
-				Texture2DReader.createtexture = false;
-				input.ReadObject<Texture2D> ();
-				Texture2DReader.createtexture = true;
-				return input.ReadObject<Texture2D> (existingInstance);
+                return input.ContentManager.Load<Texture2D>(s3tc);
 			}
 			if (GraphicsCapabilities.SupportsAtitc) {
-				Texture2DReader.createtexture = false;
-				input.ReadObject<Texture2D> ();
-				input.ReadObject<Texture2D> ();
-				Texture2DReader.createtexture = true;
-				return input.ReadObject<Texture2D> (existingInstance);
+                return input.ContentManager.Load<Texture2D>(atitc);
 			}
-			return null;
+            return input.ContentManager.Load<Texture2D>(s3tc); 
 		}
 	}
 }

@@ -1,3 +1,4 @@
+#define USEDOWNLOAD
 // #region License
 // /*
 // Microsoft Public License (Ms-PL)
@@ -177,40 +178,43 @@ namespace Microsoft.Xna.Framework
 
         static Dictionary<string, AssetLocationEnum> assets = new Dictionary<string, AssetLocationEnum>(StringComparer.OrdinalIgnoreCase);
 
-	internal static IEnumerable<string> GetAssets (Android.Content.Res.AssetManager mgr, string path)
-	{
-		var list = mgr.List (path);
-		if (list != null) {
-			foreach (var item in list) {
-				if (!item.Contains (".")) {
-					var data = GetAssets (mgr, path + "/" + item);
-					if (data != null && data.Count () > 0) {
-						foreach (var i in data) {
-							yield return i;
-						}
-					}
-				} else yield return path + "/" + item;					
-			}
-		}
-	}
-        public  static void InitActivity()
+        internal static IEnumerable<string> GetAssets(Android.Content.Res.AssetManager mgr, string path)
+        {
+            var list = mgr.List(path);
+            if (list != null)
+            {
+                foreach (var item in list)
+                {
+                    if (!item.Contains("."))
+                    {
+                        var data = GetAssets(mgr, path + "/" + item);
+                        if (data != null && data.Count() > 0)
+                        {
+                            foreach (var i in data)
+                            {
+                                yield return i;
+                            }
+                        }
+                    }
+                    else yield return path + "/" + item;
+                }
+            }
+        }
+        public static void InitActivity()
         {
             try
             {
                 assets.Clear();
-		var internalAssets = GetAssets (Game.Activity.Assets, "Content");
-		foreach (var a in internalAssets) {
-			assets.Add (a.Replace ("\\", "/"), AssetLocationEnum.Assets);
-		}
-
-		if (ExpansionPath != null) {
-			var zip = new ZipFile (ExpansionPath);
-			foreach (var z in zip.GetAllEntries ()) {
-				assets.Add (z.FilenameInZip.Replace ("\\", "/"), AssetLocationEnum.External);
-			}
-		}
-		    /*
-                using (var stream = Game.Activity.Assets.Open("resourcelist.txt"))
+                Stream stream = null;
+                try
+                {
+                    stream = Game.Activity.Assets.Open("resourcelist.txt");
+                }
+                catch
+                {
+                    // no resourcelist
+                }
+                if (stream != null)
                 {
                     using (var sr = new StreamReader(stream))
                     {
@@ -221,7 +225,26 @@ namespace Microsoft.Xna.Framework
                             assets.Add(item[0].Replace("\\", "/"), (AssetLocationEnum)Enum.Parse(typeof(AssetLocationEnum), item[1]));
                         }
                     }
-                }*/
+                }
+                else
+                {
+
+                    var internalAssets = GetAssets(Game.Activity.Assets, "content");
+                    foreach (var a in internalAssets)
+                    {
+                        assets.Add(a.Replace("\\", "/"), AssetLocationEnum.Assets);
+                    }
+
+                    if (ExpansionPath != null)
+                    {
+                        var zip = new ZipFile(ExpansionPath);
+                        foreach (var z in zip.GetAllEntries())
+                        {
+                            if (!assets.ContainsKey(z.FilenameInZip.Replace("\\", "/")))
+                                assets.Add(z.FilenameInZip.Replace("\\", "/"), AssetLocationEnum.External);
+                        }
+                    }
+                }
             }
             catch
             {
@@ -244,15 +267,18 @@ namespace Microsoft.Xna.Framework
             MemoryStream ms;
             try
             {
-		var sn = safeName.Replace ("\\", "/");
-		KeyValuePair<string, AssetLocationEnum> kvp = assets.Where (x => string.Compare(x.Key,sn, StringComparison.OrdinalIgnoreCase)== 0).FirstOrDefault ();
-		if (kvp.Key == null) {
-			if (assets.Count == 0) {
-				kvp = new KeyValuePair<string, AssetLocationEnum> (safeName,AssetLocationEnum.Assets);
-			} else
-				return null;
-		}
-		
+                var sn = safeName.Replace("\\", "/");
+                KeyValuePair<string, AssetLocationEnum> kvp = assets.Where(x => string.Compare(x.Key, sn, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                if (kvp.Key == null)
+                {
+                    if (assets.Count == 0)
+                    {
+                        kvp = new KeyValuePair<string, AssetLocationEnum>(safeName, AssetLocationEnum.Assets);
+                    }
+                    else
+                        return null;
+                }
+
                 if (kvp.Value == AssetLocationEnum.Assets)
                 {
                     using (var s = Game.Activity.Assets.Open(kvp.Key))
@@ -271,9 +297,10 @@ namespace Microsoft.Xna.Framework
                     return OpenExpansionStream(kvp.Key);
                 }
             }
-            catch (Java.IO.IOException)
+            catch (Java.IO.IOException ex)
             {
                 // not in assets try an external source
+                Android.Util.Log.Info("MonoGame", string.Format("Failed to Open Asset {0} {1}", safeName, ex.ToString()));
             }
 
             return null;
@@ -319,22 +346,24 @@ namespace Microsoft.Xna.Framework
                 if (expansionPath == null)
                 {
                     ApplicationInfo ainfo = Game.Activity.ApplicationInfo;
-		    PackageInfo pinfo = Game.Activity.PackageManager.GetPackageInfo (ainfo.PackageName, PackageInfoFlags.MetaData);
-
-		    var dir = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
+                    PackageInfo pinfo = Game.Activity.PackageManager.GetPackageInfo(ainfo.PackageName, PackageInfoFlags.MetaData);
+                    var filename = String.Format("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName);
+                    var dir = Android.OS.Environment.ExternalStorageDirectory.AbsolutePath;
                     expansionPath = Path.Combine(
                         dir,
                         "Android",
                         "obb",
-                        ainfo.PackageName,
-			 String.Format("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName));
-			if (!File.Exists(expansionPath)) {
-#if DEBUG
-				expansionPath = "/mnt/sdcard/Downloads/test.zip";
+                        ainfo.PackageName, filename
+             );
+                    if (!File.Exists(expansionPath))
+                    {
+#if USEDOWNLOAD
+                        filename = "data.zip";
+                        expansionPath = Path.Combine(dir, Android.OS.Environment.DirectoryDownloads, filename);
 #else
 				expansionPath = null;
 #endif
-			}
+                    }
                 }
                 return expansionPath;
             }
@@ -346,8 +375,8 @@ namespace Microsoft.Xna.Framework
         {
             try
             {
-		    if (ExpansionPath == null)
-			    return null;
+                if (ExpansionPath == null)
+                    return null;
 
                 if (expansionFile == null)
                     expansionFile = new ZipFile(ExpansionPath);
@@ -374,8 +403,8 @@ namespace Microsoft.Xna.Framework
             Stream stream = null;
             try
             {
-		    if (ExpansionPath == null)
-			    return null;
+                if (ExpansionPath == null)
+                    return null;
                 if (expansionFile == null)
                     expansionFile = new ZipFile(ExpansionPath);
                 var entry = expansionFile.GetAllEntries().Where(x => string.Compare(x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();

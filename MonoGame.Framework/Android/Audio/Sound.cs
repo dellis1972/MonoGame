@@ -122,7 +122,11 @@ namespace Microsoft.Xna.Framework.Audio
                     s_soundPool.LoadAsync(fd.FileDescriptor, fd.StartOffset, fd.Length, 1).ContinueWith((t) =>
                     {
                         if (t.IsCompleted)
+                        {
                             _soundId = t.Result;
+                            //if (_soundId != 0) 
+                             //   Play();
+                        }
                     });
             }
         }
