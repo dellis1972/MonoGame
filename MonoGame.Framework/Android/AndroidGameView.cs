@@ -36,7 +36,7 @@ namespace Microsoft.Xna.Framework
 		object lockObject = new object ();
 
 		bool surfaceAvailable;
-		
+
 		int surfaceWidth;
 		int surfaceHeight;
 
@@ -44,7 +44,7 @@ namespace Microsoft.Xna.Framework
 		bool glContextAvailable;
 		bool lostglContext;
 		private bool isPaused;
-        private bool isExited = false;
+		private bool isExited = false;
 		System.Diagnostics.Stopwatch stopWatch;
 		double tick = 0;
 
@@ -130,7 +130,7 @@ namespace Microsoft.Xna.Framework
 			EnsureUndisposed ();
 			if (!egl.EglMakeCurrent (eglDisplay, eglSurface,
 							eglSurface, eglContext)) {
-								System.Diagnostics.Debug.WriteLine ("Error Make Current" + GetErrorAsString ());
+				System.Diagnostics.Debug.WriteLine ("Error Make Current" + GetErrorAsString ());
 			}
 
 		}
@@ -146,10 +146,10 @@ namespace Microsoft.Xna.Framework
 			avgFps = 1;
 #endif
 			updates = 0;
-            renderTask = Task.Factory.StartNew(() => { RenderLoop(cts.Token); }, cts.Token)
-                .ContinueWith((t) => {
-                    OnStopped(EventArgs.Empty);
-                }) ;
+			renderTask = Task.Factory.StartNew (() => { RenderLoop (cts.Token); }, cts.Token)
+			    .ContinueWith ((t) => {
+				    OnStopped (EventArgs.Empty);
+			    });
 		}
 
 		public virtual void Run (double updatesPerSecond)
@@ -165,33 +165,35 @@ namespace Microsoft.Xna.Framework
 		public virtual void Pause ()
 		{
 			EnsureUndisposed ();
-			isPaused = true;
+			lock (lockObject) {
+				isPaused = true;
+				Monitor.PulseAll (lockObject);
+			}
 		}
 
 		public virtual void Resume ()
 		{
 			EnsureUndisposed ();
-			if (isPaused) {
-				isPaused = false;
-				lock (lockObject) {
+			lock (lockObject) {
+				if (isPaused) {
+					isPaused = false;
 					Monitor.PulseAll (lockObject);
 				}
+				RequestFocus ();
 			}
-			RequestFocus ();
 		}
 
 		public void Stop ()
 		{
-            Log.Verbose("AndroidGameView", "Stop() Called!!!!!");
+			Log.Verbose ("AndroidGameView", "Stop() Called!!!!!");
 			EnsureUndisposed ();
-            if (cts != null)
-            {
-                cts.Cancel();
-                lock (lockObject)
-                {
-                    Monitor.PulseAll(lockObject);
-                }
-            }
+			if (cts != null) {
+				cts.Cancel ();
+				lock (lockObject) {
+					Monitor.PulseAll (lockObject);
+				}
+				renderTask.Wait ();
+			}
 		}
 
 		FrameEventArgs renderEventArgs = new FrameEventArgs ();
@@ -209,7 +211,7 @@ namespace Microsoft.Xna.Framework
 					}
 
 					RunIteration (token);
-
+					
 					if (updates > 0) {
 						var t = updates - (stopWatch.Elapsed.TotalMilliseconds - tick);
 						if (t > 0) {
@@ -221,18 +223,18 @@ namespace Microsoft.Xna.Framework
 						}
 					}
 				}
-                Log.Verbose("AndroidGameView", "RenderLoop exited");
+				Log.Verbose ("AndroidGameView", "RenderLoop exited");
 			} catch (Exception ex) {
 				Log.Error ("AndroidGameView", ex.ToString ());
 			} finally {
 				lock (lockObject) {
-                    isExited = true;
+					isExited = true;
 					cts = null;
 					if (glSurfaceAvailable)
 						DestroyGLSurface ();
 					if (glContextAvailable) {
 						DestroyGLContext ();
-                        ContextLostInternal ();
+						ContextLostInternal ();
 					}
 				}
 			}
@@ -251,7 +253,7 @@ namespace Microsoft.Xna.Framework
 
 		protected virtual void OnUpdateFrame (FrameEventArgs e)
 		{
-			
+
 		}
 
 		// this method is called on the main thread
@@ -259,29 +261,29 @@ namespace Microsoft.Xna.Framework
 		{
 			if (token.IsCancellationRequested)
 				return;
-			
-				curUpdateTime = DateTime.Now;
-				if (prevUpdateTime.Ticks != 0) {
-					var t = (curUpdateTime - prevUpdateTime).TotalSeconds;
-					updateEventArgs.Time = t < 0 ? 0 : t;
-				}
-				try {
-					UpdateFrameInternal (updateEventArgs);
-				} catch (Content.ContentLoadException) {
-					// ignore it..
-				}
 
-				prevUpdateTime = curUpdateTime;
+			curUpdateTime = DateTime.Now;
+			if (prevUpdateTime.Ticks != 0) {
+				var t = (curUpdateTime - prevUpdateTime).TotalSeconds;
+				updateEventArgs.Time = t < 0 ? 0 : t;
+			}
+			try {
+				UpdateFrameInternal (updateEventArgs);
+			} catch (Content.ContentLoadException) {
+				// ignore it..
+			}
 
-				curRenderTime = DateTime.Now;
-				if (prevRenderTime.Ticks == 0) {
-					var t = (curRenderTime - prevRenderTime).TotalSeconds;
-					renderEventArgs.Time = t < 0 ? 0 : t;
-				}
+			prevUpdateTime = curUpdateTime;
 
-				RenderFrameInternal (renderEventArgs);
-				prevRenderTime = curRenderTime;
-			
+			curRenderTime = DateTime.Now;
+			if (prevRenderTime.Ticks == 0) {
+				var t = (curRenderTime - prevRenderTime).TotalSeconds;
+				renderEventArgs.Time = t < 0 ? 0 : t;
+			}
+
+			RenderFrameInternal (renderEventArgs);
+			prevRenderTime = curRenderTime;
+
 		}
 
 		void RenderFrameInternal (FrameEventArgs e)
@@ -294,7 +296,7 @@ namespace Microsoft.Xna.Framework
 
 		protected virtual void OnRenderFrame (FrameEventArgs e)
 		{
-			
+
 		}
 
 #if TIMING
@@ -354,11 +356,11 @@ namespace Microsoft.Xna.Framework
 			if (!(eglSurface == null || eglSurface == EGL10.EglNoSurface)) {
 				if (!egl.EglMakeCurrent (eglDisplay, EGL10.EglNoSurface,
 							EGL10.EglNoSurface, EGL10.EglNoContext)) {
-					Log.Verbose("AndroidGameView", "Could not unbind EGL surface" + GetErrorAsString ());
+					Log.Verbose ("AndroidGameView", "Could not unbind EGL surface" + GetErrorAsString ());
 				}
 
 				if (!egl.EglDestroySurface (eglDisplay, eglSurface)) {
-					Log.Verbose("AndroidGameView", "Could not destroy EGL surface" + GetErrorAsString ());
+					Log.Verbose ("AndroidGameView", "Could not destroy EGL surface" + GetErrorAsString ());
 				}
 			}
 			eglSurface = null;
@@ -420,7 +422,7 @@ namespace Microsoft.Xna.Framework
 			eglContext = egl.EglCreateContext (eglDisplay, eglConfig, EGL10.EglNoContext, contextAttribs);
 			if (eglContext == null || eglContext == EGL10.EglNoContext) {
 				eglContext = null;
-				throw new Exception ("Could not create EGL context" + GetErrorAsString());
+				throw new Exception ("Could not create EGL context" + GetErrorAsString ());
 			}
 
 			glContextAvailable = true;
@@ -487,7 +489,7 @@ namespace Microsoft.Xna.Framework
 
 		protected virtual void OnContextLost (EventArgs eventArgs)
 		{
-	
+
 		}
 
 		protected bool IsGLSurfaceAvailable ()
@@ -497,7 +499,8 @@ namespace Microsoft.Xna.Framework
 				// this is not called from the UI thread but on
 				// the background rendering thread
 				while (!cts.IsCancellationRequested) {
-					//Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable {0} IsPaused {1} ThreadID {2}", glSurfaceAvailable, isPaused, Thread.CurrentThread.ManagedThreadId);
+					Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable {0} IsPaused {1} lostcontext {2} surfaceAvailable {3} contextAvailable {4} ThreadID {5}",
+						glSurfaceAvailable, isPaused, lostglContext, surfaceAvailable, glContextAvailable,Thread.CurrentThread.ManagedThreadId);
 					if (glSurfaceAvailable && (isPaused || !surfaceAvailable)) {
 						// Surface we are using needs to go away
 						DestroyGLSurface ();
@@ -552,38 +555,38 @@ namespace Microsoft.Xna.Framework
 						// a surfaceCreated event or some other 
 						// event from the ISurfaceHolderCallback
 						// so we can create a new GL surface.
-                        if (cts.IsCancellationRequested)
-                            break;
+						if (cts.IsCancellationRequested)
+							break;
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable entering wait state");
 						Monitor.Wait (lockObject);
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable exiting wait state");
 						continue;
 					}
 				}
-                Log.Verbose("AndroidGameView", "IsGLSurfaceAvailable exited!!!!!");
-                return false;
+				Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable exited!!!!!");
+				return false;
 			}
 		}
 
 		protected virtual void OnUnload (EventArgs eventArgs)
 		{
-			
+
 		}
 
 		protected virtual void OnContextSet (EventArgs eventArgs)
 		{
-			
+
 		}
 
 		protected virtual void OnLoad (EventArgs eventArgs)
 		{
-		
+
 		}
 
-        protected virtual void OnStopped(EventArgs eventArgs)
-        {
+		protected virtual void OnStopped (EventArgs eventArgs)
+		{
 
-        }
+		}
 
 		#region Properties
 
@@ -631,7 +634,7 @@ namespace Microsoft.Xna.Framework
 
 		private void OnResize (EventArgs eventArgs)
 		{
-			
+
 		}
 		#endregion
 

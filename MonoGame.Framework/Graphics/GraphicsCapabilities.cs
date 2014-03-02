@@ -132,7 +132,7 @@ namespace Microsoft.Xna.Framework.Graphics
             SupportsAtitc = device._extensions.Contains("GL_ATI_texture_compression_atitc") ||
                 device._extensions.Contains("GL_AMD_compressed_ATC_texture");
 #endif
-        }
+	}
 
         static bool GetNonPowerOfTwo(GraphicsDevice device)
         {

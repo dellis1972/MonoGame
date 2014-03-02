@@ -22,15 +22,17 @@ namespace Microsoft.Xna.Framework
 	[CLSCompliant (false)]
 	public class AndroidGameActivity : Activity
 	{
-        static Game game;
-		public static Game Game {
-            get { return game; }
-            set
-            {
-                game = value;
-                TitleContainer.InitActivity();
-            }
-        }
+		static Game game;
+		public static Game Game
+		{
+			get { return game; }
+			set
+			{
+				game = value;
+				if (game != null)
+					TitleContainer.InitActivity ();
+			}
+		}
 
 
 		private OrientationListener o;
@@ -55,6 +57,7 @@ namespace Microsoft.Xna.Framework
 		/// </param>
 		protected override void OnCreate (Bundle savedInstanceState)
 		{
+			System.Diagnostics.Debug.WriteLine ("MonoGame OnCreate !!!!!!!!!");
 			base.OnCreate (savedInstanceState);
 			o = new OrientationListener (this);
 			if (o.CanDetectOrientation ()) {
@@ -75,12 +78,12 @@ namespace Microsoft.Xna.Framework
 			RequestWindowFeature (WindowFeatures.NoTitle);
 		}
 
-        public override void Finish()
-        {
-            TitleContainer.Close();
-            base.Finish();
-            
-        }
+		public override void Finish ()
+		{
+			TitleContainer.Close ();
+			base.Finish ();
+
+		}
 
 		public static event EventHandler Paused;
 
@@ -94,6 +97,7 @@ namespace Microsoft.Xna.Framework
 
 		protected override void OnPause ()
 		{
+			System.Diagnostics.Debug.WriteLine ("MonoGame OnPause !!!!!!!!!");
 			base.OnPause ();
 			if (Paused != null)
 				Paused (this, EventArgs.Empty);
@@ -103,9 +107,10 @@ namespace Microsoft.Xna.Framework
 
 
 		public static event EventHandler Resumed;
-		
+
 		protected override void OnResume ()
 		{
+			System.Diagnostics.Debug.WriteLine ("MonoGame OnResume !!!!!!!!!");
 			base.OnResume ();
 			if (Resumed != null)
 				Resumed (this, EventArgs.Empty);
@@ -121,40 +126,39 @@ namespace Microsoft.Xna.Framework
 
 		protected override void OnDestroy ()
 		{
+			System.Diagnostics.Debug.WriteLine ("MonoGame OnDestroy !!!!!!!!!");
 			UnregisterReceiver (screenReceiver);
-            if (keyboardVisible)
-                HideKeyboard();
-            if (Game != null)
-            {
-                Game.DoExiting();
-                Game.Dispose();
-            }
+			if (keyboardVisible)
+				HideKeyboard ();
+			if (Game != null) {
+				Game.DoExiting ();
+				Game.Window.Stop ();
+				Game.Dispose ();
+				Graphics.GraphicsAdapter.Reset ();
+			}
 			Game = null;
 			base.OnDestroy ();
 		}
 
-        bool wasalreadyvisible = false;
+		bool wasalreadyvisible = false;
 
 		public void ShowKeyboard ()
 		{
-            if (!keyboardVisible)
-            {
-                InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
-                keyboardVisible = manager.ShowSoftInput(Game.Window, ShowFlags.Implicit, null);
-            }
-            else
-                wasalreadyvisible = true;
+			if (!keyboardVisible) {
+				InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+				keyboardVisible = manager.ShowSoftInput (Game.Window, ShowFlags.Implicit, null);
+			} else
+				wasalreadyvisible = true;
 		}
 
 		public void HideKeyboard ()
 		{
-            if (keyboardVisible && !wasalreadyvisible)
-            {
-                InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService(Context.InputMethodService);
-                manager.HideSoftInputFromWindow(Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
-                keyboardVisible = false;
-            }
-            if (wasalreadyvisible) wasalreadyvisible = false;
+			if (keyboardVisible && !wasalreadyvisible) {
+				InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+				manager.HideSoftInputFromWindow (Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
+				keyboardVisible = false;
+			}
+			if (wasalreadyvisible) wasalreadyvisible = false;
 		}
 	}
 

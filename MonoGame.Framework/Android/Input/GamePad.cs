@@ -1,7 +1,7 @@
 #region License
 /*
 Microsoft Public License (Ms-PL)
-MonoGame - Copyright © 2009 The MonoGame Team
+MonoGame - Copyright � 2009 The MonoGame Team
 
 All rights reserved.
 
@@ -38,82 +38,54 @@ purpose and non-infringement.
 */
 #endregion License
 
-using Android.Content;
-using Android.OS;
 using Android.Views;
-using Microsoft.Xna.Framework;
 using System;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using System.Diagnostics;
+//using Ouya.Console.Api;
 
-
-﻿namespace Microsoft.Xna.Framework.Input
+namespace Microsoft.Xna.Framework.Input
 {
-    public class GamePad
-    {
-		private static GamePad _instance;
-		private float _thumbStickRadius = 20*20;	
-		private bool _visible;
-		private List<ButtonDefinition> _buttonsDefinitions;
-		private ThumbStickDefinition _leftThumbDefinition,_rightThumbDefinition;
-		private Color _alphaColor = Color.DarkGray;		
-		private int _buttons;
-		
-		protected GamePad()
+	public class GamePad
+	{
+		internal InputDevice _device;
+		internal int _deviceId;
+		internal string _descriptor;
+		internal bool _isConnected;
+
+		private Buttons _buttons;
+		private float _leftTrigger, _rightTrigger;
+		private Vector2 _leftStick, _rightStick;
+
+		// Workaround for the OnKeyUp and OnKeyDown events for KeyCode.Menu 
+		// both being sent in a single frame. This can be removed if the
+		// OUYA firmware is updated to send these events in different frames. 
+		private bool _startButtonPressed;
+
+		private readonly GamePadCapabilities _capabilities;
+
+		private static readonly GamePad[] GamePads = new GamePad[4];//OuyaController.MaxControllers];
+
+		[CLSCompliant (false)]
+		protected GamePad (InputDevice device)
 		{
-			_visible = true;
-			_buttonsDefinitions = new List<ButtonDefinition>();
-			
-			// Set the transparency Level
-			_alphaColor.A = 100;
-	
-			Reset();
+			_device = device;
+			_deviceId = device.Id;
+#if OUYA
+			_descriptor = device.Descriptor;
+#endif
+			_isConnected = true;
+
+			_capabilities = CapabilitiesOfDevice (device);
 		}
-		
-		internal static GamePad Instance 
+
+		public static GamePadCapabilities GetCapabilities (PlayerIndex playerIndex)
 		{
-			get 
-			{
-				if (_instance == null) 
-				{
-					_instance = new GamePad();
-				}
-				return _instance;
-			}
-		}
-		
-		public void Reset()
-		{
-			_buttons = 0;
-			
-			// reset thumbsticks
-			if (_leftThumbDefinition != null) 
-			{
-				_leftThumbDefinition.Offset = Vector2.Zero;
-			}
-			if (_rightThumbDefinition != null) 
-			{
-				_rightThumbDefinition.Offset = Vector2.Zero;
-			}
-		}
-		
-		public static bool Visible 
-		{
-			get 
-			{
-				return GamePad.Instance._visible;
-			}
-			set 
-			{
-				GamePad.Instance.Reset();
-				GamePad.Instance._visible = value;
-			}
-		}
-		
-        public static GamePadCapabilities GetCapabilities(PlayerIndex playerIndex)
-        {
-            GamePadCapabilities capabilities = new GamePadCapabilities();
-			capabilities.IsConnected = (playerIndex == PlayerIndex.One);
+			var gamePad = GamePads[(int)playerIndex];
+			if (gamePad != null)
+				return gamePad._capabilities;
+
+			GamePadCapabilities capabilities = new GamePadCapabilities ();
+			capabilities.IsConnected = false;
 			capabilities.HasAButton = true;
 			capabilities.HasBButton = true;
 			capabilities.HasXButton = true;
@@ -123,228 +95,277 @@ using System.Collections.Generic;
 			capabilities.HasLeftYThumbStick = true;
 			capabilities.HasRightXThumbStick = true;
 			capabilities.HasRightYThumbStick = true;
-			
+
 			return capabilities;
-        }
+		}
 
-        internal void SetBack()
-        {
-            _buttons |= (int)Buttons.Back;
-        }
+		public static GamePadState GetState (PlayerIndex playerIndex)
+		{
+			return GetState (playerIndex, GamePadDeadZone.IndependentAxes);
+		}
 
-        internal void Update(MotionEvent e)
-        {
-            Vector2 location = new Vector2(e.GetX(), e.GetY());
-            // Check where is the touch
-            bool hitInButton = false;
+		public static GamePadState GetState (PlayerIndex playerIndex, GamePadDeadZone deadZone)
+		{
+			var gamePad = GamePads[(int)playerIndex];
+			GamePadState state = GamePadState.InitializedState;
+			if (gamePad != null && gamePad._isConnected) {
+				// Check if the device was disconnected
+				var dvc = InputDevice.GetDevice (gamePad._deviceId);
+				if (dvc == null) {
+					Debug.WriteLine ("Detected controller disconnect [" + (int)playerIndex + "] ");
+					gamePad._isConnected = false;
+					return state;
+				}
 
-            if (e.Action == MotionEventActions.Down) {
+				GamePadThumbSticks thumbSticks = new GamePadThumbSticks (gamePad._leftStick, gamePad._rightStick);
+				thumbSticks.ApplyDeadZone (deadZone, 0.3f);
 
-                Reset();
+				if (gamePad._startButtonPressed) {
+					gamePad._buttons |= Buttons.Start;
+					gamePad._startButtonPressed = false;
+				} else {
+					gamePad._buttons &= ~Buttons.Start;
+				}
 
-                if (Visible) {
-                    foreach (ButtonDefinition button in _buttonsDefinitions) {
-                        hitInButton |= UpdateButton(button, location);
-                    }
-
-                    if (!hitInButton) {
-                        
-                        if (_leftThumbDefinition != null && (CheckThumbStickHit(_leftThumbDefinition, location))) {
-                            _leftThumbDefinition.InitialHit = location;
-                        }
-                        else if (Visible && (_rightThumbDefinition != null) && (CheckThumbStickHit(_rightThumbDefinition, location))) {
-                            _rightThumbDefinition.InitialHit = location;
-                        }
-                    }
-                }
-            } 
-            else if (e.Action == MotionEventActions.Move) {
-
-                if (Visible) {
-                    foreach (ButtonDefinition button in _buttonsDefinitions) {
-                        hitInButton |= UpdateButton(button, location);
-                    }
-                }
-
-                if (!hitInButton) {
-                    if (Visible && (_leftThumbDefinition != null) &&
-                        (CheckThumbStickHit(_leftThumbDefinition, location))) {
-                        Vector2 movement = location - LeftThumbStickDefinition.InitialHit;
-
-                        // Keep the stick in the "hole" 
-                        float radius = (movement.X*movement.X) + (movement.Y*movement.Y);
-
-                        if (radius <= _thumbStickRadius) {
-                            _leftThumbDefinition.Offset = movement;
-                        }
-                    }
-                    else {
-                        // reset left thumbstick
-                        if (_leftThumbDefinition != null) {
-                            _leftThumbDefinition.Offset = Vector2.Zero;
-                        }
-
-                        if (Visible && (_rightThumbDefinition != null) &&
-                            (CheckThumbStickHit(_rightThumbDefinition, location))) {
-                            Vector2 movement = location - _rightThumbDefinition.InitialHit;
-
-                            // Keep the stick in the "hole" 
-                            float radius = (movement.X*movement.X) + (movement.Y*movement.Y);
-
-                            if (radius <= _thumbStickRadius) {
-                                _rightThumbDefinition.Offset = movement;
-                            }
-                        }
-                        else {
-                            // reset right thumbstick
-                            if (_rightThumbDefinition != null) {
-                                _rightThumbDefinition.Offset = Vector2.Zero;
-                            }
-                        }
-                    }
-                }
-            }
-            else if (e.Action == MotionEventActions.Up || e.Action == MotionEventActions.Cancel) {
-                if (Visible) {
-                    foreach (ButtonDefinition button in _buttonsDefinitions) {
-                        if (CheckButtonHit(button, location)) {
-                            _buttons &= ~(int) button.Type;
-                        }
-                    }
-                    if ((_leftThumbDefinition != null) && (CheckThumbStickHit(_leftThumbDefinition, location))) {
-                        LeftThumbStickDefinition.Offset = Vector2.Zero;
-                    }
-                    if ((_rightThumbDefinition != null) && (CheckThumbStickHit(_rightThumbDefinition, location))) {
-                        _rightThumbDefinition.Offset = Vector2.Zero;
-                    }
-                }
-            }
-        }
-
-        private bool CheckButtonHit(ButtonDefinition theButton, Vector2 location)
-        {
-            Rectangle buttonRect = new Rectangle((int)theButton.Position.X, (int)theButton.Position.Y, theButton.TextureRect.Width, theButton.TextureRect.Height);
-            return buttonRect.Contains((int)location.X, (int)location.Y);
-        }
-
-        private bool CheckThumbStickHit(ThumbStickDefinition theStick, Vector2 location)
-        {
-            Vector2 stickPosition = theStick.Position + theStick.Offset;
-            Rectangle thumbRect = new Rectangle((int)stickPosition.X, (int)stickPosition.Y, theStick.TextureRect.Width, theStick.TextureRect.Height);
-            return thumbRect.Contains((int)location.X, (int)location.Y);
-        }
-
-        private bool UpdateButton(ButtonDefinition button, Vector2 location)
-        {
-            bool hitInButton = CheckButtonHit(button, location);
-
-            if (hitInButton)
-            {
-                _buttons |= (int)button.Type;
-            }
-            return hitInButton;
-        }
-
-        public static GamePadState GetState(PlayerIndex playerIndex)
-        {
-            var instance = GamePad.Instance;
-            var state = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons((Buttons)instance._buttons), new GamePadDPad());
-            instance.Reset();
-            return state;
-        }
-
-        public static bool SetVibration(PlayerIndex playerIndex, float leftMotor, float rightMotor)
-        {	
-			try
-			{
-	            Vibrator vibrator = (Vibrator)Game.Activity.GetSystemService(Context.VibratorService);
-				vibrator.Vibrate(500);
-	            return true;
+				state = new GamePadState (
+				    thumbSticks,
+				    new GamePadTriggers (gamePad._leftTrigger, gamePad._rightTrigger),
+				    new GamePadButtons (gamePad._buttons),
+				    new GamePadDPad (gamePad._buttons));
 			}
-			catch
-			{
+
+			return state;
+		}
+
+		public static bool SetVibration (PlayerIndex playerIndex, float leftMotor, float rightMotor)
+		{
+			var gamePad = GamePads[(int)playerIndex];
+			if (gamePad == null)
 				return false;
-			}
-        }
-		
-		public static ThumbStickDefinition LeftThumbStickDefinition
+
+#if OUYA
+			var vibrator = gamePad._device.Vibrator;
+			if (!vibrator.HasVibrator)
+				return false;
+			vibrator.Vibrate (500);
+#endif
+			return true;
+		}
+
+		internal static GamePad GetGamePad (InputDevice device)
 		{
-			get 
-			{
-				return Instance._leftThumbDefinition;
+			if (device == null || (device.Sources & InputSourceType.Gamepad) != InputSourceType.Gamepad)
+				return null;
+
+			// The recommended way to map devices to players numbers is to use OuyaController.GetPlayerNumByDeviceId(), 
+			// however as of ODK 0.0.6 there is a bug where disconnected and reconnected controllers get mapped
+			// to new player numbers. Also, the player number returned does not match the LED on the controller.
+			// Once this is fixed, we could consider using OuyaController.GetPlayerNumByDeviceId()
+			// http://forums.ouya.tv/discussion/819/getplayernumbydeviceid-can-return-1-after-controllers-disconnect-and-reconnect
+
+			int firstDisconnectedPadId = -1;
+			for (int i = 0; i < GamePads.Length; i++) {
+				var pad = GamePads[i];
+				if (pad != null && pad._isConnected && pad._deviceId == device.Id) {
+					return pad;
+				} else if (pad != null && !pad._isConnected 
+#if OUYA
+					&& pad._descriptor == device.Descriptor
+#endif
+					) {
+					Debug.WriteLine ("Found previous controller [" + i + "] " + device.Name);
+					pad._deviceId = device.Id;
+					pad._isConnected = true;
+					return pad;
+				} else if (pad == null) {
+					Debug.WriteLine ("Found new controller [" + i + "] " + device.Name);
+					pad = new GamePad (device);
+					GamePads[i] = pad;
+					return pad;
+				} else if (!pad._isConnected && firstDisconnectedPadId < 0) {
+					firstDisconnectedPadId = i;
+				}
 			}
-			set
-			{
-				Instance._leftThumbDefinition = value;
+
+			// If we get here, we failed to find a game pad or an empty slot to create one.
+			// If we're holding onto a disconnected pad, overwrite it with this one
+			if (firstDisconnectedPadId >= 0) {
+				Debug.WriteLine ("Found new controller in place of disconnected controller [" + firstDisconnectedPadId + "] " + device.Name);
+				var pad = new GamePad (device);
+				GamePads[firstDisconnectedPadId] = pad;
+				return pad;
 			}
+
+			// All pad slots are taken so ignore further devices.
+			return null;
 		}
-		
-		public static ThumbStickDefinition RightThumbStickDefinition
+
+		internal static bool OnKeyDown (Keycode keyCode, KeyEvent e)
 		{
-			get 
-			{
-				return Instance._rightThumbDefinition;
+			var gamePad = GetGamePad (e.Device);
+			if (gamePad == null)
+				return false;
+
+			gamePad._buttons |= ButtonForKeyCode (keyCode);
+
+			if (keyCode == Keycode.Menu) {
+				gamePad._startButtonPressed = true;
 			}
-			set
-			{
-				Instance._rightThumbDefinition = value;
-			}
+			return true;
 		}
-	
-		 
-		#region render virtual gamepad
-		
-		public static List<ButtonDefinition> ButtonsDefinitions
+
+		internal static bool OnKeyUp (Keycode keyCode, KeyEvent e)
 		{
-			get 
-			{
-				return Instance._buttonsDefinitions;
-			}
+			var gamePad = GetGamePad (e.Device);
+			if (gamePad == null)
+				return false;
+
+			gamePad._buttons &= ~ButtonForKeyCode (keyCode);
+			return true;
 		}
-		
-		public static void Draw(GameTime gameTime, SpriteBatch batch )
-		{		
-			Instance.Render(gameTime,batch);		
-		}
-		
-		internal void Render(GameTime gameTime, SpriteBatch batch)
+
+		internal static bool OnGenericMotionEvent (MotionEvent e)
 		{
-			// render buttons
-			foreach (ButtonDefinition button in _buttonsDefinitions)
-			{
-				RenderButton(button, batch);
-			}			
-			
-			// Render the thumbsticks
-			if (_leftThumbDefinition != null)
-			{
-				RenderThumbStick(_leftThumbDefinition, batch);
-			}
-			if (_rightThumbDefinition != null)
-			{
-				RenderThumbStick(_rightThumbDefinition, batch);
-			}
+			var gamePad = GetGamePad (e.Device);
+			if (gamePad == null)
+				return false;
+
+			if (e.Action != MotionEventActions.Move)
+				return false;
+
+			gamePad._leftStick = new Vector2 (e.GetAxisValue (Axis.X), -e.GetAxisValue (Axis.Y));
+			gamePad._rightStick = new Vector2 (e.GetAxisValue (Axis.Z), -e.GetAxisValue (Axis.Rz));
+			gamePad._leftTrigger = e.GetAxisValue (Axis.Ltrigger);
+			gamePad._rightTrigger = e.GetAxisValue (Axis.Rtrigger);
+
+			return true;
 		}
-		
-		private void RenderButton(ButtonDefinition theButton, SpriteBatch batch)
+
+		private static Buttons ButtonForKeyCode (Keycode keyCode)
 		{
-			if (batch == null)
-			{
-				throw new InvalidOperationException("SpriteBatch not set.");
+			switch (keyCode) {
+				case Keycode.ButtonA: //O
+					return Buttons.A;
+				case Keycode.ButtonX: //U
+					return Buttons.X;
+				case Keycode.ButtonY: //Y
+					return Buttons.Y;
+				case Keycode.ButtonB: //A
+					return Buttons.B;
+
+				case Keycode.ButtonL1:
+					return Buttons.LeftShoulder;
+				case Keycode.ButtonL2:
+					return Buttons.LeftTrigger;
+				case Keycode.ButtonR1:
+					return Buttons.RightShoulder;
+				case Keycode.ButtonR2:
+					return Buttons.RightTrigger;
+
+				case Keycode.ButtonThumbl:
+					return Buttons.LeftStick;
+				case Keycode.ButtonThumbr:
+					return Buttons.RightStick;
+
+				case Keycode.DpadUp:
+					return Buttons.DPadUp;
+				case Keycode.DpadDown:
+					return Buttons.DPadDown;
+				case Keycode.DpadLeft:
+					return Buttons.DPadLeft;
+				case Keycode.DpadRight:
+					return Buttons.DPadRight;
+
+				// Ouya system button sends Keycode.Menu after a delay if no
+				// double tap or hold is detected. It also sends Keycode.Home just
+				// before the system menu is opened (but not on dev kit controllers)
+				// http://forums.ouya.tv/discussion/comment/6076/#Comment_6076
+				case Keycode.Menu:
+				case Keycode.ButtonStart:
+					return Buttons.Start;
+				case Keycode.Home:
+					return Buttons.BigButton;
+				case Keycode.Back:
+					return Buttons.Back;
 			}
-			batch.Draw(theButton.Texture,theButton.Position,theButton.TextureRect,_alphaColor);
+
+			return 0;
 		}
-		
-		private void RenderThumbStick(ThumbStickDefinition theStick, SpriteBatch batch)
+
+
+		private static GamePadCapabilities CapabilitiesOfDevice (InputDevice device)
 		{
-			if (batch == null)
-			{
-				throw new InvalidOperationException("SpriteBatch not set.");
+			//TODO: There is probably a better way to do this. Maybe device.GetMotionRange and device.GetKeyCharacterMap?
+			//Or not http://stackoverflow.com/questions/11686703/android-enumerating-the-buttons-on-a-gamepad
+
+			var capabilities = new GamePadCapabilities ();
+			capabilities.IsConnected = true;
+			capabilities.GamePadType = GamePadType.GamePad;
+#if OUYA
+			capabilities.HasLeftVibrationMotor = capabilities.HasRightVibrationMotor = device.Vibrator.HasVibrator;
+#else
+			capabilities.HasLeftVibrationMotor = capabilities.HasRightVibrationMotor = false;
+#endif
+
+			switch (device.Name) {
+				case "OUYA Game Controller":
+
+					capabilities.HasAButton = true;
+					capabilities.HasBButton = true;
+					capabilities.HasXButton = true;
+					capabilities.HasYButton = true;
+
+					capabilities.HasLeftXThumbStick = true;
+					capabilities.HasLeftYThumbStick = true;
+					capabilities.HasRightXThumbStick = true;
+					capabilities.HasRightYThumbStick = true;
+
+					capabilities.HasLeftShoulderButton = true;
+					capabilities.HasRightShoulderButton = true;
+					capabilities.HasLeftTrigger = true;
+					capabilities.HasRightTrigger = true;
+
+					capabilities.HasDPadDownButton = true;
+					capabilities.HasDPadLeftButton = true;
+					capabilities.HasDPadRightButton = true;
+					capabilities.HasDPadUpButton = true;
+					break;
+
+				case "Microsoft X-Box 360 pad":
+					capabilities.HasAButton = true;
+					capabilities.HasBButton = true;
+					capabilities.HasXButton = true;
+					capabilities.HasYButton = true;
+
+					capabilities.HasLeftXThumbStick = true;
+					capabilities.HasLeftYThumbStick = true;
+					capabilities.HasRightXThumbStick = true;
+					capabilities.HasRightYThumbStick = true;
+
+					capabilities.HasLeftShoulderButton = true;
+					capabilities.HasRightShoulderButton = true;
+					capabilities.HasLeftTrigger = true;
+					capabilities.HasRightTrigger = true;
+
+					capabilities.HasDPadDownButton = true;
+					capabilities.HasDPadLeftButton = true;
+					capabilities.HasDPadRightButton = true;
+					capabilities.HasDPadUpButton = true;
+
+					capabilities.HasStartButton = true;
+					capabilities.HasBackButton = true;
+					break;
 			}
-			batch.Draw(theStick.Texture,theStick.Position + theStick.Offset,theStick.TextureRect,_alphaColor);
+			return capabilities;
 		}
-		
-		#endregion
+
+
+		internal static void Initialize ()
+		{
+			//Iterate and 'connect' any detected gamepads
+			foreach (var deviceId in InputDevice.GetDeviceIds ()) {
+				GetGamePad (InputDevice.GetDevice (deviceId));
+			}
+		}
 	}
-	
 }

@@ -63,6 +63,9 @@
     <Reference Include="NAudio.WindowsMediaFormat">
       <HintPath>..\..\ThirdParty\Libs\NAudio\NAudio.WindowsMediaFormat.dll</HintPath>
     </Reference>
+    <Reference Include="Nvidia.TextureTools">
+      <HintPath>..\..\ThirdParty\Libs\NVTT\Windows\Nvidia.TextureTools.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>..\..\ThirdParty\Libs\SharpDX\Windows\SharpDX.dll</HintPath>
     </Reference>
@@ -71,6 +74,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />

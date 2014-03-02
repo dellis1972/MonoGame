@@ -76,6 +76,10 @@ namespace Microsoft.Xna.Framework.Graphics
         {
             _view = screen;
         }
+
+	internal static void Reset() {
+		adapters = null;
+	}
 #else
         internal GraphicsAdapter()
         {

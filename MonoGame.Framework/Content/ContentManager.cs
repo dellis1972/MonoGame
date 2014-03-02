@@ -573,20 +573,27 @@ namespace Microsoft.Xna.Framework.Content
 			try {
 				//try load it traditionally
 				stream = OpenStream (assetName);
-
-				// Try to load as XNB file
-				try {
-					using (BinaryReader xnbReader = new BinaryReader (stream)) {
-						using (ContentReader reader = GetContentReaderFromXnb (assetName, ref stream, xnbReader, null)) {
-							reader.InitializeTypeReaders ();
-							reader.ReadObject<T> (currentAsset);
-							reader.ReadSharedResources ();
+				if (stream != null) {
+					// Try to load as XNB file
+					try {
+						using (BinaryReader xnbReader = new BinaryReader (stream)) {
+							using (ContentReader reader = GetContentReaderFromXnb (assetName, ref stream, xnbReader, null)) {
+								reader.InitializeTypeReaders ();
+								reader.ReadObject<T> (currentAsset);
+								reader.ReadSharedResources ();
+							}
+						}
+					} finally {
+						if (stream != null) {
+							stream.Dispose ();
 						}
 					}
-				} finally {
-					if (stream != null) {
-						stream.Dispose ();
-					}
+				} else {
+					assetName = TitleContainer.GetFilename (Path.Combine (RootDirectory, assetName));
+
+					assetName = Normalize<T> (assetName);
+
+					ReloadRawAsset (currentAsset, assetName, originalAssetName);
 				}
 			} catch (ContentLoadException) {
 				// Try to reload as a non-xnb file.

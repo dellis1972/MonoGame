@@ -86,183 +86,171 @@ using Android.Hardware;
 
 namespace Microsoft.Xna.Framework
 {
-    class AndroidGamePlatform : GamePlatform
-    {
-        public AndroidGamePlatform(Game game)
-            : base(game)
-        {
-            System.Diagnostics.Debug.Assert(Game.Activity != null, "Must set Game.Activity before creating the Game instance");
-            AndroidGameActivity.Game = game;
-            AndroidGameActivity.Paused += Activity_Paused;
-            AndroidGameActivity.Resumed += Activity_Resumed;
+	class AndroidGamePlatform : GamePlatform
+	{
+		public AndroidGamePlatform (Game game)
+			: base (game)
+		{
+			System.Diagnostics.Debug.Assert (Game.Activity != null, "Must set Game.Activity before creating the Game instance");
+			AndroidGameActivity.Game = game;
+			AndroidGameActivity.Paused += Activity_Paused;
+			AndroidGameActivity.Resumed += Activity_Resumed;
 
-            Window = new AndroidGameWindow(Game.Activity, game);
-        }
+			Window = new AndroidGameWindow (Game.Activity, game);
+		}
 
-        private bool _initialized;
-        public static bool IsPlayingVdeo { get; set; }
+		private bool _initialized;
+		public static bool IsPlayingVdeo { get; set; }
 		private bool _exiting = false;
 
-        public override void Exit()
-        {
-            //TODO: Fix this
-            try
-            {
-				if (!_exiting)
-				{
+		public override void Exit ()
+		{
+			//TODO: Fix this
+			try {
+				if (!_exiting) {
 					_exiting = true;
 					AndroidGameActivity.Paused -= Activity_Paused;
-					AndroidGameActivity.Resumed -= Activity_Resumed;					
-                    Net.NetworkSession.Exit();               	    
-				    Window.Close();
+					AndroidGameActivity.Resumed -= Activity_Resumed;
+					Net.NetworkSession.Exit ();
+					Window.Close ();
 				}
-            }
-            catch
-            {
-            }
-        }
+			} catch {
+			}
+		}
 
-        public override void RunLoop()
-        {
-            throw new NotSupportedException("The Android platform does not support synchronous run loops");
-        }
+		public override void RunLoop ()
+		{
+			throw new NotSupportedException ("The Android platform does not support synchronous run loops");
+		}
 
-        public override void StartRunLoop()
-        {
-            Window.Resume();
-        }
+		public override void StartRunLoop ()
+		{
+			Window.Resume ();
+		}
 
-        public override bool BeforeUpdate(GameTime gameTime)
-        {
-            if (!_initialized)
-            {
-                Game.DoInitialize();
-                _initialized = true;				
-            }
+		public override bool BeforeUpdate (GameTime gameTime)
+		{
+			if (!_initialized) {
+				Game.DoInitialize ();
+				_initialized = true;
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        public override bool BeforeDraw(GameTime gameTime)
-        {
-            PrimaryThreadLoader.DoLoads();
-            return !IsPlayingVdeo;
-        }
+		public override bool BeforeDraw (GameTime gameTime)
+		{
+			PrimaryThreadLoader.DoLoads ();
+			return !IsPlayingVdeo;
+		}
 
-        public override void BeforeInitialize()
-        {
-            // TODO: Determine whether device natural orientation is Portrait or Landscape for OrientationListener
-            //SurfaceOrientation currentOrient = Game.Activity.WindowManager.DefaultDisplay.Rotation;
+		public override void BeforeInitialize ()
+		{
+			// TODO: Determine whether device natural orientation is Portrait or Landscape for OrientationListener
+			//SurfaceOrientation currentOrient = Game.Activity.WindowManager.DefaultDisplay.Rotation;
 
-            switch (Window.Context.Resources.Configuration.Orientation)
-            {
-                case Android.Content.Res.Orientation.Portrait:
-                    Window.SetOrientation(DisplayOrientation.Portrait, false);				
-                    break;
-                case Android.Content.Res.Orientation.Landscape:
-                    Window.SetOrientation(DisplayOrientation.LandscapeLeft, false);
-                    break;
-                default:
-                    Window.SetOrientation(DisplayOrientation.LandscapeLeft, false);
-                    break;
-            }			
-            base.BeforeInitialize();
-        }
+			switch (Window.Context.Resources.Configuration.Orientation) {
+				case Android.Content.Res.Orientation.Portrait:
+					Window.SetOrientation (DisplayOrientation.Portrait, false);
+					break;
+				case Android.Content.Res.Orientation.Landscape:
+					Window.SetOrientation (DisplayOrientation.LandscapeLeft, false);
+					break;
+				default:
+					Window.SetOrientation (DisplayOrientation.LandscapeLeft, false);
+					break;
+			}
+			base.BeforeInitialize ();
+		}
 
-        public override bool BeforeRun()
-        {
-            // Run it as fast as we can to allow for more response on threaded GPU resource creation
-            Window.Run();
+		public override bool BeforeRun ()
+		{
+			// Run it as fast as we can to allow for more response on threaded GPU resource creation
+			Window.Run ();
 
-            return false;
-        }
+			return false;
+		}
 
-        public override void EnterFullScreen()
-        {
-        }
+		public override void EnterFullScreen ()
+		{
+		}
 
-        public override void ExitFullScreen()
-        {
-        }
+		public override void ExitFullScreen ()
+		{
+		}
 
-        public override void BeginScreenDeviceChange(bool willBeFullScreen)
-        {
-        }
+		public override void BeginScreenDeviceChange (bool willBeFullScreen)
+		{
+		}
 
-        public override void EndScreenDeviceChange(string screenDeviceName, int clientWidth, int clientHeight)
-        {
-            // Force the Viewport to be correctly set
-            Game.graphicsDeviceManager.ResetClientBounds();
-        }
+		public override void EndScreenDeviceChange (string screenDeviceName, int clientWidth, int clientHeight)
+		{
+			// Force the Viewport to be correctly set
+			Game.graphicsDeviceManager.ResetClientBounds ();
+		}
 
-        // EnterForeground
-        void Activity_Resumed(object sender, EventArgs e)
-        {
-            if (!IsActive)
-            {
-                IsActive = true;
-                Window.Resume();
-                Sound.ResumeAll();
-				if(_MediaPlayer_PrevState == MediaState.Playing && Game.Activity.AutoPauseAndResumeMediaPlayer)
-                	MediaPlayer.Resume();
-				if(!Window.IsFocused)
-		           Window.RequestFocus();
-            }
-        }
+		// EnterForeground
+		void Activity_Resumed (object sender, EventArgs e)
+		{
+			if (!IsActive) {
+				IsActive = true;
+				Window.Resume ();
+				Sound.ResumeAll ();
+				if (_MediaPlayer_PrevState == MediaState.Playing && Game.Activity.AutoPauseAndResumeMediaPlayer)
+					MediaPlayer.Resume ();
+				if (!Window.IsFocused)
+					Window.RequestFocus ();
+			}
+		}
 
 		MediaState _MediaPlayer_PrevState = MediaState.Stopped;
-        // EnterBackground
-        void Activity_Paused(object sender, EventArgs e)
-        {
-            if (IsActive)
-            {
-                IsActive = false;
+		// EnterBackground
+		void Activity_Paused (object sender, EventArgs e)
+		{
+			if (IsActive) {
+				IsActive = false;
 				_MediaPlayer_PrevState = MediaPlayer.State;
-                Window.Pause();
-				Window.ClearFocus();
-                Sound.PauseAll();
-				if(Game.Activity.AutoPauseAndResumeMediaPlayer)
-                	MediaPlayer.Pause();
-            }
-        }
+				Window.Pause ();
+				Window.ClearFocus ();
+				Sound.PauseAll ();
+				if (Game.Activity.AutoPauseAndResumeMediaPlayer)
+					MediaPlayer.Pause ();
+			}
+		}
 
-        public override GameRunBehavior DefaultRunBehavior
-        {
-            get { return GameRunBehavior.Asynchronous; }
-        }
-		
-		public override void Log(string Message) 
+		public override GameRunBehavior DefaultRunBehavior
+		{
+			get { return GameRunBehavior.Asynchronous; }
+		}
+
+		public override void Log (string Message)
 		{
 #if LOGGING
 			Android.Util.Log.Debug("MonoGameDebug", Message);
 #endif
 		}
-		
-        public override void Present()
-        {
-			if (_exiting)
-                return;
-            try
-            {
-                var device = Game.GraphicsDevice;
-                if (device != null)
-                    device.Present();
-                    
-                Window.SwapBuffers();
-            }
-            catch (Exception ex)
-            {
-                Android.Util.Log.Error("Error in swap buffers", ex.ToString());
-            }
-        }
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-            if (disposing)
-            {
-                Window.Dispose();
-            }
-        }
-    }
+		public override void Present ()
+		{
+			if (_exiting)
+				return;
+			try {
+				var device = Game.GraphicsDevice;
+				if (device != null)
+					device.Present ();
+
+				Window.SwapBuffers ();
+			} catch (Exception ex) {
+				Android.Util.Log.Error ("Error in swap buffers", ex.ToString ());
+			}
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if (disposing) {
+				Window.Dispose ();
+			}
+		}
+	}
 }
