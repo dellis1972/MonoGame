@@ -115,6 +115,7 @@ namespace Microsoft.Xna.Framework.Graphics
                         (target as IDisposable).Dispose();
                 }
                 resources.Clear();
+                GC.Collect();
             }
         }
 

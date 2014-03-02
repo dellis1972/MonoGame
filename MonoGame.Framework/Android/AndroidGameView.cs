@@ -179,7 +179,11 @@ namespace Microsoft.Xna.Framework
 					isPaused = false;
 					Monitor.PulseAll (lockObject);
 				}
-				RequestFocus ();
+				try {
+				if (!IsFocused)
+					RequestFocus ();
+				} catch {
+				}
 			}
 		}
 
@@ -200,16 +204,16 @@ namespace Microsoft.Xna.Framework
 
 		protected void RenderLoop (CancellationToken token)
 		{
+			Threading.ResetThread (Thread.CurrentThread.ManagedThreadId);
 			try {
 				stopWatch = System.Diagnostics.Stopwatch.StartNew ();
 				tick = 0;
 				while (!cts.IsCancellationRequested) {
-					//Threading.ResetThread (Thread.CurrentThread.ManagedThreadId);
-
 					if (!IsGLSurfaceAvailable ()) {
 						return;
 					}
 
+					Threading.ResetThread (Thread.CurrentThread.ManagedThreadId);
 					RunIteration (token);
 					
 					if (updates > 0) {

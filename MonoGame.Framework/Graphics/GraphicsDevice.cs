@@ -1455,6 +1455,18 @@ namespace Microsoft.Xna.Framework.Graphics
                 }
             }
         }
+
+	static internal void ClearDisposeActions ()
+	{
+		// Dispose of any GL resources that were disposed in another thread
+		lock (disposeActionsLock) {
+			if (disposeActions.Count > 0) {
+				foreach (var action in disposeActions)
+					action ();
+				disposeActions.Clear ();
+			}
+		}
+	}
 #endif
 
         public void Present()
@@ -1511,16 +1523,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			GL.Flush();
             GraphicsExtensions.CheckGLError();
 
-            // Dispose of any GL resources that were disposed in another thread
-            lock (disposeActionsLock)
-            {
-                if (disposeActions.Count > 0)
-                {
-                    foreach (var action in disposeActions)
-                        action();
-                    disposeActions.Clear();
-                }
-            }
+	    ClearDisposeActions ();
 #endif
         }
 

@@ -1,3 +1,4 @@
+//#define OPENTK
 #region License
 /*
 Microsoft Public License (Ms-PL)
@@ -64,7 +65,13 @@ using Microsoft.Xna.Framework.Input.Touch;
 namespace Microsoft.Xna.Framework
 {
 	[CLSCompliant (false)]
-	public class AndroidGameWindow : Microsoft.Xna.Framework.AndroidGameView, Android.Views.View.IOnTouchListener, ISurfaceHolderCallback
+	public class AndroidGameWindow : 
+#if OPENTK
+		OpenTK.Platform.Android.AndroidGameView,
+#else
+		Microsoft.Xna.Framework.AndroidGameView, 
+#endif
+		Android.Views.View.IOnTouchListener, ISurfaceHolderCallback
 	{
 		private Rectangle clientBounds;
 		private Game _game;

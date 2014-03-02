@@ -198,8 +198,6 @@ namespace Microsoft.Xna.Framework
 				Sound.ResumeAll ();
 				if (_MediaPlayer_PrevState == MediaState.Playing && Game.Activity.AutoPauseAndResumeMediaPlayer)
 					MediaPlayer.Resume ();
-				if (!Window.IsFocused)
-					Window.RequestFocus ();
 			}
 		}
 

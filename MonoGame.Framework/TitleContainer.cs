@@ -198,36 +198,42 @@ namespace Microsoft.Xna.Framework
             try
             {
                 assets.Clear();
-		var internalAssets = GetAssets (Game.Activity.Assets, "Content");
-		foreach (var a in internalAssets) {
-			assets.Add (a.Replace ("\\", "/"), AssetLocationEnum.Assets);
+		Stream stream = null;
+		try {
+			stream = Game.Activity.Assets.Open ("resourcelist.txt");
+		} catch {
 		}
-
-		if (ExpansionPath != null) {
-			if (expansionFile != null) {
-				expansionFile.Close ();
-				expansionFile.Dispose ();
+		if (stream != null) {
+			using (var sr = new StreamReader(stream))
+			{
+				string line;
+				while ((line = sr.ReadLine()) != null)
+				{
+					string[] item = line.Split(new char[1] { ',' });
+					assets.Add(item[0].Replace("\\", "/"), (AssetLocationEnum)Enum.Parse(typeof(AssetLocationEnum), item[1]));
+				}
 			}
-			 expansionFile = new ZipFile (ExpansionPath);
-			 if (expansionFile != null) {
-				 foreach (var z in expansionFile.GetAllEntries ()) {
-					 assets.Add (z.FilenameInZip.Replace ("\\", "/"), AssetLocationEnum.External);
-				 }
-			 }
+			stream.Dispose();
 		}
-		    /*
-                using (var stream = Game.Activity.Assets.Open("resourcelist.txt"))
-                {
-                    using (var sr = new StreamReader(stream))
-                    {
-                        string line;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            string[] item = line.Split(new char[1] { ',' });
-                            assets.Add(item[0].Replace("\\", "/"), (AssetLocationEnum)Enum.Parse(typeof(AssetLocationEnum), item[1]));
-                        }
-                    }
-                }*/
+		else {
+			var internalAssets = GetAssets (Game.Activity.Assets, "Content");
+			foreach (var a in internalAssets) {
+				assets.Add (a.Replace ("\\", "/"), AssetLocationEnum.Assets);
+			}
+
+			if (ExpansionPath != null) {
+				if (expansionFile != null) {
+					expansionFile.Close ();
+					expansionFile.Dispose ();
+				}
+				 expansionFile = new ZipFile (ExpansionPath);
+				 if (expansionFile != null) {
+					 foreach (var z in expansionFile.GetAllEntries ()) {
+						 assets.Add (z.FilenameInZip.Replace ("\\", "/"), AssetLocationEnum.External);
+					 }
+				 }
+			}
+		}
             }
             catch(Exception e)
             {

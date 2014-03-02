@@ -136,6 +136,7 @@ namespace Microsoft.Xna.Framework
 				Game.Dispose ();
 				Graphics.GraphicsAdapter.Reset ();
 				Content.ContentManager.ClearGraphicsContent ();
+				Microsoft.Xna.Framework.Graphics.GraphicsDevice.ClearDisposeActions ();
 			}
 			Game = null;
 			base.OnDestroy ();
