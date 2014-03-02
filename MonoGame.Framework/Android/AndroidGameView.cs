@@ -204,7 +204,7 @@ namespace Microsoft.Xna.Framework
 				stopWatch = System.Diagnostics.Stopwatch.StartNew ();
 				tick = 0;
 				while (!cts.IsCancellationRequested) {
-					Threading.ResetThread (Thread.CurrentThread.ManagedThreadId);
+					//Threading.ResetThread (Thread.CurrentThread.ManagedThreadId);
 
 					if (!IsGLSurfaceAvailable ()) {
 						return;
