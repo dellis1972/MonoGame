@@ -341,10 +341,20 @@ namespace Microsoft.Xna.Framework
 				    if (!File.Exists (expansionPath)) {
 #if DEBUG
 				expansionPath = "/mnt/sdcard/Downloads/test.zip";
+				if (!File.Exists(expansionPath))
+					return null;
 #else
 				expansionPath = null;
 #endif
 				    }
+			    } else {
+#if DEBUG
+				expansionPath = "/mnt/sdcard/Downloads/test.zip";
+				if (!File.Exists(expansionPath))
+					return null;
+#else
+				expansionPath = null;
+#endif
 			    }
 		    }
                 }

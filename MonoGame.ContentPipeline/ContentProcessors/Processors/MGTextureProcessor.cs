@@ -382,7 +382,7 @@ namespace MonoGameContentProcessors.Processors
                     var row = colorTex.GetRow(x);
                     for (int y = 0; y < row.Length; y++)
                     {
-                        bitmap.SetPixel(x, y, System.Drawing.Color.FromArgb(row[y].A, row[y].R, row[y].G, row[y].B));
+                        bitmap.SetPixel(y, x, System.Drawing.Color.FromArgb(row[y].A, row[y].R, row[y].G, row[y].B));
                     }
                 }
                 bitmap.Save(file, System.Drawing.Imaging.ImageFormat.Png);
@@ -451,8 +451,8 @@ namespace MonoGameContentProcessors.Processors
                 }
             }
 
-            //if (File.Exists(file)) File.Delete(file);
-            //if (File.Exists(file.Replace(".png", ".DDS"))) File.Delete(file.Replace(".png", ".DDS"));
+            if (File.Exists(file)) File.Delete(file);
+            if (File.Exists(file.Replace(".png", ".DDS"))) File.Delete(file.Replace(".png", ".DDS"));
 
             sourceContent.Faces[0].Clear();
             foreach (var f in faces)

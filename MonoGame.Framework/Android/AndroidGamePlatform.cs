@@ -111,7 +111,9 @@ namespace Microsoft.Xna.Framework
 					_exiting = true;
 					AndroidGameActivity.Paused -= Activity_Paused;
 					AndroidGameActivity.Resumed -= Activity_Resumed;
+					Game.DoExiting ();
 					Net.NetworkSession.Exit ();
+					Game.Activity.Finish ();
 					Window.Close ();
 				}
 			} catch {

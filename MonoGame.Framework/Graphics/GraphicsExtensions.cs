@@ -570,6 +570,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				glFormat = (PixelFormat)All.CompressedTextureFormats;
 				break;
             case SurfaceFormat.Dxt1a:
+	    case SurfaceFormat.RgbaS3tcDxt1:
                 // 0x83F0 is the RGB version, 0x83F1 is the RGBA version (1-bit alpha)
                 glInternalFormat = (PixelInternalFormat)0x83F1;
                 glFormat = (PixelFormat)All.CompressedTextureFormats;

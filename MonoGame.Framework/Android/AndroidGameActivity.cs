@@ -154,12 +154,13 @@ namespace Microsoft.Xna.Framework
 			if (keyboardVisible)
 				HideKeyboard ();
 			if (Game != null) {
-				Game.DoExiting ();
+				//Game.DoExiting ();
 				Game.Window.Stop ();
 				Game.Dispose ();
 				Graphics.GraphicsAdapter.Reset ();
 				Content.ContentManager.ClearGraphicsContent ();
-				Microsoft.Xna.Framework.Graphics.GraphicsDevice.ClearDisposeActions ();
+				Graphics.GraphicsDevice.ClearDisposeActions ();
+				Media.MediaPlayer.Stop ();
 			}
 			Game = null;
 			base.OnDestroy ();

@@ -210,7 +210,7 @@ namespace Microsoft.Xna.Framework
 				tick = 0;
 				while (!cts.IsCancellationRequested) {
 					if (!IsGLSurfaceAvailable ()) {
-						return;
+						break;
 					}
 
 					Threading.ResetThread (Thread.CurrentThread.ManagedThreadId);
@@ -561,6 +561,8 @@ namespace Microsoft.Xna.Framework
 						// so we can create a new GL surface.
 						if (cts.IsCancellationRequested)
 							break;
+						if (Game.Activity.IsFinishing)
+							return false;
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable entering wait state");
 						Monitor.Wait (lockObject);
 						Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable exiting wait state");

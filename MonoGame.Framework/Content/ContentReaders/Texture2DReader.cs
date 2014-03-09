@@ -111,13 +111,15 @@ namespace Microsoft.Xna.Framework.Content
 					if (GraphicsCapabilities.SupportsPvrtc)
 						convertedFormat = SurfaceFormat.RgbaPvrtc4Bpp;
 					if (GraphicsCapabilities.SupportsS3tc)
-						convertedFormat = SurfaceFormat.RgbaS3tcDxt3;
+						convertedFormat = SurfaceFormat.RgbaS3tcDxt1;
 					if (GraphicsCapabilities.SupportsAtitc)
                         convertedFormat = SurfaceFormat.RgbaATCExplicitAlpha;
 					break;
 				case SurfaceFormat.Dxt3:
 					if (!GraphicsCapabilities.SupportsS3tc)
 						convertedFormat = SurfaceFormat.Color;
+					else
+						convertedFormat = SurfaceFormat.RgbaS3tcDxt3;
 					break;
 				case SurfaceFormat.Dxt5:
 					if (GraphicsCapabilities.SupportsPvrtc)

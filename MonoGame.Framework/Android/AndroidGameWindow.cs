@@ -243,7 +243,12 @@ namespace Microsoft.Xna.Framework
 
 		protected void OnClosed (EventArgs e)
 		{
-			Game.Activity.Finish ();
+			//Game.Activity.Finish ();
+		}
+
+		protected override void OnStopped (EventArgs eventArgs)
+		{
+			base.OnStopped (eventArgs);
 		}
 
 #endif
