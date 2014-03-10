@@ -123,7 +123,7 @@ namespace Microsoft.Xna.Framework.Input
 			maps[Keycode.W] = Keys.W;
 			maps[Keycode.X] = Keys.X;
 			maps[Keycode.Y] = Keys.Y;
-			maps[Keycode.C] = Keys.Z;
+			maps[Keycode.Z] = Keys.Z;
 			maps[Keycode.Back] = Keys.Escape;
 			maps[Keycode.Back] = Keys.Back;
 			maps[Keycode.Home] = Keys.Home;
