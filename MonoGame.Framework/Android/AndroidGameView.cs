@@ -503,8 +503,8 @@ namespace Microsoft.Xna.Framework
 				// this is not called from the UI thread but on
 				// the background rendering thread
 				while (!cts.IsCancellationRequested) {
-					Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable {0} IsPaused {1} lostcontext {2} surfaceAvailable {3} contextAvailable {4} ThreadID {5}",
-						glSurfaceAvailable, isPaused, lostglContext, surfaceAvailable, glContextAvailable,Thread.CurrentThread.ManagedThreadId);
+					//Log.Verbose ("AndroidGameView", "IsGLSurfaceAvailable {0} IsPaused {1} lostcontext {2} surfaceAvailable {3} contextAvailable {4} ThreadID {5}",
+					//	glSurfaceAvailable, isPaused, lostglContext, surfaceAvailable, glContextAvailable,Thread.CurrentThread.ManagedThreadId);
 					if (glSurfaceAvailable && (isPaused || !surfaceAvailable)) {
 						// Surface we are using needs to go away
 						DestroyGLSurface ();

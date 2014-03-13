@@ -165,7 +165,11 @@ namespace Microsoft.Xna.Framework.GamerServices
 				if (gamerAchievements == null)
 				{
 					gamerAchievements = new AchievementCollection();
-				}				
+				}		
+				#if !OUYA
+				foreach(var achievement in GameHelper.Instance.Achievements) 
+					gamerAchievements.Add(achievement);
+				#endif
 			}
 			return gamerAchievements;
 		}
@@ -209,7 +213,9 @@ namespace Microsoft.Xna.Framework.GamerServices
 		
 		public void DoAwardAchievement( string achievementId, double percentageComplete )
 		{
-			
+			#if !OUYA
+			GameHelper.Instance.AwardAchievement(achievementId, percentageComplete);
+			#endif
 		}
 		
 		public void AwardAchievement( string achievementId, double percentageComplete )

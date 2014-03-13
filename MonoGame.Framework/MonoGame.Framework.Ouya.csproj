@@ -3,22 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8BEA875D-66D2-4A5F-B137-83D262A3851D}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Xna.Framework</RootNamespace>
     <AssemblyName>MonoGame.Framework</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <AndroidSupportedAbis>armeabi-v7a%3bx86</AndroidSupportedAbis>
-    <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
-    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
-    <DeployExternal>False</DeployExternal>
+    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v4.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -41,19 +35,19 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+    <AndroidStoreUncompressedFileExtensions>
+    </AndroidStoreUncompressedFileExtensions>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
-    <Reference Include="mscorlib" />
     <Reference Include="OpenTK" />
     <Reference Include="Ouya.Console.Api">
       <HintPath>..\ThirdParty\Libs\OUYA\Ouya.Console.Api.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Core" />
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Android\IResumeManager.cs" />
@@ -135,11 +129,8 @@
     <Compile Include="Graphics\ModelMeshPart.cs" />
     <Compile Include="Graphics\ModelMeshPartCollection.cs" />
     <Compile Include="Graphics\PackedVector\Bgr565.cs" />
-	
     <Compile Include="Graphics\PackedVector\Bgra4444.cs" />
-	
     <Compile Include="Graphics\PackedVector\Byte4.cs" />
-	
     <Compile Include="Graphics\PackedVector\HalfSingle.cs" />
     <Compile Include="Graphics\PackedVector\HalfTypeHelper.cs" />
     <Compile Include="Graphics\PackedVector\NormalizedShort2.cs" />
@@ -173,7 +164,7 @@
     <Compile Include="Graphics\Effect\EffectTechnique.cs" />
     <Compile Include="Graphics\Effect\EffectTechniqueCollection.cs" />
     <Compile Include="Graphics\States\BlendState.cs" />
-	<Compile Include="Graphics\States\TargetBlendState.cs" />
+    <Compile Include="Graphics\States\TargetBlendState.cs" />
     <Compile Include="Graphics\States\BlendFunction.cs" />
     <Compile Include="Graphics\States\Blend.cs" />
     <Compile Include="Graphics\States\CompareFunction.cs" />
@@ -421,18 +412,23 @@
     <Compile Include="Content\ContentReaders\EffectMaterialReader.cs" />
     <Compile Include="Content\ContentReaders\ExternalReferenceReader.cs" />
     <Compile Include="Audio\MSADPCMToPCM.cs" />
-	<Compile Include="Utilities\ObjectFactoryWithReset.cs" />
+    <Compile Include="Utilities\ObjectFactoryWithReset.cs" />
     <Compile Include="GamerServices\LeaderboardEntry.cs" />
     <Compile Include="GamerServices\LeaderboardIdentity.cs" />
     <Compile Include="GamerServices\LeaderboardKey.cs" />
     <Compile Include="GamerServices\LeaderboardReader.cs" />
     <Compile Include="GamerServices\LeaderboardWriter.cs" />
     <Compile Include="GamerServices\PropertyDictionary.cs" />
+    <Compile Include="Android\AndroidGameView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ThirdParty\Lidgren.Network\Lidgren.Network.Android.csproj">
       <Project>{565129E0-4EE5-4F6F-B403-C3484C9740BE}</Project>
       <Name>Lidgren.Network.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Android.Play.ExpansionLibrary\System.IO.Compression.Zip\System.IO.Compression.Zip.csproj">
+      <Project>{6064DA47-9606-45E5-B87E-13765E4BE628}</Project>
+      <Name>System.IO.Compression.Zip</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

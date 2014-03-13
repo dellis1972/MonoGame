@@ -94,6 +94,13 @@ namespace Microsoft.Xna.Framework
 			base.OnConfigurationChanged (newConfig);
 		}
 
+		protected override void OnActivityResult (int requestCode, Result resultCode, Intent data)
+		{
+			#if !OUYA
+			GamerServices.GameHelper.Instance.OnActivityResult (requestCode, resultCode, data);
+			#endif
+			base.OnActivityResult (requestCode, resultCode, data);
+		}
 
 		protected override void OnPause ()
 		{
@@ -103,6 +110,22 @@ namespace Microsoft.Xna.Framework
 				Paused (this, EventArgs.Empty);
 
 
+		}
+
+		protected override void OnStart ()
+		{
+			#if !OUYA
+			GamerServices.GameHelper.Instance.Start ();
+			#endif
+			base.OnStart ();
+		}
+
+		protected override void OnStop ()
+		{
+			#if !OUYA
+			GamerServices.GameHelper.Instance.Stop ();
+			#endif
+			base.OnStop ();
 		}
 
 

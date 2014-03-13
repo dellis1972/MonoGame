@@ -11,10 +11,11 @@ namespace Microsoft.Xna.Framework.GamerServices
     {
         private static MonoLiveGuide guide = null;
 
-        
-
-        public static void ShowSigninSheet()
+		public static void ShowSigninSheet()
         {
+			if (Guide.IsVisible)
+				return;
+
             guide.Enabled = true;
 			guide.Visible = true;
             Guide.IsVisible = true;
@@ -29,7 +30,10 @@ namespace Microsoft.Xna.Framework.GamerServices
             }
         }}
 
-    internal class MonoLiveGuide : DrawableGameComponent
+	internal class MonoLiveGuide : DrawableGameComponent
+	#if !OUYA
+	, GameHelper.IGameHelperListener
+	#endif
     {
         SpriteBatch spriteBatch;
         Texture2D signInProgress;
@@ -43,11 +47,17 @@ namespace Microsoft.Xna.Framework.GamerServices
             this.Visible = false;
             //Guide.IsVisible = false;
             this.DrawOrder = Int32.MaxValue;
+			#if !OUYA
+			GameHelper.Instance.Initialize (this);
+			#endif
         }
 
         public override void Initialize()
         {
             base.Initialize();
+			#if !OUYA
+			GameHelper.Instance.SignIn ();
+			#endif
         }
 
         Texture2D Circle(GraphicsDevice graphics, int radius)
@@ -97,7 +107,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 
         public override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin();//SpriteSortMode.Immediate, BlendState.AlphaBlend);
+			/* spriteBatch.Begin();//SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             Vector2 center = new Vector2(this.Game.GraphicsDevice.Viewport.Width / 2, this.Game.GraphicsDevice.Viewport.Height - 100);
             Vector2 loc = Vector2.Zero;
@@ -110,7 +120,7 @@ namespace Microsoft.Xna.Framework.GamerServices
                 alphaColor.A += 255 / 12;
                 if (alphaColor.A > 255) alphaColor.A = 0;
             }
-            spriteBatch.End();
+            spriteBatch.End();*/
             base.Draw(gameTime);
         }
 
@@ -127,47 +137,68 @@ namespace Microsoft.Xna.Framework.GamerServices
                 last = gameTime.TotalGameTime;
                 startalpha += 255 / 12;
             }
-
-            if ((gameTime.TotalGameTime - gt).TotalSeconds > delay) // close after 10 seconds
-            {
-				
-				string name = "androiduser";
-				try
-				{
-					Android.Accounts.AccountManager mgr = (Android.Accounts.AccountManager)Android.App.Application.Context.GetSystemService(Android.App.Activity.AccountService);
-					if (mgr != null)
-					{
-						var accounts = mgr.GetAccounts();
-						if (accounts != null && accounts.Length > 0)
-						{							
-							name = accounts[0].Name;
-							if (name.Contains("@"))
-							{
-								// its an email 
-								name = name.Substring(0, name.IndexOf("@"));
-							}
-						}
-					}
-				}
-				catch
-				{
-				}
-				
-                SignedInGamer sig = new SignedInGamer();
-                sig.DisplayName = name;
-                sig.Gamertag = name;
-				sig.IsSignedInToLive = false;
-
-                Gamer.SignedInGamers.Add(sig);
-
-                this.Visible = false;
-                this.Enabled = false;
-                //Guide.IsVisible = false;
-                gt = TimeSpan.Zero;
-            }
+			#if OUYA
+			OnSignInFailed();
+			#endif
             base.Update(gameTime);
         }
 
+		#region IGameHelperListener implementation
+		public void OnSignInFailed ()
+		{
+			string name = "androiduser";
+			try
+			{
+				Android.Accounts.AccountManager mgr = (Android.Accounts.AccountManager)Android.App.Application.Context.GetSystemService(Android.App.Activity.AccountService);
+				if (mgr != null)
+				{
+					var accounts = mgr.GetAccounts();
+					if (accounts != null && accounts.Length > 0)
+					{							
+						name = accounts[0].Name;
+						if (name.Contains("@"))
+						{
+							// its an email 
+							name = name.Substring(0, name.IndexOf("@"));
+						}
+					}
+				}
+			}
+			catch
+			{
+			}
+
+			SignedInGamer sig = new SignedInGamer();
+			sig.DisplayName = name;
+			sig.Gamertag = name;
+			sig.IsSignedInToLive = false;
+
+			Gamer.SignedInGamers.Add(sig);
+
+			this.Visible = false;
+			this.Enabled = false;
+			Guide.IsVisible = false;
+		}
+		public void OnSignInSucceeded ()
+		{
+			#if !OUYA
+			var name = GameHelper.Instance.GameClient.CurrentAccountName;
+			SignedInGamer sig = new SignedInGamer();
+			sig.DisplayName = name;
+			sig.Gamertag = name;
+			sig.IsSignedInToLive = true;
+
+			Gamer.SignedInGamers.Add(sig);
+
+			this.Visible = false;
+			this.Enabled = false;
+			Guide.IsVisible = false;
+
+			GameHelper.Instance.LoadAchievements();
+			#endif
+
+		}
+		#endregion
     }
 }
 

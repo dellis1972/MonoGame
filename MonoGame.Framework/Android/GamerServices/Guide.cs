@@ -300,7 +300,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 		{
 			if ( ( Gamer.SignedInGamers.Count > 0 ) && ( Gamer.SignedInGamers[0].IsSignedInToLive ) )
 			{
-				
+				GameHelper.Instance.ShowLeaderboard ();
 			}
 		}
 
@@ -308,7 +308,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 		{
 			if ( ( Gamer.SignedInGamers.Count > 0 ) && ( Gamer.SignedInGamers[0].IsSignedInToLive ) )
 			{
-				
+				GameHelper.Instance.ShowAchievements ();
 			}
 		}
 		
