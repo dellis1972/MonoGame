@@ -172,7 +172,12 @@ namespace Microsoft.Xna.Framework
 		{
 			if (!keyboardVisible) {
 				InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+				Game.Window.RequestFocus ();
 				keyboardVisible = manager.ShowSoftInput (Game.Window, ShowFlags.Implicit, null);
+				if (!keyboardVisible) {
+					manager.ToggleSoftInputFromWindow (Game.Window.WindowToken, ShowSoftInputFlags.Explicit, HideSoftInputFlags.ImplicitOnly);
+					keyboardVisible = true;
+				}
 			} else
 				wasalreadyvisible = true;
 		}
