@@ -64,6 +64,7 @@ namespace Microsoft.Xna.Framework.Input
 		private readonly GamePadCapabilities _capabilities;
 
 		private static readonly GamePad[] GamePads = new GamePad[4];//OuyaController.MaxControllers];
+		private static Buttons _noGamepadButtons;
 
 		[CLSCompliant (false)]
 		protected GamePad (InputDevice device)
@@ -132,6 +133,14 @@ namespace Microsoft.Xna.Framework.Input
 				    new GamePadTriggers (gamePad._leftTrigger, gamePad._rightTrigger),
 				    new GamePadButtons (gamePad._buttons),
 				    new GamePadDPad (gamePad._buttons));
+			} else {
+				if (_noGamepadButtons != 0) {
+					state = new GamePadState (
+				    state.ThumbSticks,
+				    new GamePadTriggers (state.Triggers.Left, state.Triggers.Right),
+				    new GamePadButtons (_noGamepadButtons),
+				    new GamePadDPad (ButtonState.Released, ButtonState.Released, ButtonState.Released, ButtonState.Released));
+				}
 			}
 
 			return state;
@@ -203,22 +212,33 @@ namespace Microsoft.Xna.Framework.Input
 		internal static bool OnKeyDown (Keycode keyCode, KeyEvent e)
 		{
 			var gamePad = GetGamePad (e.Device);
-			if (gamePad == null)
+			if (gamePad == null) {
+				if (keyCode == Keycode.Back) {
+					_noGamepadButtons |= ButtonForKeyCode (keyCode);
+					return true;
+				}
 				return false;
+			}
 
 			gamePad._buttons |= ButtonForKeyCode (keyCode);
 
 			if (keyCode == Keycode.Menu) {
 				gamePad._startButtonPressed = true;
 			}
+
 			return true;
 		}
 
 		internal static bool OnKeyUp (Keycode keyCode, KeyEvent e)
 		{
 			var gamePad = GetGamePad (e.Device);
-			if (gamePad == null)
+			if (gamePad == null) {
+				if (keyCode == Keycode.Back) {
+					_noGamepadButtons &= ~ButtonForKeyCode (keyCode);
+					return true;
+				}
 				return false;
+			}
 
 			gamePad._buttons &= ~ButtonForKeyCode (keyCode);
 			return true;
