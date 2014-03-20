@@ -819,7 +819,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
 		
 		#endregion
 
-#if WINDOWS_PHONE
+#if WINDOWS_PHONE || ANDROID
         internal static void ResetState()
         {
             _touchState.Clear();

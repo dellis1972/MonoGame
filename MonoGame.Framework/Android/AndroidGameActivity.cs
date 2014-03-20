@@ -144,6 +144,7 @@ namespace Microsoft.Xna.Framework
 				return;
 			(deviceManager as GraphicsDeviceManager).ForceSetFullScreen ();
 			Game.Window.RequestFocus ();
+			TouchPanel.ResetState ();
 		}
 
 
@@ -170,26 +171,28 @@ namespace Microsoft.Xna.Framework
 
 		public void ShowKeyboard ()
 		{
-			if (!keyboardVisible) {
-				InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
-				Game.Window.RequestFocus ();
-				keyboardVisible = manager.ShowSoftInput (Game.Window, ShowFlags.Implicit, null);
+			RunOnUiThread (() => {
 				if (!keyboardVisible) {
-					manager.ToggleSoftInputFromWindow (Game.Window.WindowToken, ShowSoftInputFlags.Explicit, HideSoftInputFlags.ImplicitOnly);
+					InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+					Game.Window.RequestFocus ();
+					manager.ToggleSoftInput (ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
 					keyboardVisible = true;
-				}
-			} else
-				wasalreadyvisible = true;
+				} else
+					wasalreadyvisible = true;
+			});
 		}
 
 		public void HideKeyboard ()
 		{
-			if (keyboardVisible && !wasalreadyvisible) {
-				InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
-				manager.HideSoftInputFromWindow (Game.Window.WindowToken, HideSoftInputFlags.ImplicitOnly);
-				keyboardVisible = false;
-			}
-			if (wasalreadyvisible) wasalreadyvisible = false;
+			RunOnUiThread (() => {
+				if (keyboardVisible && !wasalreadyvisible) {
+					InputMethodManager manager = (InputMethodManager)Game.Activity.GetSystemService (Context.InputMethodService);
+					manager.HideSoftInputFromWindow (Game.Window.WindowToken, HideSoftInputFlags.None);
+					keyboardVisible = false;
+				}
+				if (wasalreadyvisible)
+					wasalreadyvisible = false;
+			});
 		}
 	}
 
