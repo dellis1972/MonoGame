@@ -61,6 +61,25 @@ namespace Microsoft.Xna.Framework.GamerServices
 		Activity activity;
 		GamesClient client;
 		IGameHelperListener listener;
+		private bool _signedOut = true;
+
+		protected bool SignedOut {
+			get { return _signedOut; }
+			set {
+				if (_signedOut != value) {
+					_signedOut = value;
+					using (var settings = this.activity.GetSharedPreferences ("monogameplayservices", FileCreationMode.Private)) {
+						using (var e = settings.Edit ()) {
+							e.PutBoolean ("SignedOut", _signedOut);
+							e.Commit ();
+						}
+					}
+				}
+			}
+		}
+
+		bool signingin = false;
+
 
 		public GamesClient GameClient {
 			get { return client; }
@@ -74,14 +93,38 @@ namespace Microsoft.Xna.Framework.GamerServices
 
 		public void Initialize(IGameHelperListener listener, ClientsEnum clients = ClientsEnum.Games) {
 
+			var settings = this.activity.GetSharedPreferences ("monogameplayservices", FileCreationMode.Private);
+			_signedOut = settings.GetBoolean ("SignedOut", true);
+
 			this.listener = listener;
+
+			if (!_signedOut)
+				CreateClient ();
+		}
+
+		private void CreateClient() {
+
+			var settings = this.activity.GetSharedPreferences ("monogameplayservices", FileCreationMode.Private);
+			var id = settings.GetString ("playerid", String.Empty);
+
+			if (string.IsNullOrEmpty (id)) {
 				client = new GamesClient.Builder (activity, this, this)
 				.SetGravityForPopups ((int)(GravityFlags.Top | GravityFlags.Center))
 				.SetScopes (new string[] { Scopes.Games })
 				.Create ();
+			} else {
+				client = new GamesClient.Builder (activity, this, this)
+					.SetGravityForPopups ((int)(GravityFlags.Top | GravityFlags.Center))
+					.SetScopes (new string[] { Scopes.Games })
+					.SetAccountName(id)
+					.Create ();
+			}
 		}
 
 		public void Start() {
+
+			if(SignedOut && !signingin)
+				return;
 
 			if (client != null && !client.IsConnected) {
 				client.Connect ();
@@ -100,10 +143,28 @@ namespace Microsoft.Xna.Framework.GamerServices
 				client.Reconnect ();
 		}
 
+		public void SignOut() {
+
+			SignedOut = true;
+			if (client.IsConnected) {
+				client.SignOut ();
+				Stop ();
+				using (var settings = this.activity.GetSharedPreferences ("monogameplayservices", FileCreationMode.Private)) {
+					using (var e = settings.Edit ()) {
+						e.PutString ("playerid",String.Empty);
+						e.Commit ();
+					}
+				}
+				client.Dispose ();
+				client = null;
+			}
+		}
+
 		public void SignIn() {
 
+			signingin = true;
 			if (client == null)
-				return;
+				CreateClient ();
 
 			if (client.IsConnected)
 				return;
@@ -116,6 +177,8 @@ namespace Microsoft.Xna.Framework.GamerServices
 			if (result != ConnectionResult.Success) {
 				return;
 			}
+
+
 
 			Start ();
 
@@ -144,6 +207,17 @@ namespace Microsoft.Xna.Framework.GamerServices
 				if (inv != null && !string.IsNullOrEmpty(inv.InvitationId))
 					invitationId = inv.InvitationId;*/
 			}
+			resolving = false;
+			SignedOut = false;
+			signingin = false;
+
+			using (var settings = this.activity.GetSharedPreferences ("monogameplayservices", FileCreationMode.Private)) {
+				using (var e = settings.Edit ()) {
+					e.PutString ("playerid",client.CurrentAccountName);
+					e.Commit ();
+				}
+			}
+
 
 			listener.OnSignInSucceeded ();
 		}
@@ -198,6 +272,10 @@ namespace Microsoft.Xna.Framework.GamerServices
 				result.StartResolutionForResult (activity, RC_RESOLVE);
 				return;
 			}
+
+			resolving = false;
+			SignedOut = false;
+			signingin = false;
 			System.Diagnostics.Debug.WriteLine ("Failed " + result.ToString());
 			listener.OnSignInFailed ();
 		}

@@ -19,6 +19,11 @@ namespace Microsoft.Xna.Framework.GamerServices
             guide.Enabled = true;
 			guide.Visible = true;
             Guide.IsVisible = true;
+			if (SignedInGamer.SignedInGamers.Count == 0) {
+				#if !OUYA
+				GameHelper.Instance.SignIn ();
+				#endif
+			}
         }
     
         internal static void Initialise(Game game)
@@ -56,7 +61,7 @@ namespace Microsoft.Xna.Framework.GamerServices
         {
             base.Initialize();
 			#if !OUYA
-			GameHelper.Instance.SignIn ();
+			GameHelper.Instance.Start ();
 			#endif
         }
 
@@ -167,13 +172,14 @@ namespace Microsoft.Xna.Framework.GamerServices
 			catch
 			{
 			}
+			if (Gamer.SignedInGamers.FirstOrDefault (x => x.DisplayName == name) == null) {
+				SignedInGamer sig = new SignedInGamer ();
+				sig.DisplayName = name;
+				sig.Gamertag = name;
+				sig.IsSignedInToLive = false;
 
-			SignedInGamer sig = new SignedInGamer();
-			sig.DisplayName = name;
-			sig.Gamertag = name;
-			sig.IsSignedInToLive = false;
-
-			Gamer.SignedInGamers.Add(sig);
+				Gamer.SignedInGamers.Add (sig);
+			}
 
 			this.Visible = false;
 			this.Enabled = false;
@@ -182,13 +188,19 @@ namespace Microsoft.Xna.Framework.GamerServices
 		public void OnSignInSucceeded ()
 		{
 			#if !OUYA
-			var name = GameHelper.Instance.GameClient.CurrentAccountName;
-			SignedInGamer sig = new SignedInGamer();
-			sig.DisplayName = name;
-			sig.Gamertag = name;
-			sig.IsSignedInToLive = true;
 
-			Gamer.SignedInGamers.Add(sig);
+
+
+			var name = GameHelper.Instance.GameClient.CurrentAccountName;
+
+			if (Gamer.SignedInGamers.FirstOrDefault(x => x.DisplayName == name) == null) {
+				SignedInGamer sig = new SignedInGamer();
+				sig.DisplayName = name;
+				sig.Gamertag = name;
+				sig.IsSignedInToLive = true;
+
+				Gamer.SignedInGamers.Add(sig);
+			}
 
 			this.Visible = false;
 			this.Enabled = false;

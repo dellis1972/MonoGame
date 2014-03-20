@@ -329,6 +329,13 @@ namespace Microsoft.Xna.Framework.GamerServices
 			 }
 		}
 
+		#if ANDROID && !OUYA
+		public void SignOut() {
+			GameHelper.Instance.SignOut ();
+			SignedInGamers.Remove (this);
+			OnSignedOut (new SignedOutEventArgs (this));
+		}
+		#endif
 		
 		#region Events
 		public static event EventHandler<SignedInEventArgs> SignedIn;
