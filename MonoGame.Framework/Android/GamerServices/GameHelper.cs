@@ -10,6 +10,7 @@ using Android.Runtime;
 using Android.OS;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using Android.Gms.Games.LeaderBoard;
 
 namespace Microsoft.Xna.Framework.GamerServices
 {
@@ -17,6 +18,8 @@ namespace Microsoft.Xna.Framework.GamerServices
 	, IGooglePlayServicesClientConnectionCallbacks
 	, IGooglePlayServicesClientOnConnectionFailedListener
 	, IOnAchievementsLoadedListener
+	, IOnPlayerLeaderboardScoreLoadedListener
+	,IOnLeaderboardScoresLoadedListener
 	{
 
 		private static GameHelper instance = null;
@@ -228,6 +231,20 @@ namespace Microsoft.Xna.Framework.GamerServices
 			}
 		}
 
+		Action leaderboardLoaded = null;
+		bool loadingLeaderboards = false;
+
+		public void LoadLeaderboard (string leaderboardKey, Action loaded)
+		{
+			if (loadingLeaderboards || string.IsNullOrEmpty(leaderboardKey))
+				return;
+			if (client != null && client.IsConnected && !string.IsNullOrEmpty(leaderboardKey)) {
+				leaderboardLoaded = loaded;
+				loadingLeaderboards = true;
+				client.LoadTopScores (this, leaderboardKey, 2, 1, 25);
+			}
+		}
+
 		public void OnDisconnected ()
 		{
 			System.Diagnostics.Debug.WriteLine ("Disconnect");
@@ -390,6 +407,18 @@ namespace Microsoft.Xna.Framework.GamerServices
 			this.activity.StartActivityForResult (intent, RC_LEADERBOARDS);
 		}
 
+		public void ShowLeaderboard (string id)
+		{
+			if (showingLeaderboard)
+				return;
+
+			var intent = GameClient.GetLeaderboardIntent(id);
+			if (intent != null) {
+				showingLeaderboard = true;
+				this.activity.StartActivityForResult (intent, RC_LEADERBOARDS);
+			}
+		}
+
 		bool showingAchievements = false;
 
 		public void ShowAchievements ()
@@ -400,6 +429,74 @@ namespace Microsoft.Xna.Framework.GamerServices
 			var intent = GameClient.AchievementsIntent;
 			showingAchievements = true;
 			this.activity.StartActivityForResult (intent, RC_ACHIEVEMENTS);
+		}
+
+		class LeaderboardScoreMe : Java.Lang.Object
+		{
+
+			Java.Lang.Object parent;
+
+			public LeaderboardScoreMe (Java.Lang.Object parent)
+			{
+				this.parent = parent;
+			}
+
+			public string getScoreHolderDisplayName ()
+			{
+				var m= JNIEnv.GetMethodID (parent.Class.Handle, "getScoreHolderDisplayName", "()Ljava/lang/String;");
+				var result = JNIEnv.CallObjectMethod (parent.Handle, m);
+				return Java.Lang.Object.GetObject<Java.Lang.String> (result, JniHandleOwnership.TransferLocalRef).ToString ();
+			}
+
+			public long getRawScore ()
+			{
+				var m = JNIEnv.GetMethodID (parent.Class.Handle, "getRawScore", "()J");
+				return JNIEnv.CallLongMethod (parent.Handle, m);
+				
+			}
+		}
+
+		public void OnPlayerLeaderboardScoreLoaded (int p0, Android.Gms.Games.LeaderBoard.ILeaderboardScore p1)
+		{
+			
+		}
+
+		public void OnLeaderboardScoresLoaded (int statusCode, ILeaderboard leaderboard, LeaderboardScoreBuffer scores)
+		{
+			//
+			Entries.Clear ();
+			if (statusCode == GamesClient.StatusOk) {
+				for (int i = 0; i < scores.Count; i++) {
+					var o = scores.Get (i);
+					var l = new LeaderboardScoreMe (o);
+					var name = l.getScoreHolderDisplayName ();
+					var e = new LeaderboardEntry () {
+						Rating = l.getRawScore ()
+						,
+						Gamer = new SignedInGamer () {
+							DisplayName = name,
+							IsSignedInToLive = false,
+							Gamertag = name,
+						}
+					};
+					Entries.Add (e);
+				}
+			}
+	
+			if (leaderboardLoaded != null) {
+				leaderboardLoaded ();
+			}
+
+			loadingLeaderboards = false;
+		}
+
+		public List<Microsoft.Xna.Framework.GamerServices.LeaderboardEntry> Entries = new List<LeaderboardEntry> ();
+
+		internal void UpdateScore (LeaderboardKey key, long score)
+		{
+			var id = Game.Activity.GetLeaderBoardId (key);
+			if (!string.IsNullOrEmpty(id))
+				GameClient.SubmitScore (id, score);
 		}
 	}
 }

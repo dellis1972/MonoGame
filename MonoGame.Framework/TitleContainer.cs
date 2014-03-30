@@ -228,7 +228,8 @@ namespace Microsoft.Xna.Framework
 				}
 				 expansionFile = new ZipFile (ExpansionPath);
 				 if (expansionFile != null) {
-					 foreach (var z in expansionFile.GetAllEntries ()) {
+					 entries = expansionFile.GetAllEntries ();
+					 foreach (var z in entries) {
 						 assets.Add (z.FilenameInZip.Replace ("\\", "/"), AssetLocationEnum.External);
 					 }
 				 }
@@ -340,7 +341,7 @@ namespace Microsoft.Xna.Framework
 				     expansionPath = Path.Combine (expPath, string.Format ("main.{0}.{1}.obb", pinfo.VersionCode, ainfo.PackageName));
 				    if (!File.Exists (expansionPath)) {
 #if DEBUG
-				expansionPath = "/mnt/sdcard/Downloads/test.zip";
+				expansionPath = "/mnt/sdcard/Download/data.zip";
 				if (!File.Exists(expansionPath))
 					return null;
 #else
@@ -349,7 +350,7 @@ namespace Microsoft.Xna.Framework
 				    }
 			    } else {
 #if DEBUG
-				expansionPath = "/mnt/sdcard/Downloads/test.zip";
+				expansionPath = "/mnt/sdcard/Download/data.zip";
 				if (!File.Exists(expansionPath))
 					return null;
 #else
@@ -363,6 +364,7 @@ namespace Microsoft.Xna.Framework
         }
 
         static ZipFile expansionFile = null;
+	static ZipFileEntry[] entries = null;
 
         static AssetFileDescriptor OpenExpansionFd(string assetsPath)
         {
@@ -371,10 +373,12 @@ namespace Microsoft.Xna.Framework
 		    if (ExpansionPath == null)
 			    return null;
 
-                if (expansionFile == null)
-                    expansionFile = new ZipFile(ExpansionPath);
+		    if (expansionFile == null) {
+			    expansionFile = new ZipFile (ExpansionPath);
+			    entries = expansionFile.GetAllEntries ();
+		    }
 
-                var entry = expansionFile.GetAllEntries().Where(x => string.Compare(x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+                var entry = entries.FirstOrDefault(x => string.Compare(x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0);
                 if (entry != null)
                 {
                     ParcelFileDescriptor pfd = ParcelFileDescriptor.Open(
@@ -398,9 +402,11 @@ namespace Microsoft.Xna.Framework
             {
 		    if (ExpansionPath == null)
 			    return null;
-                if (expansionFile == null)
-                    expansionFile = new ZipFile(ExpansionPath);
-                var entry = expansionFile.GetAllEntries().Where(x => string.Compare(x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0).FirstOrDefault();
+		    if (expansionFile == null) {
+			    expansionFile = new ZipFile (ExpansionPath);
+			    entries = expansionFile.GetAllEntries ();
+		    }
+                var entry = entries.FirstOrDefault(x => string.Compare(x.FilenameInZip, assetsPath, StringComparison.OrdinalIgnoreCase) == 0);
                 if (entry != null)
                 {
 

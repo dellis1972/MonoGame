@@ -28,18 +28,47 @@ namespace Microsoft.Xna.Framework.GamerServices
         public LeaderboardReader EndPageUp(IAsyncResult result)
         {
             throw new NotImplementedException ();
+        }*/
+
+	public static IAsyncResult BeginRead (LeaderboardIdentity id, SignedInGamer gamer, int leaderboardPageSize, AsyncCallback leaderboardReadCallback, SignedInGamer gamer2)
+        {
+		
+		var ar = new LeaderboardAsyncResult (null);
+		DoLoadLeaderboard (id, gamer, leaderboardPageSize, leaderboardReadCallback, ar);
+		return ar;
         }
 
-        public static void BeginRead (LeaderboardIdentity id, SignedInGamer gamer, int leaderboardPageSize, AsyncCallback leaderboardReadCallback, SignedInGamer gamer2)
-        {
-            throw new NotImplementedException ();
-        }
+	public static IAsyncResult BeginRead (LeaderboardIdentity id, IEnumerable<Gamer> gamers, Gamer pivotGamer, int pageSize, AsyncCallback callback, Object asyncState)
+	{
+		var ar = new LeaderboardAsyncResult (asyncState);
+		DoLoadLeaderboard (id, pivotGamer, pageSize, callback, ar);
+		return ar;
+	}
 
         public static LeaderboardReader EndRead(IAsyncResult result)
         {
-            throw new NotImplementedException ();
+		var aad = (LeaderboardAsyncResult)result;
+		return new LeaderboardReader () { Entries =aad.Entries, 
+			CanPageDown = false, 
+			CanPageUp = false 
+		};
         }
 
+	static void DoLoadLeaderboard (LeaderboardIdentity id, Gamer gamer, int leaderboardPageSize, AsyncCallback callback, LeaderboardAsyncResult ar)
+	{
+#if ANDROID
+#if !OUYA
+		if (GameHelper.Instance != null) {
+			GameHelper.Instance.LoadLeaderboard (Game.Activity.GetLeaderBoardId (id.Key), () => {
+				ar.Entries = GameHelper.Instance.Entries;
+				callback (ar);
+			});
+		}
+#endif
+#endif
+	}
+	
+	/*
         public void PageDown()
         {
             throw new NotImplementedException ();
@@ -70,10 +99,44 @@ namespace Microsoft.Xna.Framework.GamerServices
 
         public void Dispose ()
         {
-            throw new NotImplementedException ();
+            
         }
 
         #endregion
+
+	public class LeaderboardAsyncResult : IAsyncResult
+	{
+		public object AsyncState
+		{
+			get;
+			set;
+		}
+
+		public System.Threading.WaitHandle AsyncWaitHandle
+		{
+			get { return null; }
+		}
+
+		public bool CompletedSynchronously
+		{
+			get { return false; }
+		}
+
+		public bool IsCompleted
+		{
+			get;
+			set;
+		}
+
+		public LeaderboardAsyncResult (object asyncState)
+		{
+			// TODO: Complete member initialization
+			this.AsyncState = asyncState;
+		}
+
+		public List<Microsoft.Xna.Framework.GamerServices.LeaderboardEntry> Entries = new List<LeaderboardEntry> ();
+
+	}
     }
 }
 

@@ -105,7 +105,14 @@ namespace MonoGame.Xna.Framework.GamerServices {
 
 		public override void Update (GameTime gameTime)
 		{
-
+			while (LeaderboardWriter.pendingUpdates.Count > 0) {
+				var e = LeaderboardWriter.pendingUpdates.Dequeue ();
+#if ANDROID && !OUYA
+				if (GameHelper.Instance != null) {
+					GameHelper.Instance.UpdateScore (e.Key, e.Rating);
+				}
+#endif
+			}
 		}
 	}
 

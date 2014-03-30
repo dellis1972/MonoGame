@@ -188,17 +188,22 @@ namespace Microsoft.Xna.Framework.GamerServices
 		public void OnSignInSucceeded ()
 		{
 			#if !OUYA
-
-
-
 			var name = GameHelper.Instance.GameClient.CurrentAccountName;
-
+			if (name.Contains ("@")) {
+				// its an email 
+				name = name.Substring (0, name.IndexOf ("@"));
+			}
+			var tag = name;
+			if (GameHelper.Instance.GameClient.CurrentPlayer != null) {
+				tag = GameHelper.Instance.GameClient.CurrentPlayer.DisplayName;
+			}
+			
 			if (Gamer.SignedInGamers.FirstOrDefault(x => x.DisplayName == name) == null) {
-				SignedInGamer sig = new SignedInGamer();
+				SignedInGamer sig = new SignedInGamer ();
+				sig.LeaderboardWriter = new LeaderboardWriter (sig);
 				sig.DisplayName = name;
-				sig.Gamertag = name;
+				sig.Gamertag = tag;
 				sig.IsSignedInToLive = true;
-
 				Gamer.SignedInGamers.Add(sig);
 			}
 
@@ -208,7 +213,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 
 			GameHelper.Instance.LoadAchievements();
 			#endif
-
+			 
 		}
 		#endregion
     }

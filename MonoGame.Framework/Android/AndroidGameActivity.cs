@@ -15,6 +15,7 @@ using Android.Widget;
 
 using Microsoft.Xna.Framework.Input.Touch;
 using Android.Views.InputMethods;
+using Microsoft.Xna.Framework.GamerServices;
 
 
 namespace Microsoft.Xna.Framework
@@ -193,6 +194,11 @@ namespace Microsoft.Xna.Framework
 				if (wasalreadyvisible)
 					wasalreadyvisible = false;
 			});
+		}
+
+		public virtual string GetLeaderBoardId (LeaderboardKey key)
+		{
+			return null;
 		}
 	}
 
