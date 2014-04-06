@@ -348,28 +348,32 @@ namespace Microsoft.Xna.Framework.GamerServices
 		public void OnAchievementsLoaded (int p0, AchievementBuffer p1)
 		{
 			if (p0 == GamesClient.StatusOk) {
-				for (int i = 0; i < p1.Count; i++) {
-					var a = p1.Get (i);
-					if (a != null) {
-						var m = new AchievementMe (a);
-						try {
-							var isIncremental = m.getType () == Android.Gms.Games.Achievement.Achievement.TypeIncremental;
-							Achievements.Add (new Achievement () { 
-								Name = m.getName (),
-								IsEarned = m.getState () == Android.Gms.Games.Achievement.Achievement.StateUnlocked,
-								DisplayBeforeEarned = m.getState () != Android.Gms.Games.Achievement.Achievement.StateHidden,
-								Key = m.getId (),
-								AchievementType = !isIncremental ? Achievement.AchievementTypeEnum.Standard : Achievement.AchievementTypeEnum.Incremental,
-								TotalSteps = isIncremental ? m.getTotalSteps () : 0,
-								CurrentSteps = isIncremental ? m.getCurrentSteps () : 0,
-								EarnedDateTime = m.getLastUpdated (),
-								EarnedOnline = true,
-								GamerScore = 0
-							});
-						} finally {
-							m.Dispose ();
+				try {
+					for (int i = 0; i < p1.Count; i++) {
+						var a = p1.Get (i);
+						if (a != null) {
+							var m = new AchievementMe (a);
+							try {
+								var isIncremental = m.getType () == Android.Gms.Games.Achievement.Achievement.TypeIncremental;
+								Achievements.Add (new Achievement () {
+									Name = m.getName (),
+									IsEarned = m.getState () == Android.Gms.Games.Achievement.Achievement.StateUnlocked,
+									DisplayBeforeEarned = m.getState () != Android.Gms.Games.Achievement.Achievement.StateHidden,
+									Key = m.getId (),
+									AchievementType = !isIncremental ? Achievement.AchievementTypeEnum.Standard : Achievement.AchievementTypeEnum.Incremental,
+									TotalSteps = isIncremental ? m.getTotalSteps () : 0,
+									CurrentSteps = isIncremental ? m.getCurrentSteps () : 0,
+									EarnedDateTime = m.getLastUpdated (),
+									EarnedOnline = true,
+									GamerScore = 0
+								});
+							} finally {
+								m.Dispose ();
+							}
 						}
 					}
+				} finally {
+					p1.Close ();
 				}
 			}
 		}
@@ -466,20 +470,28 @@ namespace Microsoft.Xna.Framework.GamerServices
 			//
 			Entries.Clear ();
 			if (statusCode == GamesClient.StatusOk) {
-				for (int i = 0; i < scores.Count; i++) {
-					var o = scores.Get (i);
-					var l = new LeaderboardScoreMe (o);
-					var name = l.getScoreHolderDisplayName ();
-					var e = new LeaderboardEntry () {
-						Rating = l.getRawScore ()
-						,
-						Gamer = new SignedInGamer () {
-							DisplayName = name,
-							IsSignedInToLive = false,
-							Gamertag = name,
+				try {
+					for (int i = 0; i < scores.Count; i++) {
+						var o = scores.Get (i);
+						var l = new LeaderboardScoreMe (o);
+						try {
+							var name = l.getScoreHolderDisplayName ();
+							var e = new LeaderboardEntry () {
+								Rating = l.getRawScore ()
+								,
+								Gamer = new SignedInGamer () {
+									DisplayName = name,
+									IsSignedInToLive = false,
+									Gamertag = name,
+								}
+							};
+							Entries.Add (e);
+						} finally {
+							l.Dispose ();
 						}
-					};
-					Entries.Add (e);
+					}
+				} finally {
+					scores.Close ();
 				}
 			}
 	
