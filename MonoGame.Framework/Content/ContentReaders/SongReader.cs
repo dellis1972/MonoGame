@@ -56,7 +56,7 @@ namespace Microsoft.Xna.Framework.Content
 
         internal static string Normalize(string fileName)
 		{
-			return Normalize(fileName, supportedExtensions, ".mp3");
+			return Normalize(fileName, supportedExtensions);
 		}
 
 		protected internal override Song Read(ContentReader input, Song existingInstance)

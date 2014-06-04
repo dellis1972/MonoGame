@@ -39,6 +39,7 @@ namespace Microsoft.Xna.Framework
 		private OrientationListener o;
 		private ScreenReceiver screenReceiver;
 		private  bool keyboardVisible;
+		private bool resuming = false;
 
 
 		private bool _AutoPauseAndResumeMediaPlayer = true;
@@ -46,6 +47,12 @@ namespace Microsoft.Xna.Framework
 		{
 			get { return _AutoPauseAndResumeMediaPlayer; }
 			set { _AutoPauseAndResumeMediaPlayer = value; }
+		}
+
+
+		public bool Resuming
+		{
+			get { return resuming; }
 		}
 
 
@@ -105,6 +112,7 @@ namespace Microsoft.Xna.Framework
 
 		protected override void OnPause ()
 		{
+			resuming = true;
 			System.Diagnostics.Debug.WriteLine ("MonoGame OnPause !!!!!!!!!");
 			base.OnPause ();
 			if (Paused != null)
@@ -146,6 +154,8 @@ namespace Microsoft.Xna.Framework
 			(deviceManager as GraphicsDeviceManager).ForceSetFullScreen ();
 			Game.Window.RequestFocus ();
 			TouchPanel.ResetState ();
+
+			resuming = false;
 		}
 
 

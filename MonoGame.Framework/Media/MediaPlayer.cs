@@ -293,6 +293,11 @@ namespace Microsoft.Xna.Framework.Media
                 if (_state != value)
                 {
                     _state = value;
+#if ANDROID
+		    // dont raise the state change when we result.
+		    if (Game.Activity.Resuming)
+			    return;
+#endif
                     if (MediaStateChanged != null)
                         MediaStateChanged (null, EventArgs.Empty);
                 }
