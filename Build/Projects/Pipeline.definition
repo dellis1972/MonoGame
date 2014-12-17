@@ -21,7 +21,7 @@
     <WindowsApplicationIcon>App.ico</WindowsApplicationIcon>
     <CustomDefinitions>
       <Platform Name="Windows">TRACE;WINDOWS</Platform>
-      <Platform Name="MacOS">TRACE;MONOMAC;XWT</Platform>
+      <Platform Name="MacOS">TRACE;MONOMAC;GTK</Platform>
       <Platform Name="Linux">TRACE;LINUX;XWT</Platform>
     </CustomDefinitions>
   </Properties>
@@ -136,16 +136,34 @@
 
     <!-- The Xwt specific stuff -->
     <Compile Include="Xwt\PipelineProjectProxy.cs">
-      <Platforms>MacOS,Linux</Platforms>
+      <Platforms>Linux</Platforms>
     </Compile>
     <Compile Include="Xwt\XwtView.cs">
-      <Platforms>MacOS,Linux</Platforms>
+      <Platforms>Linux</Platforms>
     </Compile>
     <Compile Include="Xwt\OutputTextView.cs">
-      <Platforms>MacOS,Linux</Platforms>
+      <Platforms>Linux</Platforms>
     </Compile>
     <Compile Include="Xwt\PropertyGrid.cs">
-      <Platforms>MacOS,Linux</Platforms>
+      <Platforms>Linux</Platforms>
+    </Compile>
+
+    <!-- The Gtk# specific stuff -->
+    <EmbeddedResource Include="Gtk\gtk-gui\gui.stetic">
+      <Platforms>MacOS</Platforms>
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <Compile Include="Gtk\MainView.cs">
+       <Platforms>MacOS</Platforms>
+    </Compile>
+    <Compile Include="Gtk\gtk-gui\generated.cs">
+       <Platforms>MacOS</Platforms>
+    </Compile>
+    <Compile Include="Gtk\IgeMacIntegration.cs">
+       <Platforms>MacOS</Platforms>
+    </Compile>
+    <Compile Include="Gtk\PropertyGrid.cs">
+       <Platforms>MacOS</Platforms>
     </Compile>
 
     <!-- The resources for icons and buttons -->

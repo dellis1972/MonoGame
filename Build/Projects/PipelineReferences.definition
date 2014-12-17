@@ -11,13 +11,12 @@
   </Platform>
 
   <Platform Type="MacOS">
-    <Binary
-      Name="Xwt"
-      Path="ThirdParty\Dependencies\Xwt\Xwt.dll" />
-    <Binary
-      Name="Xwt.Mac"
-      Path="ThirdParty\Dependencies\Xwt\Xwt.Mac.dll" />
-  </Platform>
+    <Reference Include="atk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="glib-sharp" />
+    <Reference Include="gtk-sharp" />
+    <Reference Include="Mono.Posix" />
+ </Platform>
 
   <Platform Type="Windows">
     <Reference Include="System.Deployment" />

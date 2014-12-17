@@ -7,7 +7,7 @@
   <import>
     <widget-library name="../bin/Debug/Pipeline.exe" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="Pipeline.MacOS.MainView" design-size="705 416">
+  <widget class="Gtk.Bin" id="Pipeline.GtkSharp.MainView" design-size="705 416">
     <action-group name="Default">
       <action id="openAction">
         <property name="Type">Action</property>

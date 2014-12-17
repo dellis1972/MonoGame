@@ -14,7 +14,7 @@ using System.Reflection;
 using IgeMacIntegration;
 #endif
 
-namespace Pipeline.MacOS
+namespace Pipeline.GtkSharp
 {
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class MainView : Gtk.Bin, IView

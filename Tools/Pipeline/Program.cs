@@ -12,7 +12,7 @@ using Xwt;
 #endif
 #if GTK
 using Gtk;
-using Pipeline.MacOS;
+using Pipeline.GtkSharp;
 using IgeMacIntegration;
 #endif
 
