@@ -30,5 +30,15 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
         /// compression formats, including PVRTC and DXT plus ATITC and other formats.
         /// </summary>
         Compressed,
+
+		/// <summary>
+		/// The SurfaceFormat value, of the input TextureContent object.  It will be using PVRTC texture compresison, this is only supported on certain Android Devices and all iOS devices.
+		/// </summary>
+		PvrCompressed,
+
+		/// <summary>
+		/// The SurfaceFormat value, of the input TextureContent object. It will be using ATITC texture compresison, this is only supported on certain Android Devices.
+		/// </summary>
+		AtcCompressed,
     }
 }

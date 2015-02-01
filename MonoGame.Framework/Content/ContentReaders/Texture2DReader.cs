@@ -110,6 +110,29 @@ namespace Microsoft.Xna.Framework.Content
 				case SurfaceFormat.Dxt5:
 					convertedFormat = SurfaceFormat.RgbaPvrtc4Bpp;
 					break;
+#elif __ANDROID__
+				case SurfaceFormat.Dxt1:
+				case SurfaceFormat.Dxt1a:
+				case SurfaceFormat.RgbaS3tcDxt1:
+					if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsDxt1)
+						convertedFormat = SurfaceFormat.Color;
+					break;
+				case SurfaceFormat.Dxt3:
+				case SurfaceFormat.Dxt5:
+				case SurfaceFormat.RgbaS3tcDxt3:
+				case SurfaceFormat.RgbaS3tcDxt5:
+					if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsS3tc)
+						convertedFormat = SurfaceFormat.Color;
+					break;
+				case SurfaceFormat.RgbEtc1:
+					if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsEtc1)
+						throw new NotSupportedException ("Etc1 Texture compression is not supported on this device");
+					break;
+				case SurfaceFormat.RgbaATCExplicitAlpha:
+				case SurfaceFormat.RgbaATCInterpolatedAlpha:
+					if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsAtitc)
+						throw new NotSupportedException ("Atitc Texture compression is not supported on this device");
+					break;
 #else
 				case SurfaceFormat.Dxt1:
                 case SurfaceFormat.Dxt1a:
@@ -150,14 +173,17 @@ namespace Microsoft.Xna.Framework.Content
 #if !IOS
 					case SurfaceFormat.Dxt1:
                     case SurfaceFormat.Dxt1a:
+					case SurfaceFormat.RgbaS3tcDxt1:
                         if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsDxt1)
 						    levelData = DxtUtil.DecompressDxt1(levelData, levelWidth, levelHeight);
 						break;
 					case SurfaceFormat.Dxt3:
+					case SurfaceFormat.RgbaS3tcDxt3:
                         if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsS3tc)
 						    levelData = DxtUtil.DecompressDxt3(levelData, levelWidth, levelHeight);
 						break;
 					case SurfaceFormat.Dxt5:
+					case SurfaceFormat.RgbaS3tcDxt5:
                         if (!reader.GraphicsDevice.GraphicsCapabilities.SupportsS3tc)
     						levelData = DxtUtil.DecompressDxt5(levelData, levelWidth, levelHeight);
 						break;

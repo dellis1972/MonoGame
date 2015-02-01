@@ -123,8 +123,27 @@ namespace Microsoft.Xna.Framework.Graphics
         /// <summary>
         /// DXT1 version where 1-bit alpha is used.
         /// </summary>
-        Dxt1a = 70
-
+        Dxt1a = 70,
+        /// <summary>>
+        /// ATC/ATITC compression (Android)
+        /// </summary>
+        RgbaATCExplicitAlpha =  0x8C93,
+        /// <summary>>
+        /// ATC/ATITC compression (Android)
+        /// </summary>
+        RgbaATCInterpolatedAlpha = 0x87EE,
+        /// <summary>>
+        /// S3TC compression (Android)
+        /// </summary>
+        RgbaS3tcDxt1 = 0x83F1,
+        /// <summary>>
+        /// S3TC compression (Android)
+        /// </summary>
+        RgbaS3tcDxt3 = 0x83F2,
+        /// <summary>>
+        /// S3TC compression (Android)
+        /// </summary>
+        RgbaS3tcDxt5 = 0x83F3,
         #endregion
     }
     

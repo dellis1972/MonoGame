@@ -523,10 +523,12 @@ namespace Microsoft.Xna.Framework.Graphics
 				glType = PixelType.UnsignedShort565;
 				break;
 			case SurfaceFormat.Bgra4444:
-#if IOS || ANDROID
-				glInternalFormat = PixelInternalFormat.Rgba;
+#if IOS
+                                glInternalFormat = PixelInternalFormat.Rgba;
+#elif __ANDROID__
+                                glInternalFormat = (PixelInternalFormat)All.Rgba4;
 #else
-				glInternalFormat = PixelInternalFormat.Rgba4;
+                                glInternalFormat = PixelInternalFormat.Rgba4;
 #endif
 				glFormat = PixelFormat.Rgba;
 				glType = PixelType.UnsignedShort4444;
@@ -648,6 +650,14 @@ namespace Microsoft.Xna.Framework.Graphics
                 glInternalFormat = (PixelInternalFormat)0x83F3;
 				glFormat = (PixelFormat)All.CompressedTextureFormats;
 				break;
+             case SurfaceFormat.RgbaATCExplicitAlpha:
+				glInternalFormat = (PixelInternalFormat)All.AtcRgbaExplicitAlphaAmd;
+				glFormat = (PixelFormat)All.CompressedTextureFormats;
+				break;
+             case SurfaceFormat.RgbaATCInterpolatedAlpha:
+				glInternalFormat = (PixelInternalFormat)All.AtcRgbaInterpolatedAlphaAmd;
+				glFormat = (PixelFormat)All.CompressedTextureFormats;
+				break;
 #endif
                     
 
@@ -704,12 +714,17 @@ namespace Microsoft.Xna.Framework.Graphics
                 case SurfaceFormat.RgbPvrtc2Bpp:
                 case SurfaceFormat.RgbaPvrtc2Bpp:
                 case SurfaceFormat.RgbEtc1:
+                case SurfaceFormat.RgbaS3tcDxt1:
                     // One texel in DXT1, PVRTC 2bpp and ETC1 is a minimum 4x4 block, which is 8 bytes
                     return 8;
                 case SurfaceFormat.Dxt3:
                 case SurfaceFormat.Dxt5:
                 case SurfaceFormat.RgbPvrtc4Bpp:
                 case SurfaceFormat.RgbaPvrtc4Bpp:
+                case SurfaceFormat.RgbaS3tcDxt3:
+                case SurfaceFormat.RgbaS3tcDxt5:
+                case SurfaceFormat.RgbaATCExplicitAlpha:
+                case SurfaceFormat.RgbaATCInterpolatedAlpha:
                     // One texel in DXT3, DXT5 and PVRTC 4bpp is a minimum 4x4 block, which is 16 bytes
                     return 16;
                 case SurfaceFormat.Alpha8:

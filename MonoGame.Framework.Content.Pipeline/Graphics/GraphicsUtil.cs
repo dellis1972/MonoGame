@@ -10,6 +10,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework.Graphics;
 using Nvidia.TextureTools;
 using WrapMode = System.Drawing.Drawing2D.WrapMode;
+using Microsoft.Xna.Framework.Content.Pipeline.Processors;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 
 namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
@@ -198,40 +200,66 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
             return true;
         }
 
+		internal static bool TextureIsOpaque(TextureContent content) {
+			foreach (MipmapChain mc in content.Faces) { 
+				for (int i = 0; i < mc.Count; i++) { 
+					BitmapContent bc = mc [i]; 
+					byte[] pixelData = bc.GetPixelData (); 
+					var containsAlpha = false;
+					for (var x = 3; x < pixelData.Length; x += 4)
+					{
+						if (pixelData[x] != 0xFF) {
+							return false;
+						}
+					}
+				}
+			}
+			return true;
+		}
+
+		internal static void PremultiplyAlpha (byte[] pixelData) {
+			for (var x = 0; x < pixelData.Length; x += 4)
+			{
+				var c = Color.FromNonPremultiplied (pixelData [x], pixelData [x + 1], pixelData [x + 2], pixelData [x + 3]);
+				pixelData [x] = c.R;
+				pixelData [x + 1] = c.G;
+				pixelData [x + 2] = c.B;
+				pixelData [x + 3] = c.A;
+			}
+		}
+
         /// <summary>
         /// Compresses TextureContent in a format appropriate to the platform
         /// </summary>
-        public static void CompressTexture(GraphicsProfile profile, TextureContent content, ContentProcessorContext context, bool generateMipmaps, bool premultipliedAlpha, bool sharpAlpha)
+		public static void CompressTexture(GraphicsProfile profile, TextureContent content, ContentProcessorContext context, bool generateMipmaps, bool premultipliedAlpha, bool sharpAlpha)
         {
             // TODO: At the moment, only DXT compression from windows machine is supported
             //       Add more here as they become available.
             switch (context.TargetPlatform)
             {
-                case TargetPlatform.Windows:
-                case TargetPlatform.WindowsGL:
-                case TargetPlatform.WindowsPhone:
-                case TargetPlatform.WindowsPhone8:
-                case TargetPlatform.WindowsStoreApp:
-                case TargetPlatform.Ouya:
-                case TargetPlatform.Android:
-                case TargetPlatform.Linux: 
-                case TargetPlatform.MacOSX:
-                case TargetPlatform.NativeClient:
-                case TargetPlatform.Xbox360:
-					context.Logger.LogMessage("Using DXT Compression");
-                    CompressDxt(profile, content, generateMipmaps, premultipliedAlpha, sharpAlpha);
-				    break;
-                case TargetPlatform.iOS:
+				case TargetPlatform.Windows:
+				case TargetPlatform.WindowsGL:
+				case TargetPlatform.WindowsPhone:
+				case TargetPlatform.WindowsPhone8:
+				case TargetPlatform.WindowsStoreApp:
+				case TargetPlatform.Ouya:
+				case TargetPlatform.Android:
+				case TargetPlatform.Linux: 
+				case TargetPlatform.MacOSX:
+				case TargetPlatform.NativeClient:
+				case TargetPlatform.Xbox360:
+					context.Logger.LogMessage ("Using DXT Compression");
+					CompressDxt(profile, content, generateMipmaps, premultipliedAlpha, sharpAlpha);
+					break;
+	            case TargetPlatform.iOS:
 					context.Logger.LogMessage("Using PVRTC Compression");
-                    CompressPvrtc(content, generateMipmaps, premultipliedAlpha);
+					CompressPvrtc(content, generateMipmaps, premultipliedAlpha);
                     break;
-
                 default:
                     throw new NotImplementedException(string.Format("Texture Compression it not implemented for {0}", context.TargetPlatform));
             }
-
         }
-        
+
         private static void CompressPvrtc(TextureContent content, bool generateMipmaps, bool premultipliedAlpha)
         {
             // TODO: Once uncompressed mipmap generation is supported, first use NVTT to generate mipmaps,

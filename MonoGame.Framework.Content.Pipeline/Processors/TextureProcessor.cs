@@ -31,7 +31,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
 
         public virtual TextureProcessorOutputFormat TextureFormat { get; set; }
 
-        public override TextureContent Process(TextureContent input, ContentProcessorContext context)
+		public override TextureContent Process(TextureContent input, ContentProcessorContext context)
         {
             var bmp = input.Faces[0][0];
 
@@ -99,8 +99,10 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
 			try 
 			{
 			    if (TextureFormat == TextureProcessorOutputFormat.DxtCompressed || 
-                    TextureFormat == TextureProcessorOutputFormat.Compressed )
-                	GraphicsUtil.CompressTexture(context.TargetProfile, input, context, GenerateMipmaps, PremultiplyAlpha, false);
+                    TextureFormat == TextureProcessorOutputFormat.Compressed ||
+					TextureFormat == TextureProcessorOutputFormat.AtcCompressed ||
+					TextureFormat == TextureProcessorOutputFormat.PvrCompressed)
+					GraphicsUtil.CompressTexture(context.TargetProfile, input, context, GenerateMipmaps, PremultiplyAlpha, false);
 			}
 			catch(EntryPointNotFoundException ex) {
 				context.Logger.LogImportantMessage ("Could not find the entry point to compress the texture", ex.ToString());
