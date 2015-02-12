@@ -223,6 +223,9 @@
     </Compile>
 
     <!-- Android/OUYA Platform -->
+    <Compile Include="Android\GamerServices\GooglePlayHelper.cs">
+      <Platforms>Android</Platforms>
+    </Compile>
     <Compile Include="Android\GamerServices\Guide.cs">
       <Platforms>Android,Ouya</Platforms>
     </Compile>
@@ -231,6 +234,12 @@
     </Compile>
     <Compile Include="Android\GamerServices\SignedInGamer.cs">
       <Platforms>Android,Ouya</Platforms>
+    </Compile>
+    <Compile Include="GamerServices\Gamer.Android.cs">
+      <Platforms>Android</Platforms>
+    </Compile>
+    <Compile Include="GamerServices\GamerProfile.Android.cs">
+      <Platforms>Android</Platforms>
     </Compile>
 
     <!-- iOS Platform -->
@@ -258,6 +267,13 @@
     <Compile Include="GamerServices\NotificationPosition.cs">
       <Platforms>iOS</Platforms>
     </Compile>
+    <Compile Include="GamerServices\Gamer.iOS.cs">
+      <Platforms>iOS</Platforms>
+    </Compile>
+    <Compile Include="GamerServices\GamerProfile.iOS.cs">
+      <Platforms>iOS</Platforms>
+    </Compile>
+
     
     <!-- DesktopGL Platform -->
     <Compile Include="DesktopGL\GamerServices\Guide.cs">

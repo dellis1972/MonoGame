@@ -116,7 +116,8 @@ namespace Microsoft.Xna.Framework.GamerServices
                 if (lp != null && lp.Authenticated)
                 {
                     this.Gamertag = lp.Alias;
-                    this.DisplayName = lp.PlayerID;	
+                    this.DisplayName = lp.PlayerID;
+                    this.LeaderboardWriter = new LeaderboardWriter(this);
                     // Insert code here to handle a successful authentication.
                     Gamer.SignedInGamers.Add(this);
                     // Fire the SignedIn event
@@ -339,13 +340,18 @@ namespace Microsoft.Xna.Framework.GamerServices
             }
         }
 
-        public void UpdateScore(string aCategory, long aScore)
+		public void UpdateScore(LeaderboardKey key, long aScore)
         {
             if (IsSignedInToLive)
             {
                 UIApplication.SharedApplication.InvokeOnMainThread(delegate
                 {
-                    GKScore score = new GKScore(aCategory);
+					var aCategory = "";
+					var resolver = Game.Instance.Services.GetService<ILeaderboardResolver>();
+					if (resolver != null) {
+							aCategory = resolver.GetLeaderboardIdFromKey(key);
+					}
+					GKScore score = new GKScore(aCategory);
                     score.Value = aScore;
 
                     if (!UIDevice.CurrentDevice.CheckSystemVersion(6, 0))
@@ -467,7 +473,12 @@ namespace Microsoft.Xna.Framework.GamerServices
         //            }
         //        }
         #endregion
-		
+
+		public void SignOut() {
+			//SignedInGamers.Remove (this);
+			//OnSignedOut (new SignedOutEventArgs (this));
+		}
+
         protected virtual void OnSignedIn(SignedInEventArgs e)
         {
             if (SignedIn != null)
@@ -493,19 +504,27 @@ namespace Microsoft.Xna.Framework.GamerServices
         #endregion
     }
 
-    public class SignedInEventArgs : EventArgs
-    {
-        public SignedInEventArgs(SignedInGamer gamer)
-        {
-			
-        }
-    }
+	public class SignedInEventArgs : EventArgs
+	{
+		public SignedInEventArgs ( SignedInGamer gamer )
+		{
+			Gamer = gamer;
+		}
 
-    public class SignedOutEventArgs : EventArgs
-    {
-        public SignedOutEventArgs(SignedInGamer gamer)
-        {
-			
-        }
-    }
+		public SignedInGamer Gamer { get; set; }
+	}
+
+	public class SignedOutEventArgs : EventArgs
+	{
+		public SignedOutEventArgs (SignedInGamer gamer )
+		{
+			Gamer = gamer;
+		}
+
+		public SignedInGamer Gamer { get; set; }
+	}
+
+	public interface ILeaderboardResolver {
+		string GetLeaderboardIdFromKey(LeaderboardKey key);
+	}
 }

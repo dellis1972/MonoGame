@@ -39,8 +39,11 @@ namespace Microsoft.Xna.Framework
         {
             if (disposing)
             {
+				Android.Util.Log.Verbose ("MonoGame", "AndroidGamePlatform.Dispose");
                 AndroidGameActivity.Paused -= Activity_Paused;
                 AndroidGameActivity.Resumed -= Activity_Resumed;
+				Game.Activity.Finish ();
+				_gameWindow.GameView.Stop ();
             }
             base.Dispose(disposing);
         }
@@ -51,7 +54,9 @@ namespace Microsoft.Xna.Framework
 
         public override void Exit()
         {
-            Game.Activity.MoveTaskToBack(true);
+
+			Android.Util.Log.Verbose ("MonoGame", "MoveTaskToBack");
+		   Game.Activity.MoveTaskToBack(true);
         }
 
         public override void RunLoop()
@@ -131,6 +136,7 @@ namespace Microsoft.Xna.Framework
             if (!IsActive)
             {
                 IsActive = true;
+				Input.GamePad.Back = false;
 				_gameWindow.GameView.Resume();
 				if(_MediaPlayer_PrevState == MediaState.Playing && Game.Activity.AutoPauseAndResumeMediaPlayer)
                 	MediaPlayer.Resume();

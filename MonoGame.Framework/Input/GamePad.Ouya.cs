@@ -41,7 +41,9 @@ purpose and non-infringement.
 using Android.Views;
 using System;
 using System.Diagnostics;
+#if OUYA
 using Ouya.Console.Api;
+#endif
 
 namespace Microsoft.Xna.Framework.Input
 {
@@ -67,7 +69,11 @@ namespace Microsoft.Xna.Framework.Input
         {
             _device = device;
             _deviceId = device.Id;
-            _descriptor = device.Descriptor;
+			try {
+              _descriptor = device.Descriptor;
+			} catch (Java.Lang.LinkageError) {
+				_descriptor = "default";
+			}
             _isConnected = true;
 
             _capabilities = CapabilitiesOfDevice(device);
@@ -140,7 +146,12 @@ namespace Microsoft.Xna.Framework.Input
 
     static partial class GamePad
     {
+		#if OUYA
         private static readonly OuyaGamePad[] GamePads = new OuyaGamePad[OuyaController.MaxControllers];
+		public static bool Back = false;
+		#else
+		private static readonly OuyaGamePad[] GamePads = new OuyaGamePad[4];
+		#endif
 
         private static int PlatformGetMaxNumberOfGamePads()
         {
@@ -172,35 +183,37 @@ namespace Microsoft.Xna.Framework.Input
         {
             var gamePad = GamePads[index];
             GamePadState state = GamePadState.Default;
-            if (gamePad != null && gamePad._isConnected)
-            {
-                // Check if the device was disconnected
-                var dvc = InputDevice.GetDevice(gamePad._deviceId);
-                if (dvc == null)
-                {
-                    Debug.WriteLine("Detected controller disconnect [" + index + "] ");
-                    gamePad._isConnected = false;
-                    return state;
-                }
+			if (gamePad != null && gamePad._isConnected) {
+				// Check if the device was disconnected
+				var dvc = InputDevice.GetDevice (gamePad._deviceId);
+				if (dvc == null) {
+					Debug.WriteLine ("Detected controller disconnect [" + index + "] ");
+					gamePad._isConnected = false;
+					return state;
+				}
 
-                GamePadThumbSticks thumbSticks = new GamePadThumbSticks(gamePad._leftStick, gamePad._rightStick, deadZoneMode);
+				GamePadThumbSticks thumbSticks = new GamePadThumbSticks (gamePad._leftStick, gamePad._rightStick, deadZoneMode);
 
-                if (gamePad._startButtonPressed)
-                {
-                    gamePad._buttons |= Buttons.Start;
-                    gamePad._startButtonPressed = false;
-                }
-                else
-                {
-                    gamePad._buttons &= ~Buttons.Start;
-                }
+				if (gamePad._startButtonPressed) {
+					gamePad._buttons |= Buttons.Start;
+					gamePad._startButtonPressed = false;
+				} else {
+					gamePad._buttons &= ~Buttons.Start;
+				}
 
-                state = new GamePadState(
-                    thumbSticks,
-                    new GamePadTriggers(gamePad._leftTrigger, gamePad._rightTrigger),
-                    new GamePadButtons(gamePad._buttons),
-                    new GamePadDPad(gamePad._buttons));
-            }
+				state = new GamePadState (
+					thumbSticks,
+					new GamePadTriggers (gamePad._leftTrigger, gamePad._rightTrigger),
+					new GamePadButtons (gamePad._buttons),
+					new GamePadDPad (gamePad._buttons));
+			} else {
+				if (index == 0 && Back)
+				{
+					// Consume state
+					Back = false;
+					state = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(Buttons.Back), new GamePadDPad());
+				}
+			}
 
             return state;
         }
@@ -228,45 +241,47 @@ namespace Microsoft.Xna.Framework.Input
             // to new player numbers. Also, the player number returned does not match the LED on the controller.
             // Once this is fixed, we could consider using OuyaController.GetPlayerNumByDeviceId()
             // http://forums.ouya.tv/discussion/819/getplayernumbydeviceid-can-return-1-after-controllers-disconnect-and-reconnect
+			try {
+	            int firstDisconnectedPadId = -1;
+	            for (int i = 0; i < GamePads.Length; i++)
+	            {
+	                var pad = GamePads[i];
+	                if (pad != null && pad._isConnected && pad._deviceId == device.Id)
+	                {
+	                    return pad;
+	                }
+	                else if (pad != null && !pad._isConnected && pad._descriptor == device.Descriptor)
+	                {
+	                    Debug.WriteLine("Found previous controller [" + i + "] " + device.Name);
+	                    pad._deviceId = device.Id;
+	                    pad._isConnected = true;
+	                    return pad;
+	                }
+	                else if (pad == null)
+	                {
+	                    Debug.WriteLine("Found new controller [" + i + "] " + device.Name);
+	                    pad = new OuyaGamePad(device);
+	                    GamePads[i] = pad;
+	                    return pad;
+	                }
+	                else if (!pad._isConnected && firstDisconnectedPadId < 0)
+	                {
+	                    firstDisconnectedPadId = i;
+	                }
+	            }
 
-            int firstDisconnectedPadId = -1;
-            for (int i = 0; i < GamePads.Length; i++)
-            {
-                var pad = GamePads[i];
-                if (pad != null && pad._isConnected && pad._deviceId == device.Id)
-                {
-                    return pad;
-                }
-                else if (pad != null && !pad._isConnected && pad._descriptor == device.Descriptor)
-                {
-                    Debug.WriteLine("Found previous controller [" + i + "] " + device.Name);
-                    pad._deviceId = device.Id;
-                    pad._isConnected = true;
-                    return pad;
-                }
-                else if (pad == null)
-                {
-                    Debug.WriteLine("Found new controller [" + i + "] " + device.Name);
-                    pad = new OuyaGamePad(device);
-                    GamePads[i] = pad;
-                    return pad;
-                }
-                else if (!pad._isConnected && firstDisconnectedPadId < 0)
-                {
-                    firstDisconnectedPadId = i;
-                }
-            }
-
-            // If we get here, we failed to find a game pad or an empty slot to create one.
-            // If we're holding onto a disconnected pad, overwrite it with this one
-            if (firstDisconnectedPadId >= 0)
-            {
-                Debug.WriteLine("Found new controller in place of disconnected controller [" + firstDisconnectedPadId + "] " + device.Name);
-                var pad = new OuyaGamePad(device);
-                GamePads[firstDisconnectedPadId] = pad;
-                return pad;
-            }
-
+	            // If we get here, we failed to find a game pad or an empty slot to create one.
+	            // If we're holding onto a disconnected pad, overwrite it with this one
+	            if (firstDisconnectedPadId >= 0)
+	            {
+	                Debug.WriteLine("Found new controller in place of disconnected controller [" + firstDisconnectedPadId + "] " + device.Name);
+	                var pad = new OuyaGamePad(device);
+	                GamePads[firstDisconnectedPadId] = pad;
+	                return pad;
+	            }
+			} catch (Java.Lang.LinkageError) {
+				return null;
+			}
             // All pad slots are taken so ignore further devices.
             return null;
         }

@@ -210,7 +210,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 			}
 		}
 		
-		public void UpdateScore( string aCategory, long aScore )
+        public void UpdateScore( LeaderboardKey aCategory, long aScore )
 		{
 			if (IsSignedInToLive)
 			{				

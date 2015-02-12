@@ -74,6 +74,9 @@ namespace Microsoft.Xna.Framework
 #if ANDROID
         static List<Action> actions = new List<Action>();
         //static Mutex actionsMutex = new Mutex();
+		internal static void ResetThread (int id) {
+			mainThreadId = id;
+		}
 #elif IOS
         public static EAGLContext BackgroundContext;
 #elif WINDOWS || DESKTOPGL || ANGLE
