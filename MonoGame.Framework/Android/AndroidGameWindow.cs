@@ -8,17 +8,19 @@ using Android.Content.PM;
 using Android.Views;
 using Microsoft.Xna.Framework.Input.Touch;
 using OpenTK;
-
-#if OUYA
 using Microsoft.Xna.Framework.Input;
-#endif
 
 namespace Microsoft.Xna.Framework
 {
     [CLSCompliant(false)]
     public class AndroidGameWindow : GameWindow, IDisposable
     {
-        internal MonoGameAndroidGameView GameView { get; private set; }
+		#if OPENTK
+		internal MonoGameAndroidGameView GameView { get; private set; }
+		#else
+		internal AndroidGameView GameView { get; private set; }
+		#endif
+        
         internal IResumeManager Resumer;
 
         private readonly Game _game;
@@ -46,36 +48,56 @@ namespace Microsoft.Xna.Framework
         {
             _clientBounds = new Rectangle(0, 0, context.Resources.DisplayMetrics.WidthPixels, context.Resources.DisplayMetrics.HeightPixels);
 
+			#if OPENTK
             GameView = new MonoGameAndroidGameView(context, this, _game);
             GameView.RenderOnUIThread = Game.Activity.RenderOnUIThread;
             GameView.RenderFrame += OnRenderFrame;
             GameView.UpdateFrame += OnUpdateFrame;
+			#else
+			GameView = new AndroidGameView (context, this, _game);
+			GameView.RenderOnUIThread = Game.Activity.RenderOnUIThread;
+			GameView.RenderFrame += OnRenderFrame;
+			GameView.UpdateFrame += OnUpdateFrame;
+			#endif
 
             GameView.RequestFocus();
             GameView.FocusableInTouchMode = true;
 
-#if OUYA
             GamePad.Initialize();
-#endif
         }
 
         #region AndroidGameView Methods
 
-        private void OnRenderFrame(object sender, FrameEventArgs frameEventArgs)
+		#if OPENTK
+		private void OnRenderFrame(object sender, FrameEventArgs frameEventArgs)
+		#else
+		private void OnRenderFrame(object sender, AndroidGameView.FrameEventArgs frameEventArgs)
+		#endif
         {
+			#if OPENTK
             if (GameView.GraphicsContext == null || GameView.GraphicsContext.IsDisposed)
                 return;
 
             if (!GameView.GraphicsContext.IsCurrent)
                 GameView.MakeCurrent();
-
+			#else
+			GameView.MakeCurrent ();
+			#endif
             Threading.Run();
         }
 
-        private void OnUpdateFrame(object sender, FrameEventArgs frameEventArgs)
+		#if OPENTK
+		private void OnUpdateFrame(object sender, FrameEventArgs frameEventArgs)
+		#else
+		private void OnUpdateFrame(object sender, AndroidGameView.FrameEventArgs frameEventArgs)
+		#endif
         {
+			#if OPENTK
             if (!GameView.GraphicsContext.IsCurrent)
                 GameView.MakeCurrent();
+			#else
+			GameView.MakeCurrent ();
+			#endif
 
             Threading.Run();
 

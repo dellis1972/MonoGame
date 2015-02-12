@@ -49,7 +49,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Microsoft.Xna.Framework.GamerServices
 {
 	
-	public sealed class GamerProfile : IDisposable
+	public sealed partial class GamerProfile : IDisposable
     {
         ~GamerProfile()
         {
@@ -71,8 +71,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 	    #endregion
 
 	#region Properties
-
-        /*
+		/*
 		public Texture2D GamerPicture {
 			get {
 				throw new NotImplementedException ();

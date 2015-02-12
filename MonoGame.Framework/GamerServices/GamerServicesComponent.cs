@@ -64,6 +64,10 @@ change. To the extent permitted under your local laws, the contributors exclude
 the implied warranties of merchantability, fitness for a particular purpose and
 non-infringement.
 */
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+
 #endregion License
 
 
@@ -105,8 +109,25 @@ namespace MonoGame.Xna.Framework.GamerServices {
 
 		public override void Update (GameTime gameTime)
 		{
-
+			while (LeaderboardWriter.pendingUpdates.Count > 0) {
+				var e = LeaderboardWriter.pendingUpdates.Dequeue ();
+				var gamer = e.Gamer as SignedInGamer;
+				if (gamer != null)
+					gamer.UpdateScore (e.Key, e.Rating);
+			}
+			while (completedTasks.Count > 0) {
+				var tcsResult = completedTasks.Dequeue ();
+				tcsResult.tcs.SetResult(tcsResult.result);
+			}
 		}
+
+		internal struct TaskCompletionResult {
+			public TaskCompletionSource<object> tcs;
+			public object result;
+		}
+
+		internal static readonly Queue<TaskCompletionResult> completedTasks = 
+			new Queue<TaskCompletionResult>();
 	}
 
     public class MonoGameGamerServicesComponent : GamerServicesComponent

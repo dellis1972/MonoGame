@@ -2,26 +2,20 @@
 /*
 Microsoft Public License (Ms-PL)
 MonoGame - Copyright © 2009 The MonoGame Team
-
 All rights reserved.
-
 This license governs use of the accompanying software. If you use the software, you accept this license. If you do not
 accept the license, do not use the software.
-
 1. Definitions
 The terms "reproduce," "reproduction," "derivative works," and "distribution" have the same meaning here as under 
 U.S. copyright law.
-
 A "contribution" is the original software, or any additions or changes to the software.
 A "contributor" is any person that distributes its contribution under this license.
 "Licensed patents" are a contributor's patent claims that read directly on its contribution.
-
 2. Grant of Rights
 (A) Copyright Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, 
 each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, prepare derivative works of its contribution, and distribute its contribution or any derivative works that you create.
 (B) Patent Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, 
 each contributor grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, sell, offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the contribution in the software.
-
 3. Conditions and Limitations
 (A) No Trademark License- This license does not grant you rights to use any contributors' name, logo, or trademarks.
 (B) If you bring a patent claim against any contributor over patents that you claim are infringed by the software, 
@@ -48,54 +42,52 @@ using Android.Net;
 
 namespace Microsoft.Xna.Framework.GamerServices
 {
-    public class SignedInGamer : Gamer
-    {
-		// TODO private GKLocalPlayer lp;
-		
+	public class SignedInGamer : Gamer
+	{
 		private AchievementCollection gamerAchievements;
 		private FriendCollection friendCollection;
 		private bool isSignedInToLive = true;
-		
+
 		delegate void AuthenticationDelegate();
-		
+
 		public IAsyncResult BeginAuthentication(AsyncCallback callback, Object asyncState)
 		{
 			// Go off authenticate
 			AuthenticationDelegate ad = DoAuthentication; 
-			
+
 			return ad.BeginInvoke(callback, ad);
 		}
-		
+
 		public void EndAuthentication( IAsyncResult result )
 		{
 			AuthenticationDelegate ad = (AuthenticationDelegate)result.AsyncState; 
-			
+
 			ad.EndInvoke(result);
 		}
-		
+
 		private void DoAuthentication()
 		{
 			try 				
 			{
-				
+
 			}
 			catch (Exception ex) 
 			{
 				Console.WriteLine(ex.Message);
 			}
 		}
-		
+
 		public SignedInGamer()
 		{		
 			var result = BeginAuthentication(null, null);	
 			EndAuthentication( result );
 		}
-		
+
 		private void AuthenticationCompletedCallback( IAsyncResult result )
 		{
 			EndAuthentication(result);	
 		}
-		
+
 		#region Methods
 		public FriendCollection GetFriends()
 		{
@@ -106,18 +98,18 @@ namespace Microsoft.Xna.Framework.GamerServices
 					friendCollection = new FriendCollection();
 				}
 			}
-			
+
 			return friendCollection;
 		}
-		
+
 		public bool IsFriend (Gamer gamer)
 		{
 			if ( gamer == null ) 
 				throw new ArgumentNullException();
-			
+
 			if ( gamer.IsDisposed )
 				throw new ObjectDisposedException(gamer.ToString());	
-			
+
 			bool found = false;
 			foreach(FriendGamer f in friendCollection)
 			{
@@ -127,19 +119,19 @@ namespace Microsoft.Xna.Framework.GamerServices
 				}
 			}
 			return found;
-						
+
 		}
-		
+
 		delegate AchievementCollection GetAchievementsDelegate();
-		
+
 		public IAsyncResult BeginGetAchievements( AsyncCallback callback, Object asyncState)
 		{
 			// Go off and grab achievements
 			GetAchievementsDelegate gad = GetAchievements; 
-			
+
 			return gad.BeginInvoke(callback, gad);
 		}
-		
+
 		private void GetAchievementCompletedCallback( IAsyncResult result )
 		{
 			// get the delegate that was used to call that method
@@ -148,16 +140,16 @@ namespace Microsoft.Xna.Framework.GamerServices
 			// get the return value from that method call
 			gamerAchievements = gad.EndInvoke(result);
 		}
-		
+
 		public AchievementCollection EndGetAchievements( IAsyncResult result )
 		{
 			GetAchievementsDelegate gad = (GetAchievementsDelegate)result.AsyncState; 
-			
+
 			gamerAchievements = gad.EndInvoke(result);
-			
+
 			return gamerAchievements;
 		}
-		
+
 		public AchievementCollection GetAchievements()
 		{
 			if ( IsSignedInToLive )
@@ -165,53 +157,59 @@ namespace Microsoft.Xna.Framework.GamerServices
 				if (gamerAchievements == null)
 				{
 					gamerAchievements = new AchievementCollection();
-				}				
+				}		
+				#if !OUYA
+				foreach(var achievement in GooglePlayHelper.Instance.Achievements) 
+					gamerAchievements.Add(achievement);
+				#endif
 			}
 			return gamerAchievements;
 		}
-		
+
 		delegate void AwardAchievementDelegate(string achievementId, double percentageComplete);
 
-        public IAsyncResult BeginAwardAchievement(string achievementId, AsyncCallback callback, Object state)
-        {
-            return BeginAwardAchievement(achievementId, 100.0, callback, state);
-        }
+		public IAsyncResult BeginAwardAchievement(string achievementId, AsyncCallback callback, Object state)
+		{
+			return BeginAwardAchievement(achievementId, 100.0, callback, state);
+		}
 
 		public IAsyncResult BeginAwardAchievement(
-         string achievementId,
-		 double percentageComplete,
-         AsyncCallback callback,
-         Object state
+			string achievementId,
+			double percentageComplete,
+			AsyncCallback callback,
+			Object state
 		)
 		{	
 			// Go off and award the achievement
 			AwardAchievementDelegate aad = DoAwardAchievement; 
-				
+
 			return aad.BeginInvoke(achievementId, percentageComplete, callback, aad);
 		}
-		
+
 		public void EndAwardAchievement(IAsyncResult result)
 		{
 			AwardAchievementDelegate aad = (AwardAchievementDelegate)result.AsyncState; 
-			
+
 			aad.EndInvoke(result);
 		}
-		
+
 		private void AwardAchievementCompletedCallback( IAsyncResult result )
 		{
 			EndAwardAchievement(result);	
 		}
-		
+
 		public void AwardAchievement( string achievementId )
 		{			
 			AwardAchievement(achievementId, 100.0f);
 		}
-		
+
 		public void DoAwardAchievement( string achievementId, double percentageComplete )
 		{
-			
+			#if !OUYA
+			GooglePlayHelper.Instance.AwardAchievement(achievementId, percentageComplete);
+			#endif
 		}
-		
+
 		public void AwardAchievement( string achievementId, double percentageComplete )
 		{
 			if (IsSignedInToLive)
@@ -219,25 +217,27 @@ namespace Microsoft.Xna.Framework.GamerServices
 				BeginAwardAchievement( achievementId, percentageComplete, AwardAchievementCompletedCallback, null );
 			}
 		}
-		
-		public void UpdateScore( string aCategory, long aScore )
+
+		internal void UpdateScore( LeaderboardKey key, long aScore )
 		{
 			if (IsSignedInToLive)
 			{
-				
+                #if !OUYA
+				GooglePlayHelper.Instance.SubmitScore (key, aScore);
+                #endif
 			}
 		}
-		
+
 		public void ResetAchievements()
 		{
 			if (IsSignedInToLive)
 			{
-				
+
 			}
 		}
 
 		#endregion
-			
+
 		#region Properties
 		public GameDefaults GameDefaults 
 		{ 
@@ -246,7 +246,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 				throw new NotSupportedException();
 			}
 		}
-		
+
 		public bool IsGuest 
 		{ 
 			get
@@ -254,7 +254,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 				throw new NotSupportedException();
 			}
 		}
-		
+
 		public bool IsSignedInToLive 
 		{ 
 			get
@@ -265,7 +265,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 				isSignedInToLive = value;
 			}
 		}
-		
+
 		public int PartySize 
 		{ 
 			get
@@ -277,15 +277,15 @@ namespace Microsoft.Xna.Framework.GamerServices
 				throw new NotSupportedException();
 			}
 		}
-		
-        public PlayerIndex PlayerIndex
-        {
-            get
-            {
-                return PlayerIndex.One;
-            }
-        }
-		
+
+		public PlayerIndex PlayerIndex
+		{
+			get
+			{
+				return PlayerIndex.One;
+			}
+		}
+
 		public GamerPresence Presence 
 		{ 
 			get
@@ -294,56 +294,71 @@ namespace Microsoft.Xna.Framework.GamerServices
 			}
 		}
 
-        GamerPrivileges _privileges = new GamerPrivileges();
-        public GamerPrivileges Privileges
-        {
-            get
-            {
-                return _privileges;
-            }
-        }
+		GamerPrivileges _privileges = new GamerPrivileges();
+		public GamerPrivileges Privileges
+		{
+			get
+			{
+				return _privileges;
+			}
+		}
 		#endregion
-		
-		
+
+
 		protected virtual void OnSignedIn(SignedInEventArgs e)
 		{
-			 if (SignedIn != null) 
-			 {
-			    // Invokes the delegates. 
-			    SignedIn(this, e);
-			 }
-		}
-		
-		protected virtual void OnSignedOut(SignedOutEventArgs e)
-		{
-			 if (SignedOut != null) 
-			 {
-			    // Invokes the delegates. 
-			    SignedOut(this, e);
-			 }
+			if (SignedIn != null) 
+			{
+				// Invokes the delegates. 
+				SignedIn(this, e);
+			}
 		}
 
-		
+		protected virtual void OnSignedOut(SignedOutEventArgs e)
+		{
+			if (SignedOut != null) 
+			{
+				// Invokes the delegates. 
+				SignedOut(this, e);
+			}
+		}
+
+		#if __ANDROID__ && !OUYA
+		internal void SignIn() {
+			OnSignedIn (new SignedInEventArgs (this));
+		}
+
+		public void SignOut() {
+			GooglePlayHelper.Instance.SignOut ();
+			SignedInGamers.Remove (this);
+			OnSignedOut (new SignedOutEventArgs (this));
+		}
+		#endif
+
 		#region Events
 		public static event EventHandler<SignedInEventArgs> SignedIn;
-		
+
 		public static event EventHandler<SignedOutEventArgs> SignedOut;
 		#endregion
-    }
-	
+	}
+
 	public class SignedInEventArgs : EventArgs
 	{
 		public SignedInEventArgs ( SignedInGamer gamer )
 		{
-			
+			Gamer = gamer;
 		}
+
+		public SignedInGamer Gamer { get; set; }
 	}
-	
+
 	public class SignedOutEventArgs : EventArgs
 	{
 		public SignedOutEventArgs (SignedInGamer gamer )
 		{
-			
+			Gamer = gamer;
 		}
+
+		public SignedInGamer Gamer { get; set; }
 	}
 }

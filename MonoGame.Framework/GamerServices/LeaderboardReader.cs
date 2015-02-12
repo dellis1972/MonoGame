@@ -8,8 +8,8 @@ namespace Microsoft.Xna.Framework.GamerServices
         public LeaderboardReader ()
         {
         }
-
-        /*
+			
+		/*
         public IAsyncResult BeginPageDown(AsyncCallback aAsyncCallback, object aAsyncState)
         {
             throw new NotImplementedException ();
@@ -28,17 +28,39 @@ namespace Microsoft.Xna.Framework.GamerServices
         public LeaderboardReader EndPageUp(IAsyncResult result)
         {
             throw new NotImplementedException ();
-        }
+        }*/
 
-        public static void BeginRead (LeaderboardIdentity id, SignedInGamer gamer, int leaderboardPageSize, AsyncCallback leaderboardReadCallback, SignedInGamer gamer2)
+		public static IAsyncResult BeginRead (LeaderboardIdentity id, SignedInGamer gamer, int leaderboardPageSize, AsyncCallback leaderboardReadCallback, SignedInGamer gamer2)
         {
-            throw new NotImplementedException ();
+			var ar = new LeaderboardAsyncResult (null);
+			DoLoadLeaderboard (id, gamer, leaderboardPageSize, leaderboardReadCallback, ar);
+			return ar;
         }
 
         public static LeaderboardReader EndRead(IAsyncResult result)
         {
-            throw new NotImplementedException ();
+			var aad = (LeaderboardAsyncResult)result;
+			return new LeaderboardReader () { Entries =aad.Entries, 
+				CanPageDown = false, 
+				CanPageUp = false 
+			};
         }
+
+		static void DoLoadLeaderboard (LeaderboardIdentity id, Gamer gamer, int leaderboardPageSize, AsyncCallback callback, LeaderboardAsyncResult ar)
+		{
+#if ANDROID && !OUYA
+			if (GooglePlayHelper.Instance != null) {
+				var resolver = Game.Instance.Services.GetService<ILeaderboardResolver>();
+				if (resolver == null)
+					return;
+				var key = resolver.GetLeaderboardIdFromKey (id.Key);
+				GooglePlayHelper.Instance.LoadTopScores (key, () => {
+					ar.Entries = GooglePlayHelper.Instance.GetScores(key);
+					callback (ar);
+				});
+			}
+#endif
+		}
 
         public void PageDown()
         {
@@ -49,7 +71,6 @@ namespace Microsoft.Xna.Framework.GamerServices
         {
             throw new NotImplementedException ();
         }
-        */
 
         public bool CanPageDown {
             get;
@@ -75,5 +96,39 @@ namespace Microsoft.Xna.Framework.GamerServices
 
         #endregion
     }
+
+	public class LeaderboardAsyncResult : IAsyncResult
+	{
+		public object AsyncState
+		{
+			get;
+			set;
+		}
+
+		public System.Threading.WaitHandle AsyncWaitHandle
+		{
+			get { return null; }
+		}
+
+		public bool CompletedSynchronously
+		{
+			get { return false; }
+		}
+
+		public bool IsCompleted
+		{
+			get;
+			set;
+		}
+
+		public LeaderboardAsyncResult (object asyncState)
+		{
+			// TODO: Complete member initialization
+			this.AsyncState = asyncState;
+		}
+
+		public List<Microsoft.Xna.Framework.GamerServices.LeaderboardEntry> Entries = new List<LeaderboardEntry> ();
+
+	}
 }
 

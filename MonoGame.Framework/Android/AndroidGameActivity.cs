@@ -92,11 +92,39 @@ namespace Microsoft.Xna.Framework
             UnregisterReceiver(screenReceiver);
             ScreenReceiver.ScreenLocked = false;
             _orientationListener = null;
-            if (Game != null)
-                Game.Dispose();
-            Game = null;
+			if (Game != null) {
+				Game.Dispose ();
+				Game = null;
+			}
 			base.OnDestroy ();
 		}
+
+		protected override void OnActivityResult (int requestCode, Result resultCode, Intent data)
+		{
+			if (OnActivityResultEvent != null)
+				OnActivityResultEvent (requestCode, resultCode, data);
+			base.OnActivityResult (requestCode, resultCode, data);
+		}
+
+		protected override void OnStart ()
+		{
+			if (OnStartEvent != null)
+				OnStartEvent (this, EventArgs.Empty);
+			base.OnStart ();
+		}
+
+		protected override void OnStop ()
+		{
+			if (OnStopEvent != null)
+				OnStopEvent (this, EventArgs.Empty);
+			base.OnStop ();
+		}
+
+		public delegate void ActivityResultEvent (int requestCode, Result resultCode, Intent data);
+		public event ActivityResultEvent OnActivityResultEvent;
+
+		public event EventHandler OnStartEvent;
+		public event EventHandler OnStopEvent;
     }
 
 	[CLSCompliant(false)]

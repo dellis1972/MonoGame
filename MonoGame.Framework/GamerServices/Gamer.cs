@@ -44,7 +44,7 @@ using System.Runtime.Serialization;
 namespace Microsoft.Xna.Framework.GamerServices
 {
     [DataContract]
-    public abstract class Gamer
+	public abstract partial class Gamer
     {
         static SignedInGamerCollection _signedInGamers = new SignedInGamerCollection();
         string _gamer = "MonoGame";

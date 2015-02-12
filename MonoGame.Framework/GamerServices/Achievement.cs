@@ -84,6 +84,18 @@ namespace Microsoft.Xna.Framework.GamerServices
 			throw new NotImplementedException();
 		}
         */
+
+#if ANDROID
+
+		internal enum AchievementTypeEnum { Standard, Incremental };
+
+		internal AchievementTypeEnum AchievementType { get; set; }
+
+		internal int TotalSteps { get; set; }
+
+		internal int CurrentSteps { get; set; }
+
+#endif
 	}
 }
 

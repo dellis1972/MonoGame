@@ -130,20 +130,8 @@ namespace Microsoft.Xna.Framework.Input
         /// Initializes a new instance of the <see cref="KeyboardState"/> class.
         /// </summary>
         /// <param name="keys">List of keys to be flagged as pressed on initialization.</param>
-        internal KeyboardState(List<Keys> keys)
+		internal KeyboardState (List<Keys> keys) : this (keys.ToArray ())
         {
-            keys0 = 0;
-            keys1 = 0;
-            keys2 = 0;
-            keys3 = 0;
-            keys4 = 0;
-            keys5 = 0;
-            keys6 = 0;
-            keys7 = 0;
-
-            if (keys != null)
-                foreach (Keys k in keys)
-                    InternalSetKey(k);
         }
 
         /// <summary>
@@ -162,7 +150,7 @@ namespace Microsoft.Xna.Framework.Input
             keys7 = 0;
 
             if (keys != null)
-                foreach (Keys k in keys)
+				foreach (Keys k in keys)
                     InternalSetKey(k);
         }
 

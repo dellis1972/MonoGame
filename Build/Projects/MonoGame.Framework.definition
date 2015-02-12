@@ -765,7 +765,7 @@
       <Platforms>tvOS</Platforms>
     </Compile>
     <Compile Include="Input\GamePad.Ouya.cs">
-      <Platforms>Ouya</Platforms>
+      <Platforms>Ouya,Android</Platforms>
     </Compile>
     <Compile Include="Input\GamePad.OpenTK.cs">
       <Platforms>Angle,Linux,MacOS,WindowsGL</Platforms>
@@ -1037,6 +1037,9 @@
     <Compile Include="Android\MonoGameAndroidGameView.cs">
       <Platforms>Android,Ouya</Platforms>
     </Compile>
+    <Compile Include="Android\AndroidGameView.cs">
+      <Platforms>Android,Ouya</Platforms>
+    </Compile>    
     <Compile Include="Android\Devices\Sensors\Accelerometer.cs">
       <Platforms>Android,Ouya</Platforms>
     </Compile>
