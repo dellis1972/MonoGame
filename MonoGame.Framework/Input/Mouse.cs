@@ -42,15 +42,16 @@ using System;
 
 #if MONOMAC || WINDOWS
 using System.Runtime.InteropServices;
-using System.Drawing;
 #endif
 
 #if OPENGL
 #if WINDOWS || LINUX
 using MouseInfo = OpenTK.Input.Mouse;
+using NativePoint = OpenTK.Point;
 #elif MONOMAC
 using MonoMac.Foundation;
 using MonoMac.AppKit;
+using System.Drawing;
 #endif
 #endif
 
@@ -134,7 +135,7 @@ namespace Microsoft.Xna.Framework.Input
 #elif (WINDOWS && OPENGL) || LINUX || ANGLE
 
             var state = OpenTK.Input.Mouse.GetCursorState();
-            var pc = ((OpenTKGameWindow)window).Window.PointToClient(new System.Drawing.Point(state.X, state.Y));
+            var pc = ((OpenTKGameWindow)window).Window.PointToClient(new NativePoint(state.X, state.Y));
             window.MouseState.X = pc.X;
             window.MouseState.Y = pc.Y;
 
@@ -191,7 +192,7 @@ namespace Microsoft.Xna.Framework.Input
 #if (WINDOWS && (OPENGL || DIRECTX)) || LINUX || ANGLE
             // correcting the coordinate system
             // Only way to set the mouse position !!!
-            var pt = Window.PointToScreen(new System.Drawing.Point(x, y));
+            var pt = Window.PointToScreen(new NativePoint(x, y));
 #elif WINDOWS
             var pt = new System.Drawing.Point(0, 0);
 #endif
@@ -247,9 +248,9 @@ namespace Microsoft.Xna.Framework.Input
             public int X;
             public int Y;
 
-            public System.Drawing.Point ToPoint()
+            public NativePoint ToPoint()
             {
-                return new System.Drawing.Point(X, Y);
+                return new NativePoint(X, Y);
             }
 
         }

@@ -42,12 +42,13 @@ purpose and non-infringement.
 using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Reflection;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using OpenTK;
 using OpenTK.Graphics;
+using NativePoint = OpenTK.Point;
+using NativeRectangle = OpenTK.Rectangle;
 
 
 #endregion Using Statements
@@ -126,7 +127,7 @@ namespace Microsoft.Xna.Framework
         public override Microsoft.Xna.Framework.Point Position
         {
             get { return new Microsoft.Xna.Framework.Point(window.Location.X,window.Location.Y); }
-            set { window.Location = new System.Drawing.Point(value.X,value.Y); }
+            set { window.Location = new NativePoint(value.X,value.Y); }
         }
 #endif
         protected internal override void SetSupportedOrientations(DisplayOrientation orientations)
@@ -257,7 +258,7 @@ namespace Microsoft.Xna.Framework
             {
                 window.WindowBorder = WindowBorder.Resizable;
                 updateClientBounds = false;
-                window.ClientRectangle = new System.Drawing.Rectangle(targetBounds.X,
+                window.ClientRectangle = new NativeRectangle(targetBounds.X,
                                      targetBounds.Y, targetBounds.Width, targetBounds.Height);
                 
                 // if the window-state is set from the outside (maximized button pressed) we have to update it here.

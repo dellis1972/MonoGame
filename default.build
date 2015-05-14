@@ -71,6 +71,11 @@
       <exec program="xbuild" commandline="/t:Clean /p:Configuration=Release MonoGame.Framework.WindowsGL.sln" />
       <exec program="xbuild" commandline="/t:Build /p:Configuration=Release MonoGame.Framework.WindowsGL.sln" />
     </if>
+    <if test="${os == 'MacOS'}">
+      <exec program="mono" commandline="Protobuild.exe -generate WindowsGL" />
+      <exec program="xbuild" commandline="/t:Clean /p:Configuration=Release MonoGame.Framework.WindowsGL.sln" />
+      <exec program="xbuild" commandline="/t:Build /p:Configuration=Release MonoGame.Framework.WindowsGL.sln" />
+    </if>
   </target>
 
   <target name="build_linux" description="Build Linux" depends="clean">
@@ -80,6 +85,11 @@
       <exec program="msbuild " commandline="MonoGame.Framework.Linux.sln /t:Build /p:Configuration=Release" />
     </if>
     <if test="${os == 'Unix'}">
+      <exec program="mono" commandline="Protobuild.exe -generate Linux" />
+      <exec program="xbuild" commandline="/t:Clean /p:Configuration=Release MonoGame.Framework.Linux.sln" />
+      <exec program="xbuild" commandline="/t:Build /p:Configuration=Release MonoGame.Framework.Linux.sln" />
+    </if>
+    <if test="${os == 'MacOS'}">
       <exec program="mono" commandline="Protobuild.exe -generate Linux" />
       <exec program="xbuild" commandline="/t:Clean /p:Configuration=Release MonoGame.Framework.Linux.sln" />
       <exec program="xbuild" commandline="/t:Build /p:Configuration=Release MonoGame.Framework.Linux.sln" />

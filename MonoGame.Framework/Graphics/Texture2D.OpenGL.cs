@@ -5,7 +5,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Drawing;
 using MonoGame.Utilities.Png;
 
 #if MONOMAC
@@ -39,11 +38,12 @@ using GLPixelFormat = OpenTK.Graphics.ES20.PixelFormat;
 #if ANDROID
 using Android.Graphics;
 #endif
-#endif // OPENGL
 
-#if WINDOWS || LINUX || MONOMAC || ANGLE
-using System.Drawing.Imaging;
+#if MONOMAC || IOS
+using System.Drawing;
 #endif
+
+#endif // OPENGL
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -313,31 +313,8 @@ namespace Microsoft.Xna.Framework.Graphics
             }
 #endif
 #if WINDOWS || LINUX || ANGLE
-            Bitmap image = (Bitmap)Bitmap.FromStream(stream);
-            try
-            {
-                // Fix up the Image to match the expected format
-                image = (Bitmap)image.RGBToBGR();
-
-                var data = new byte[image.Width * image.Height * 4];
-
-                BitmapData bitmapData = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                if (bitmapData.Stride != image.Width * 4) 
-                    throw new NotImplementedException();
-                Marshal.Copy(bitmapData.Scan0, data, 0, data.Length);
-                image.UnlockBits(bitmapData);
-
-                Texture2D texture = null;
-                texture = new Texture2D(graphicsDevice, image.Width, image.Height);
-                texture.SetData(data);
-
-                return texture;
-            }
-            finally
-            {
-                image.Dispose();
-            }
+            var png = new PngReader ();
+            return png.Read (stream, graphicsDevice);
 #endif
         }
 
@@ -482,9 +459,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
         private void PlatformSaveAsJpeg(Stream stream, int width, int height)
         {
-#if MONOMAC || WINDOWS
-			SaveAsImage(stream, width, height, ImageFormat.Jpeg);
-#elif ANDROID
+#if ANDROID
             SaveAsImage(stream, width, height, Bitmap.CompressFormat.Jpeg);
 #else
             throw new NotImplementedException();
@@ -493,7 +468,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
         private void PlatformSaveAsPng(Stream stream, int width, int height)
         {
-#if MONOMAC || WINDOWS || IOS
+#if MONOMAC || WINDOWS || IOS || LINUX
             var pngWriter = new PngWriter();
             pngWriter.Write(this, stream);
 #elif ANDROID
@@ -503,64 +478,7 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
         }
 
-#if MONOMAC || WINDOWS
-		private void SaveAsImage(Stream stream, int width, int height, ImageFormat format)
-		{
-			if (stream == null)
-			{
-				throw new ArgumentNullException("stream", "'stream' cannot be null (Nothing in Visual Basic)");
-			}
-			if (width <= 0)
-			{
-				throw new ArgumentOutOfRangeException("width", width, "'width' cannot be less than or equal to zero");
-			}
-			if (height <= 0)
-			{
-				throw new ArgumentOutOfRangeException("height", height, "'height' cannot be less than or equal to zero");
-			}
-			if (format == null)
-			{
-				throw new ArgumentNullException("format", "'format' cannot be null (Nothing in Visual Basic)");
-			}
-			
-			byte[] data = null;
-			GCHandle? handle = null;
-			Bitmap bitmap = null;
-			try 
-			{
-				data = new byte[width * height * 4];
-				handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-				GetData(data);
-				
-				// internal structure is BGR while bitmap expects RGB
-				for(int i = 0; i < data.Length; i += 4)
-				{
-					byte temp = data[i + 0];
-					data[i + 0] = data[i + 2];
-					data[i + 2] = temp;
-				}
-				
-				bitmap = new Bitmap(width, height, width * 4, System.Drawing.Imaging.PixelFormat.Format32bppArgb, handle.Value.AddrOfPinnedObject());
-				
-				bitmap.Save(stream, format);
-			} 
-			finally 
-			{
-				if (bitmap != null)
-				{
-					bitmap.Dispose();
-				}
-				if (handle.HasValue)
-				{
-					handle.Value.Free();
-				}
-				if (data != null)
-				{
-					data = null;
-				}
-			}
-		}
-#elif ANDROID
+#if ANDROID
         private void SaveAsImage(Stream stream, int width, int height, Bitmap.CompressFormat format)
         {
             int[] data = new int[width * height];
