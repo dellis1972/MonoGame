@@ -106,7 +106,7 @@ namespace Microsoft.Xna.Framework.Net
 		private bool isHost = false;
 		private NetworkGamer hostingGamer;
 
-		internal MonoGamerPeer networkPeer;
+        internal FalconNetworkPeer networkPeer;
 		
 		private NetworkSession (NetworkSessionType sessionType, int maxGamers, int privateGamerSlots, NetworkSessionProperties sessionProperties, bool isHost, int hostGamer)
 			: this(sessionType, maxGamers, privateGamerSlots, sessionProperties, isHost, hostGamer, null)
@@ -121,20 +121,6 @@ namespace Microsoft.Xna.Framework.Net
 			
 			_allGamers = new GamerCollection<NetworkGamer>();
 			_localGamers = new GamerCollection<LocalNetworkGamer>();
-//			for (int x = 0; x < Gamer.SignedInGamers.Count; x++) {
-//				GamerStates states = GamerStates.Local;
-//				if (x == 0)
-//					states |= GamerStates.Host;
-//				LocalNetworkGamer localGamer = new LocalNetworkGamer(this, (byte)x, states);
-//				localGamer.SignedInGamer = Gamer.SignedInGamers[x];
-//				_allGamers.AddGamer(localGamer);
-//				_localGamers.AddGamer(localGamer);
-//				
-//				// We will attach a property change handler to local gamers
-//				//  se that we can broadcast the change to other peers.
-//				localGamer.PropertyChanged += HandleGamerPropertyChanged;	
-//				
-//			}
 
 			_remoteGamers = new GamerCollection<NetworkGamer>();
 			_previousGamers = new GamerCollection<NetworkGamer>();
@@ -148,15 +134,27 @@ namespace Microsoft.Xna.Framework.Net
 			this.sessionProperties = sessionProperties;
 			this.isHost = isHost;
             if (isHost)
-                networkPeer = new MonoGamerPeer(this, null);
+            {
+                networkPeer = new FalconNetworkPeer(this, null);
+            }
             else
             {
                 if (networkPeer == null)
-                    networkPeer = new MonoGamerPeer(this, availableSession);
+                {
+                    ProcessGamerJoined (new CommandGamerJoined (hostGamer) {
+                        DisplayName = _localGamers[0].SignedInGamer.DisplayName,
+                        GamerTag = _localGamers[0].SignedInGamer.Gamertag,
+                    });
+                    networkPeer = new FalconNetworkPeer(this, availableSession);
+                }
             }
-            			
-			CommandGamerJoined gj = new CommandGamerJoined(hostGamer, this.isHost, true);
-			commandQueue.Enqueue(new CommandEvent(gj));
+
+            if (isHost)
+            {
+                CommandGamerJoined gj = new CommandGamerJoined(hostGamer, this.isHost, true);
+                commandQueue.Enqueue(new CommandEvent(gj));
+            }
+
 		}
 		
 		public static NetworkSession Create (
@@ -258,10 +256,7 @@ namespace Microsoft.Xna.Framework.Net
                     if (networkPeer != null)
                     {
                         networkPeer.ShutDown();
-                    }
-                    if (networkPeer != null)
-                    {
-                        networkPeer.ShutDown();
+                        networkPeer = null;
                     }
                 }
 
@@ -501,7 +496,7 @@ namespace Microsoft.Xna.Framework.Net
 				if (asyncResult.AsyncDelegate is NetworkSessionAsynchronousFind) {
 					returnValue = ((NetworkSessionAsynchronousFind)asyncResult.AsyncDelegate).EndInvoke (result);                    
 				
-					MonoGamerPeer.FindResults(networkSessions);
+					//MonoGamerPeer.FindResults(networkSessions);
                 }
 #endif
 
@@ -509,7 +504,6 @@ namespace Microsoft.Xna.Framework.Net
 				// Close the wait handle.
 				result.AsyncWaitHandle.Close ();
 			}
-			returnValue = new AvailableNetworkSessionCollection(networkSessions);
 			return returnValue;
 		}
 
@@ -601,14 +595,36 @@ namespace Microsoft.Xna.Framework.Net
 			int maxLocalGamers,
 			NetworkSessionProperties searchProperties)
 		{
+            var peer = new FalconNetworkPeer (null, null, false);
 			try {
 				if (maxLocalGamers < 1 || maxLocalGamers > 4)
 					throw new ArgumentOutOfRangeException ( "maxLocalGamers must be between 1 and 4." );
 
-				List<AvailableNetworkSession> availableNetworkSessions = new List<AvailableNetworkSession> ();
-				MonoGamerPeer.Find(sessionType);
+
+                List<AvailableNetworkSession> availableNetworkSessions = new List<AvailableNetworkSession> ();
+                peer.Find (sessionType, availableNetworkSessions);
+                for (int i=availableNetworkSessions.Count-1; i >= 0;  i--) {
+                    var session = availableNetworkSessions[i];
+                    if (session.SessionType != sessionType) {
+                        availableNetworkSessions.Remove (session);
+                        continue;
+                    }
+                    if (searchProperties == null)
+                        continue;
+                    for (int p=0; p < searchProperties.Count; p++) {
+                        if (searchProperties[p].HasValue) {
+                            if (!session.SessionProperties[p].HasValue || 
+                                searchProperties[p].Value != session.SessionProperties[p].Value) {
+                                availableNetworkSessions.Remove(session);
+                                break;
+                            }
+                        }
+                    }
+                }
+
 				return new AvailableNetworkSessionCollection ( availableNetworkSessions );
-			} finally {
+        	} finally {
+                peer.ShutDown();
 			}
 		}
 		
@@ -701,6 +717,9 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			// Updates the state of the multiplayer session. 
 			try {
+                if (networkPeer == null)
+                    return;
+                networkPeer.Update ();
 				while (commandQueue.Count > 0 && networkPeer.IsReady) {
 					var command = (CommandEvent)commandQueue.Dequeue();
 					
@@ -835,6 +854,7 @@ namespace Microsoft.Xna.Framework.Net
 			NetworkGamer gamer;
 			
 			if ((command.State & GamerStates.Local) != 0) {
+                System.Diagnostics.Debug.WriteLine("Local Gamer {0} Joined", command.GamerTag);
 				gamer = new LocalNetworkGamer(this, (byte)command.InternalIndex, command.State);
 				_allGamers.AddGamer(gamer);
 				_localGamers.AddGamer((LocalNetworkGamer)gamer);
@@ -849,6 +869,7 @@ namespace Microsoft.Xna.Framework.Net
 				gamer.PropertyChanged += HandleGamerPropertyChanged;				
 			}
 			else {
+                System.Diagnostics.Debug.WriteLine("Gamer {0} Joined", command.GamerTag);
 				gamer = new NetworkGamer (this, (byte)command.InternalIndex, command.State);
 				gamer.DisplayName = command.DisplayName;
 				gamer.Gamertag = command.GamerTag;
@@ -872,13 +893,6 @@ namespace Microsoft.Xna.Framework.Net
 				
 				networkPeer.SendPeerIntroductions(gamer);
 			}
-			
-			if (networkPeer != null)
-			{
-				networkPeer.UpdateLiveSession(this);
-			}
-			
-			
 		}
 		
 		private void ProcessGamerLeft(CommandGamerLeft command) 
@@ -896,11 +910,6 @@ namespace Microsoft.Xna.Framework.Net
 					}
 				}
 				
-			}
-			
-			if (networkPeer != null)
-			{
-				networkPeer.UpdateLiveSession(this);
 			}
 		}		
 

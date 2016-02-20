@@ -36,6 +36,9 @@
 // permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular
 // purpose and non-infringement.
 // */
+using FalconUDP;
+
+
 #endregion License 
 
 #region Using clause
@@ -132,5 +135,7 @@ namespace Microsoft.Xna.Framework.Net
         }
 
         internal NetworkSessionType SessionType { get; set; }
+
+        internal IPEndPoint IpEndpoint { get; set; }
     }
 }
