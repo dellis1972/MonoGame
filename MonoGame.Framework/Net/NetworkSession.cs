@@ -87,7 +87,7 @@ namespace Microsoft.Xna.Framework.Net
 		private GamerCollection<NetworkGamer> _previousGamers;
 		
 		internal Queue<CommandEvent> commandQueue;
-        internal bool IsReady { get { return client.IsConnectedAndReady; } }
+        internal bool IsReady;
 
         PhotonClient client;
 
@@ -143,7 +143,10 @@ namespace Microsoft.Xna.Framework.Net
             {
                 client.CreateSession(SignedInGamer.SignedInGamers[0] ?? null, sessionProperties);
             }
-            
+            IsReady = client.IsConnectedAndReady;
+            CommandGamerJoined gj = new CommandGamerJoined(hostGamer, this.isHost, true);
+			commandQueue.Enqueue(new CommandEvent(gj));
+
             if (!isHost && availableSession != null)
             {
                 client.JoinSession(availableSession);
@@ -712,7 +715,7 @@ namespace Microsoft.Xna.Framework.Net
 		
 		private void ProcessGamerStateChange(CommandGamerStateChange command) 
 		{
-            client.SendGamerState(command);
+			client.SendGamerState(command);
 		}
 		
 		private void ProcessSendData(CommandSendData command)
