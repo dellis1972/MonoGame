@@ -36,16 +36,17 @@
 // permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular
 // purpose and non-infringement.
 // */
+using System.Runtime.Remoting.Messaging;
+
+
 #endregion License
 
 #region Using clause
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if !WINDOWS_PHONE
-using System.Runtime.Remoting.Messaging;
-#endif
 using System.Threading;
+using ExitGames.Client.Photon;
 
 using Microsoft.Xna.Framework.GamerServices;
 
@@ -80,13 +81,15 @@ namespace Microsoft.Xna.Framework.Net
 		internal static List<NetworkSession> activeSessions = new List<NetworkSession>();
 		
 		private NetworkSessionState sessionState;
-		//private static NetworkSessionType networkSessionType;	
 		private GamerCollection<NetworkGamer> _allGamers;
 		private GamerCollection<LocalNetworkGamer> _localGamers;
 		private GamerCollection<NetworkGamer> _remoteGamers;
 		private GamerCollection<NetworkGamer> _previousGamers;
 		
 		internal Queue<CommandEvent> commandQueue;
+        internal bool IsReady;
+
+        PhotonClient client;
 
 		// use the static Create or BeginCreate methods
 		private NetworkSession ()
@@ -106,8 +109,6 @@ namespace Microsoft.Xna.Framework.Net
 		private bool isHost = false;
 		private NetworkGamer hostingGamer;
 
-		internal MonoGamerPeer networkPeer;
-		
 		private NetworkSession (NetworkSessionType sessionType, int maxGamers, int privateGamerSlots, NetworkSessionProperties sessionProperties, bool isHost, int hostGamer)
 			: this(sessionType, maxGamers, privateGamerSlots, sessionProperties, isHost, hostGamer, null)
 		{
@@ -118,23 +119,12 @@ namespace Microsoft.Xna.Framework.Net
 			if (sessionProperties == null) {
 				throw new ArgumentNullException ("sessionProperties");
 			}
+
+            if (sessionType != NetworkSessionType.PlayerMatch)
+                throw new ArgumentException("Only PlayerMatch sesisons are supported");
 			
 			_allGamers = new GamerCollection<NetworkGamer>();
 			_localGamers = new GamerCollection<LocalNetworkGamer>();
-//			for (int x = 0; x < Gamer.SignedInGamers.Count; x++) {
-//				GamerStates states = GamerStates.Local;
-//				if (x == 0)
-//					states |= GamerStates.Host;
-//				LocalNetworkGamer localGamer = new LocalNetworkGamer(this, (byte)x, states);
-//				localGamer.SignedInGamer = Gamer.SignedInGamers[x];
-//				_allGamers.AddGamer(localGamer);
-//				_localGamers.AddGamer(localGamer);
-//				
-//				// We will attach a property change handler to local gamers
-//				//  se that we can broadcast the change to other peers.
-//				localGamer.PropertyChanged += HandleGamerPropertyChanged;	
-//				
-//			}
 
 			_remoteGamers = new GamerCollection<NetworkGamer>();
 			_previousGamers = new GamerCollection<NetworkGamer>();
@@ -147,16 +137,20 @@ namespace Microsoft.Xna.Framework.Net
 			this.privateGamerSlots = privateGamerSlots;
 			this.sessionProperties = sessionProperties;
 			this.isHost = isHost;
+
+            client = new PhotonClient (this);
             if (isHost)
-                networkPeer = new MonoGamerPeer(this, null);
-            else
             {
-                if (networkPeer == null)
-                    networkPeer = new MonoGamerPeer(this, availableSession);
+                client.CreateSession(SignedInGamer.SignedInGamers[0] ?? null, sessionProperties);
             }
-            			
-			CommandGamerJoined gj = new CommandGamerJoined(hostGamer, this.isHost, true);
+            IsReady = client.IsConnectedAndReady;
+            CommandGamerJoined gj = new CommandGamerJoined(hostGamer, this.isHost, true);
 			commandQueue.Enqueue(new CommandEvent(gj));
+
+            if (!isHost && availableSession != null)
+            {
+                client.JoinSession(availableSession);
+            }
 		}
 		
 		public static NetworkSession Create (
@@ -182,11 +176,7 @@ namespace Microsoft.Xna.Framework.Net
 		)
 		{
 			try {
-#if WINDOWS_PHONE
-                return Create(sessionType, maxLocalGamers, maxGamers, 0, null, 0, false);
-#else
 				return EndCreate(BeginCreate(sessionType,maxLocalGamers,maxGamers,null, null));
-#endif
 			} finally {
 				
 			}
@@ -201,11 +191,7 @@ namespace Microsoft.Xna.Framework.Net
 			NetworkSessionProperties sessionProperties)
 		{
 			try {
-#if WINDOWS_PHONE
-                return Create(sessionType, maxLocalGamers, maxGamers, privateGamerSlots, sessionProperties, 0, false);
-#else
 				return EndCreate(BeginCreate(sessionType,maxLocalGamers,maxGamers,privateGamerSlots,sessionProperties,null, null));
-#endif
 			} finally {
 				
 			}
@@ -253,16 +239,6 @@ namespace Microsoft.Xna.Framework.Net
                     {
                         gamer.Dispose();
                     }
-
-                    // Make sure we shut down our server instance as we no longer need it.
-                    if (networkPeer != null)
-                    {
-                        networkPeer.ShutDown();
-                    }
-                    if (networkPeer != null)
-                    {
-                        networkPeer.ShutDown();
-                    }
                 }
 
                 this._isDisposed = true;
@@ -304,7 +280,7 @@ namespace Microsoft.Xna.Framework.Net
 			AsyncCallback callback,
 			Object asyncState)
 		{
-			return BeginCreate (sessionType, -1, maxLocalGamers, maxGamers, 0, null, callback, asyncState);
+            return BeginCreate (sessionType, -1, maxLocalGamers, maxGamers, 0, null, callback, asyncState);
 		}
 
 		public static IAsyncResult BeginCreate (
@@ -457,9 +433,6 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			NetworkSession returnValue = null;
 			try {
-#if WINDOWS_PHONE
-                return null;
-#else
 				// Retrieve the delegate.
 				AsyncResult asyncResult = (AsyncResult)result;
 
@@ -471,7 +444,6 @@ namespace Microsoft.Xna.Framework.Net
 				if (asyncResult.AsyncDelegate is NetworkSessionAsynchronousCreate) {
 					returnValue = ((NetworkSessionAsynchronousCreate)asyncResult.AsyncDelegate).EndInvoke (result);
 				}	
-#endif
 			} finally {
 				// Close the wait handle.
 				result.AsyncWaitHandle.Close ();	 
@@ -487,12 +459,7 @@ namespace Microsoft.Xna.Framework.Net
 			
 			try {
 				// Retrieve the delegate.
-#if WINDOWS_PHONE
-                MonoGamerPeer.FindResults(networkSessions);
-#else
                 AsyncResult asyncResult = (AsyncResult)result;            	
-
-      
 				// Wait for the WaitHandle to become signaled.
 				result.AsyncWaitHandle.WaitOne ();
 				               
@@ -500,16 +467,11 @@ namespace Microsoft.Xna.Framework.Net
 				// Call EndInvoke to retrieve the results.
 				if (asyncResult.AsyncDelegate is NetworkSessionAsynchronousFind) {
 					returnValue = ((NetworkSessionAsynchronousFind)asyncResult.AsyncDelegate).EndInvoke (result);                    
-				
-					MonoGamerPeer.FindResults(networkSessions);
                 }
-#endif
-
             } finally {
 				// Close the wait handle.
 				result.AsyncWaitHandle.Close ();
 			}
-			returnValue = new AvailableNetworkSessionCollection(networkSessions);
 			return returnValue;
 		}
 
@@ -527,8 +489,6 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			NetworkSession returnValue = null;
 			try {
-#if WINDOWS_PHONE
-#else
 				// Retrieve the delegate.
 				AsyncResult asyncResult = (AsyncResult)result;            	
 
@@ -539,7 +499,6 @@ namespace Microsoft.Xna.Framework.Net
 				if (asyncResult.AsyncDelegate is NetworkSessionAsynchronousJoin) {
 					returnValue = ((NetworkSessionAsynchronousJoin)asyncResult.AsyncDelegate).EndInvoke (result);
 				}		            	            
-#endif
 			} finally {
 				// Close the wait handle.
 				result.AsyncWaitHandle.Close ();
@@ -580,11 +539,7 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			int hostGamer = -1;
 			hostGamer = GetHostingGamerIndex(localGamers);
-#if WINDOWS_PHONE
-            return Find(sessionType, hostGamer, 4, null);
-#else
 			return EndFind(BeginFind(sessionType, hostGamer, 4, searchProperties,null,null));
-#endif
 		}
 
 		public static AvailableNetworkSessionCollection Find (
@@ -605,8 +560,20 @@ namespace Microsoft.Xna.Framework.Net
 				if (maxLocalGamers < 1 || maxLocalGamers > 4)
 					throw new ArgumentOutOfRangeException ( "maxLocalGamers must be between 1 and 4." );
 
-				List<AvailableNetworkSession> availableNetworkSessions = new List<AvailableNetworkSession> ();
-				MonoGamerPeer.Find(sessionType);
+                List<AvailableNetworkSession> availableNetworkSessions = new List<AvailableNetworkSession> ();
+                PhotonClient.FindRooms (availableNetworkSessions);
+                if (searchProperties != null) {
+                    for (int i = availableNetworkSessions.Count-1; i >= 0; i--) {
+                        for (int x=0; x < searchProperties.Count; x++) {
+                            if (searchProperties[x].HasValue) {
+                                if (availableNetworkSessions[i].SessionProperties[x].HasValue &&
+                                        availableNetworkSessions[i].SessionProperties[x] != searchProperties[x]) {
+                                    availableNetworkSessions.RemoveAt (i);
+                                }
+                            }
+                        }
+                    }
+                }
 				return new AvailableNetworkSessionCollection ( availableNetworkSessions );
 			} finally {
 			}
@@ -627,12 +594,7 @@ namespace Microsoft.Xna.Framework.Net
 
 		public static NetworkSession Join (AvailableNetworkSession availableSession)
 		{
-#if WINDOWS_PHONE
-            return JoinSession(availableSession);
-#else
 			return EndJoin(BeginJoin(availableSession, null, null));
-#endif
-
 		}
 		
 		private static NetworkSession JoinSession (AvailableNetworkSession availableSession) 
@@ -701,7 +663,9 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			// Updates the state of the multiplayer session. 
 			try {
-				while (commandQueue.Count > 0 && networkPeer.IsReady) {
+                if (client != null)
+                    client.Update ();
+				while (commandQueue.Count > 0 && IsReady) {
 					var command = (CommandEvent)commandQueue.Dequeue();
 					
 					// for some screwed up reason we are dequeueing something
@@ -750,15 +714,11 @@ namespace Microsoft.Xna.Framework.Net
 		}
 		
 		private void ProcessGamerStateChange(CommandGamerStateChange command) 
-		{
-			
-			networkPeer.SendGamerStateChange(command.Gamer);	
+		{	
 		}
 		
 		private void ProcessSendData(CommandSendData command)
 		{
-			networkPeer.SendData(command.data, command.options);
-
 			CommandReceiveData crd = new CommandReceiveData (command.sender.RemoteUniqueIdentifier,
 								command.data);
 			crd.gamer = command.sender;
@@ -867,41 +827,26 @@ namespace Microsoft.Xna.Framework.Net
 			if (GamerJoined != null) {
 				GamerJoined(this, new GamerJoinedEventArgs(gamer));
 			}
-			
-			if (networkPeer !=  null && (command.State & GamerStates.Local) == 0) {
-				
-				networkPeer.SendPeerIntroductions(gamer);
-			}
-			
-			if (networkPeer != null)
-			{
-				networkPeer.UpdateLiveSession(this);
-			}
-			
-			
 		}
 		
 		private void ProcessGamerLeft(CommandGamerLeft command) 
 		{
 			NetworkGamer gamer;
 			
-			for (int x = 0; x < _remoteGamers.Count; x++) {
-				if (_remoteGamers[x].RemoteUniqueIdentifier == command.remoteUniqueIdentifier) {
-					gamer = _remoteGamers[x];
-					_remoteGamers.RemoveGamer(gamer);
-					_allGamers.RemoveGamer(gamer);
+            for (int x = 0; x < _remoteGamers.Count; x++)
+            {
+                if (_remoteGamers[x].RemoteUniqueIdentifier == command.remoteUniqueIdentifier)
+                {
+                    gamer = _remoteGamers[x];
+                    _remoteGamers.RemoveGamer(gamer);
+                    _allGamers.RemoveGamer(gamer);
 				
-					if (GamerLeft != null) {
-						GamerLeft(this, new GamerLeftEventArgs(gamer));
-					}
-				}
-				
-			}
-			
-			if (networkPeer != null)
-			{
-				networkPeer.UpdateLiveSession(this);
-			}
+                    if (GamerLeft != null)
+                    {
+                        GamerLeft(this, new GamerLeftEventArgs(gamer));
+                    }
+                }
+            }
 		}		
 
 		void HandleGamerPropertyChanged (object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -1058,23 +1003,10 @@ namespace Microsoft.Xna.Framework.Net
 
 		public TimeSpan SimulatedLatency {
 			get {
-#if DEBUG
-                if (networkPeer != null)
-                {
-                    return networkPeer.SimulatedLatency;
-                }
-#endif
                 return defaultSimulatedLatency;				
 			}
 			set {
                 defaultSimulatedLatency = value;
-#if DEBUG
-                if (networkPeer != null)
-                {
-                    networkPeer.SimulatedLatency = value;
-                }
-#endif
-                
 			}
 		}
 
@@ -1082,14 +1014,9 @@ namespace Microsoft.Xna.Framework.Net
 
 		public float SimulatedPacketLoss {
 			get {
-                if (networkPeer != null)
-                {
-                    simulatedPacketLoss = networkPeer.SimulatedPacketLoss;                   
-                }
                 return simulatedPacketLoss;
 			}
 			set {
-                if (networkPeer != null) networkPeer.SimulatedPacketLoss = value;
                 simulatedPacketLoss = value;
 			}
 		}			

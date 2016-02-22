@@ -117,20 +117,6 @@ namespace Microsoft.Xna.Framework.Net
 			internal set { _sessionProperties = value; }			
 		}
 		
-		IPEndPoint _endPoint;
-		internal IPEndPoint EndPoint 
-		{
-			get { return _endPoint; }
-			set { _endPoint = value;}
-		}
-        IPEndPoint _internalendPoint;
-
-        internal IPEndPoint InternalEndpont
-        {
-            get { return _internalendPoint; }
-            set { _internalendPoint = value; }
-        }
-
-        internal NetworkSessionType SessionType { get; set; }
+		internal NetworkSessionType SessionType { get; set; }
     }
 }

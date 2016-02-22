@@ -123,7 +123,7 @@ namespace Microsoft.Xna.Framework.GamerServices
                 startalpha += 255 / 12;
             }
 
-            if ((gameTime.TotalGameTime - gt).TotalSeconds > 5) // close after 10 seconds
+            if ((gameTime.TotalGameTime - gt).TotalSeconds > 1) // close after 10 seconds
             {
                 string strUsr = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
 

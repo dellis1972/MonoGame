@@ -39,6 +39,7 @@ using System.Resources;
 // some of our internal helper methods that it needs.
 [assembly: InternalsVisibleTo("MonoGame.Framework.Content.Pipeline")]
 [assembly: InternalsVisibleTo("MonoGame.Framework.Net")]
+[assembly: InternalsVisibleTo("MonoGame.Networking.Tests")]
 
 //Tests projects need access too
 [assembly: InternalsVisibleTo("MonoGameTests")]
