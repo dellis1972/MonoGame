@@ -247,7 +247,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 		{ 
 			get
 			{
-				return false;
+				return true;
 			}
 		}
 		

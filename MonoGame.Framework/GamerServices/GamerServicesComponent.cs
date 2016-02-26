@@ -105,7 +105,7 @@ namespace MonoGame.Xna.Framework.GamerServices {
 
 		public override void Update (GameTime gameTime)
 		{
-
+            GamerServicesDispatcher.Update();
 		}
 	}
 

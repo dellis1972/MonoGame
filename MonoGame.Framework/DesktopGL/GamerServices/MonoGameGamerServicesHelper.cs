@@ -135,7 +135,7 @@ namespace Microsoft.Xna.Framework.GamerServices
 
                 SignedInGamer sig = new SignedInGamer();
                 sig.DisplayName = strUsr;
-                sig.Gamertag = strUsr;
+                sig.Gamertag = strUsr;                
 
                 Gamer.SignedInGamers.Add(sig);
 

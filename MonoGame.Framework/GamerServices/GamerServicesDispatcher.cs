@@ -38,21 +38,44 @@ purpose and non-infringement.
 */
 #endregion License
 
+using Microsoft.Xna.Framework.Net;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.Xna.Framework.GamerServices
 {
     public static class GamerServicesDispatcher
     {
-        /*
+        static List<PhotonClient> clients = new List<PhotonClient>();
+        static object lockObject = new object();
+
         public static void Initialize ( IServiceProvider serviceProvider )
         {
-            throw new NotImplementedException();   
         }
-        */
+
+        internal static void AddClient(PhotonClient client)
+        {
+            lock (lockObject)
+            {
+                clients.Add(client);
+            }
+        }
+
+        internal static void RemoveClient(PhotonClient client)
+        {
+            lock (lockObject)
+            {
+                clients.Remove(client);
+            }
+        }
 
         public static void Update ()
-        {            
+        {
+            lock (lockObject)
+            {
+                foreach (var p in clients)
+                    p.Update();
+            }
         }
 
         public static bool IsInitialized { get { return false;  } }
