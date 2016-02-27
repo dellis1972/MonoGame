@@ -711,7 +711,8 @@ namespace Microsoft.Xna.Framework.Net
 		}
 		
 		private void ProcessGamerStateChange(CommandGamerStateChange command) 
-		{	
+		{
+            client.SendGamerState(command);
 		}
 		
 		private void ProcessSendData(CommandSendData command)
@@ -796,6 +797,8 @@ namespace Microsoft.Xna.Framework.Net
 				_allGamers.AddGamer(gamer);
 				_localGamers.AddGamer((LocalNetworkGamer)gamer);
 
+                client.SetGamer(command.InternalIndex, gamer);
+
 				// Note - This might be in the wrong place for certain connections
 				//  Take a look at HoneycombRush tut for debugging later.
 				if (Gamer.SignedInGamers.Count >= _localGamers.Count)
@@ -810,7 +813,8 @@ namespace Microsoft.Xna.Framework.Net
 				gamer.DisplayName = command.DisplayName;
 				gamer.Gamertag = command.GamerTag;
 				gamer.RemoteUniqueIdentifier = command.remoteUniqueIdentifier;
-				_allGamers.AddGamer(gamer);
+                client.SetGamer((int)command.remoteUniqueIdentifier, gamer);
+                _allGamers.AddGamer(gamer);
 				_remoteGamers.AddGamer(gamer);
 			}
 			
