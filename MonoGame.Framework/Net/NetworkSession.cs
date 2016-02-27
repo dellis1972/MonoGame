@@ -712,7 +712,7 @@ namespace Microsoft.Xna.Framework.Net
 		
 		private void ProcessGamerStateChange(CommandGamerStateChange command) 
 		{
-			client.SendGamerState(command);
+            client.SendGamerState(command);
 		}
 		
 		private void ProcessSendData(CommandSendData command)
