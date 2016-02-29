@@ -92,6 +92,7 @@ Test/*.csproj
 #Zip files
 *.zip
 
+
 Installers/MacOS/Scripts/Framework/postinstall
 
 # Nuget packages.config - This is ignored because ProtoBuild usings <Platform>.package.config
