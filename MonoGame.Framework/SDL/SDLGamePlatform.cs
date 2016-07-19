@@ -128,6 +128,14 @@ namespace Microsoft.Xna.Framework
                     Mouse.ScrollY += ev.Wheel.Y * 120;
                 else if (ev.Type == Sdl.EventType.KeyDown) {
                     var key = KeyboardUtil.ToXna (ev.Key.Keysym.Sym);
+                    if (CurrentPlatform.OS == OS.MacOSX) {
+                        // Ignore Ctrl+Cmd+F for full screen switching
+                        if (key == Keys.F &&
+                            (ev.Key.Keysym.Mod & Sdl.Keyboard.Keymod.LeftCtrl) == Sdl.Keyboard.Keymod.LeftCtrl &&
+                            (ev.Key.Keysym.Mod & Sdl.Keyboard.Keymod.LeftGui) == Sdl.Keyboard.Keymod.LeftGui) {
+                            continue;
+                        }
+                    }
                     if (!_keys.Contains (key))
                         _keys.Add (key);
                     char character = (char)ev.Key.Keysym.Sym;
@@ -137,7 +145,8 @@ namespace Microsoft.Xna.Framework
                 else if (ev.Type == Sdl.EventType.KeyUp)
                 {
                     var key = KeyboardUtil.ToXna(ev.Key.Keysym.Sym);
-                    _keys.Remove(key);
+                    if (_keys.Contains (key))
+                        _keys.Remove(key);
                 }
                 else if (ev.Type == Sdl.EventType.TextInput)
                 {
