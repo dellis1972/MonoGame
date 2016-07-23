@@ -169,10 +169,10 @@ namespace Microsoft.Xna.Framework
                         _view.ClientResize (ev.Window.Data1, ev.Window.Data2);
                     else if (ev.Window.EventID == Sdl.Window.EventId.FocusGained) {
                         IsActive = true;
-                        Sdl.EnableScreenSaver ();
+                        Sdl.DisableScreenSaver ();
                     } else if (ev.Window.EventID == Sdl.Window.EventId.FocusLost) {
                         IsActive = false;
-                        Sdl.DisableScreenSaver ();
+                        Sdl.EnableScreenSaver ();
                     }
                 }
             }
