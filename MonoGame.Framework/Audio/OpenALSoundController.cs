@@ -261,6 +261,7 @@ namespace Microsoft.Xna.Framework.Audio
 
                 _context = Alc.CreateContext(_device, attribute);
 #if DESKTOPGL
+                EffectsExtension.device = _device;
                 _oggstreamer = new OggStreamer();
 #endif
 

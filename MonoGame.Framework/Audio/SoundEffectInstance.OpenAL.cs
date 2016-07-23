@@ -142,36 +142,9 @@ namespace Microsoft.Xna.Framework.Audio
 			AL.Source (SourceId, ALSourcef.Pitch, XnaPitchToAlPitch(_pitch));
             ALHelper.CheckError("Failed to set source pitch.");
 
-            if (reverb > 0f && SoundEffect.ReverbSlot != 0) {
-                OpenALSoundController.Efx.BindSourceToAuxiliarySlot (SourceId, (int)SoundEffect.ReverbSlot, 0, 0);
-                ALHelper.CheckError ("Failed to set reverb.");
-            }
+            ApplyReverb ();
 
-            if (applyFilter && controller.Filter > 0) {
-                var freq = frequency / 20000f;
-                var lf = 1.0f - freq;
-                var efx = OpenALSoundController.Efx;
-                efx.Filter (controller.Filter, EfxFilteri.FilterType, (int)filterType);
-                ALHelper.CheckError ("Failed to set filter.");
-                switch (filterType) {
-                    case EfxFilterType.Lowpass:
-                        efx.Filter (controller.Filter, EfxFilterf.LowpassGainHF, freq);
-                        ALHelper.CheckError ("Failed to set LowpassGainHF.");
-                    break;
-                    case EfxFilterType.Highpass:
-                        efx.Filter (controller.Filter, EfxFilterf.HighpassGainLF, freq);
-                        ALHelper.CheckError ("Failed to set HighpassGainLF.");
-                    break;
-                    case EfxFilterType.Bandpass:
-                        efx.Filter (controller.Filter, EfxFilterf.BandpassGainHF, freq);
-                        ALHelper.CheckError ("Failed to set BandpassGainHF.");
-                        efx.Filter (controller.Filter, EfxFilterf.BandpassGainLF, lf);
-                        ALHelper.CheckError ("Failed to set BandpassGainLF.");
-                    break;
-                }
-                AL.Source (SourceId, ALSourcei.EfxDirectFilter, controller.Filter);
-                ALHelper.CheckError ("Failed to set DirectFilter.");
-            }
+            ApplyFilter ();
 
             AL.SourcePlay(SourceId);
             ALHelper.CheckError("Failed to play source.");
@@ -308,6 +281,47 @@ namespace Microsoft.Xna.Framework.Audio
             if (!OpenALSoundController.Efx.IsInitialized)
                 return;
             reverb = mix;
+            if (State == SoundState.Playing) {
+                ApplyReverb ();
+                reverb = 0f;
+            }
+        }
+
+        internal void ApplyReverb ()
+        {
+            if (reverb > 0f && SoundEffect.ReverbSlot != 0) {
+                OpenALSoundController.Efx.BindSourceToAuxiliarySlot (SourceId, (int)SoundEffect.ReverbSlot, 0, 0);
+                ALHelper.CheckError ("Failed to set reverb.");
+            }
+        }
+
+        internal void ApplyFilter ()
+        {
+            if (applyFilter && controller.Filter > 0) {
+                var freq = frequency / 20000f;
+                var lf = 1.0f - freq;
+                var efx = OpenALSoundController.Efx;
+                efx.Filter (controller.Filter, EfxFilteri.FilterType, (int)filterType);
+                ALHelper.CheckError ("Failed to set filter.");
+                switch (filterType) {
+                case EfxFilterType.Lowpass:
+                    efx.Filter (controller.Filter, EfxFilterf.LowpassGainHF, freq);
+                    ALHelper.CheckError ("Failed to set LowpassGainHF.");
+                    break;
+                case EfxFilterType.Highpass:
+                    efx.Filter (controller.Filter, EfxFilterf.HighpassGainLF, freq);
+                    ALHelper.CheckError ("Failed to set HighpassGainLF.");
+                    break;
+                case EfxFilterType.Bandpass:
+                    efx.Filter (controller.Filter, EfxFilterf.BandpassGainHF, freq);
+                    ALHelper.CheckError ("Failed to set BandpassGainHF.");
+                    efx.Filter (controller.Filter, EfxFilterf.BandpassGainLF, lf);
+                    ALHelper.CheckError ("Failed to set BandpassGainLF.");
+                    break;
+                }
+                AL.Source (SourceId, ALSourcei.EfxDirectFilter, controller.Filter);
+                ALHelper.CheckError ("Failed to set DirectFilter.");
+            }
         }
 
         internal void PlatformSetFilter(FilterMode mode, float filterQ, float frequency)
@@ -329,6 +343,10 @@ namespace Microsoft.Xna.Framework.Audio
             }
             this.filterQ = filterQ;
             this.frequency = frequency;
+            if (State == SoundState.Playing) {
+                ApplyFilter ();
+                applyFilter = false;
+            }
         }
 
         internal void PlatformClearFilter()

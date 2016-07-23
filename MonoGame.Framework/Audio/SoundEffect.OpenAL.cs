@@ -215,7 +215,7 @@ namespace Microsoft.Xna.Framework.Audio
             //efx.SetEffectParam (ReverbEffect, EfxEffectf.LowFrequencyReference, reverbSettings.DecayTimeSec);
             //efx.SetEffectParam (ReverbEffect, EfxEffectf.LowFrequencyReference, reverbSettings.RoomSizeFeet);
 
-            efx.BindEffectToAuxiliarySlot (ReverbSlot, ReverbEffect);
+            efx.BindEffectToAuxiliarySlot (ReverbEffect, ReverbSlot);
         }
 
         #region IDisposable Members
