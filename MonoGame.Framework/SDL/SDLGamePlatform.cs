@@ -59,7 +59,7 @@ namespace Microsoft.Xna.Framework
             var version = 100 * Sdl.Major + 10 * Sdl.Minor + Sdl.Patch;
 
             if (version <= 204)
-                Debug.WriteLine ("Please use SDL 2.0.5 or higher.");
+                Console.WriteLine ("Please use SDL 2.0.5 or higher.");
 
             Sdl.Init((int)(
                 Sdl.InitFlags.Video |
