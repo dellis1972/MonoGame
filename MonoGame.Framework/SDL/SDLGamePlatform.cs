@@ -153,7 +153,7 @@ namespace Microsoft.Xna.Framework
                     string text;
                     unsafe
                     {
-                        text = new string((char*)ev.Text.Text);
+                        text = System.Runtime.InteropServices.Marshal.PtrToStringAuto ((IntPtr)ev.Text.Text);
                     }
                     if (text.Length == 0)
                         continue;
