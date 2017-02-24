@@ -68,22 +68,17 @@ non-infringement.
 
 
 #region Using Statements
-using System;
 
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Net;
 #endregion Statements
 
 #if !WINDOWS_PHONE
-namespace Microsoft.Xna.Framework.GamerServices {
+namespace Microsoft.Xna.Framework.GamerServices
+{
 #else
 namespace MonoGame.Xna.Framework.GamerServices {
 #endif
 
-	public class GamerServicesComponent : GameComponent {
-		private static LocalNetworkGamer lng;
-
-		internal static LocalNetworkGamer LocalNetworkGamer { get { return lng; } set { lng = value; } }
+    public class GamerServicesComponent : GameComponent {
 
 		public GamerServicesComponent(Game game)
 			: base(game)
@@ -108,12 +103,4 @@ namespace MonoGame.Xna.Framework.GamerServices {
 
 		}
 	}
-
-    public class MonoGameGamerServicesComponent : GamerServicesComponent
-    {
-        public MonoGameGamerServicesComponent(Game game): base (game)
-        {
-
-        }
-    }
 }
