@@ -1334,7 +1334,7 @@ namespace MonoGame.OpenGL
                 // this will be detected in the initialization of GraphicsCapabilities
             }
 
-#if DEBUG
+#if DEBUG && !FORMS
             try
             {
                 DebugMessageCallback = (DebugMessageCallbackDelegate)LoadEntryPoint<DebugMessageCallbackDelegate>("glDebugMessageCallback");

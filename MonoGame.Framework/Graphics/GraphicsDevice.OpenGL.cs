@@ -18,7 +18,7 @@ namespace Microsoft.Xna.Framework.Graphics
     public partial class GraphicsDevice
     {
 #if DESKTOPGL || ANGLE
-        internal IGraphicsContext Context { get; private set; }
+        public IGraphicsContext Context { get; set; }
 #endif
 
 #if !GLES
@@ -213,7 +213,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 #if !(GLES || MONOMAC)
                     // only set the divisor if instancing is supported
-                    if (GraphicsCapabilities.SupportsInstancing) 
+                    if (GraphicsCapabilities.SupportsInstancing)
                         GL.VertexAttribDivisor(element.AttributeLocation, vertexBufferBinding.InstanceFrequency);
 #endif
 
@@ -243,7 +243,8 @@ namespace Microsoft.Xna.Framework.Graphics
         private void PlatformSetup()
         {
             _programCache = new ShaderProgramCache(this);
-#if DESKTOPGL || ANGLE
+#if FORMS
+#elif (DESKTOPGL || ANGLE)
             var windowInfo = new WindowInfo(SdlGameWindow.Instance.Handle);
 
             if (Context == null || Context.IsDisposed)
@@ -253,7 +254,6 @@ namespace Microsoft.Xna.Framework.Graphics
 
             Context.MakeCurrent(windowInfo);
             Context.SwapInterval = PresentationParameters.PresentationInterval.GetSwapInterval();
-
             Context.MakeCurrent(windowInfo);
 #endif
             MaxTextureSlots = 16;
@@ -419,13 +419,13 @@ namespace Microsoft.Xna.Framework.Graphics
 				bufferMask = bufferMask | ClearBufferMask.DepthBufferBit;
 			}
 
-#if MONOMAC
+#if MONOMAC || FORMS
             if (GL.CheckFramebufferStatus(FramebufferTarget.FramebufferExt) == FramebufferErrorCode.FramebufferComplete)
             {
 #endif
                 GL.Clear(bufferMask);
                 GraphicsExtensions.CheckGLError();
-#if MONOMAC
+#if MONOMAC || FORMS
             }
 #endif
            		
@@ -512,7 +512,7 @@ namespace Microsoft.Xna.Framework.Graphics
             }
         }
 
-#if DESKTOPGL || ANGLE
+#if (DESKTOPGL || ANGLE) && !FORMS
         static internal void DisposeContext(IntPtr resource)
         {
             lock (_disposeContextsLock)
@@ -1235,7 +1235,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
         internal void OnPresentationChanged()
         {
-#if DESKTOPGL || ANGLE
+#if (DESKTOPGL || ANGLE) && !FORMS
             Context.MakeCurrent(new WindowInfo(SdlGameWindow.Instance.Handle));
             Context.SwapInterval = PresentationParameters.PresentationInterval.GetSwapInterval();
 #endif
@@ -1259,31 +1259,5 @@ namespace Microsoft.Xna.Framework.Graphics
                 Vbo = vbo;
             }
         }
-
-#if DESKTOPGL
-        private void GetModeSwitchedSize(out int width, out int height)
-        {
-            var mode = new Sdl.Display.Mode
-            {
-                Width = PresentationParameters.BackBufferWidth,
-                Height = PresentationParameters.BackBufferHeight,
-                Format = 0,
-                RefreshRate = 0,
-                DriverData = IntPtr.Zero
-            };
-            Sdl.Display.Mode closest;
-            Sdl.Display.GetClosestDisplayMode(0, mode, out closest);
-            width = closest.Width;
-            height = closest.Height;
-        }
-
-        private void GetDisplayResolution(out int width, out int height)
-        {
-            Sdl.Display.Mode mode;
-            Sdl.Display.GetCurrentDisplayMode(0, out mode);
-            width = mode.Width;
-            height = mode.Height;
-        }
-#endif
     }
 }

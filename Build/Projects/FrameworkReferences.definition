@@ -16,6 +16,10 @@
     <Reference Include="System" />
     <Reference Include="System.Runtime.Serialization" />
   </Platform>
+  <Platform Type="Forms">
+    <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
+  </Platform>
 
   <Platform Type="MacOS">
     <Reference Include="System" />
