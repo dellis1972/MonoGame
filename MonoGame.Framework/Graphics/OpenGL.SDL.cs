@@ -12,7 +12,10 @@ namespace MonoGame.OpenGL
     {
         static partial void LoadPlatformEntryPoints()
         {
-            BoundApi = RenderApi.GL;
+            var flags = (Sdl.GL.Profile)Sdl.GL.GetAttribute(Sdl.GL.Attribute.ContextProfileMask);
+            var gles = flags.HasFlag(Sdl.GL.Profile.ES);
+ 
+            BoundApi = gles ? RenderApi.ES : RenderApi.GL;
         }
 
         private static IGraphicsContext PlatformCreateContext (IWindowInfo info)

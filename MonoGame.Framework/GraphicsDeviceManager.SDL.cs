@@ -40,8 +40,18 @@ namespace Microsoft.Xna.Framework
             }
 
             Sdl.GL.SetAttribute(Sdl.GL.Attribute.DoubleBuffer, 1);
-            Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextMajorVersion, 2);
-            Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextMinorVersion, 1);
+
+            if (!string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("USE_GLES_PROFILE")))
+            {
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextMajorVersion, 2);
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextMinorVersion, 1);
+            } else {
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.RetainedBacking, 0);
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.AcceleratedVisual, 1);
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextMajorVersion, 2);
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextMinorVersion, 1);
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextProfileMask, (int)Sdl.GL.Profile.ES);
+            }
 
             ((SdlGameWindow)SdlGameWindow.Instance).CreateWindow();
         }

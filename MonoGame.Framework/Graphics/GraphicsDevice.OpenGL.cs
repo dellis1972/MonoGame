@@ -414,11 +414,15 @@ namespace Microsoft.Xna.Framework.Graphics
             {
                 string version = GL.GetString(StringName.Version);
 
-                if (string.IsNullOrEmpty(version))
+                if (string.IsNullOrEmpty(version) && GL.BoundApi != GL.RenderApi.ES)
                     throw new NoSuitableGraphicsDeviceException("Unable to retrieve OpenGL version");
 
                 glMajorVersion = Convert.ToInt32(version.Substring(0, 1));
                 glMinorVersion = Convert.ToInt32(version.Substring(2, 1));
+            }
+            catch (NullReferenceException) {
+                glMajorVersion = 3;
+                glMinorVersion = 0;
             }
             catch (FormatException)
             {

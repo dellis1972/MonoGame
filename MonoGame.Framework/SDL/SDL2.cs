@@ -461,10 +461,18 @@ internal static class Sdl
             ContextMinorVersion,
             ContextEgl,
             ContextFlags,
-            ContextProfileMAsl,
+            ContextProfileMask,
             ShareWithCurrentContext,
             FramebufferSRGBCapable,
             ContextReleaseBehaviour,
+        }
+
+        [Flags]
+        public enum Profile
+        {
+            Core = 0x0001,
+            Compatability = 0x0002,
+            ES = 0x0004
         }
 
         [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL_GL_CreateContext", ExactSpelling = true)]
@@ -498,6 +506,16 @@ internal static class Sdl
         public static int SetAttribute(Attribute attr, int value)
         {
             return GetError(SDL_GL_SetAttribute(attr, value));
+        }
+
+        [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL_GL_GetAttribute", ExactSpelling = true)]
+        private static extern int SDL_GL_GetAttribute(Attribute attr, out int flags);
+
+        public static int GetAttribute(Attribute attr)
+        {
+            int flags = 0;
+            GetError(SDL_GL_GetAttribute(attr, out flags));
+            return flags;
         }
 
         [DllImport(NativeLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "SDL_GL_SetSwapInterval", ExactSpelling = true)]
