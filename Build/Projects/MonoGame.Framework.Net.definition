@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Name="MonoGame.Framework.Net" Path="MonoGame.Framework" Type="Library" Platforms="Android,iOS,Linux,MacOS,Windows,WindowsGL,WindowsUniversal">
+<Project Name="MonoGame.Framework.Net" Path="MonoGame.Framework" Type="Library" Platforms="Android,iOS,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Headless">
 
   <!--
     Using Protobuild in your own project?  ProjectGuids are only in use here
@@ -16,6 +16,7 @@
 	<Platform Name="Windows">87A71215-7CAC-4B80-9D43-1700DECFB828</Platform>
 	<Platform Name="WindowsGL">6D6009F4-0AFB-4806-89D7-7945F20270F5</Platform>
     <Platform Name="WindowsUniversal">9CE2FA93-3D41-4025-B228-3D9D81F19BE0</Platform>
+    <Platform Name="Headless">9CE2FA93-3D41-4025-B228-3D9D81F19BEA</Platform>
   </ProjectGuids>
 
   <!-- Common assembly references -->
@@ -43,6 +44,7 @@
       <Platform Name="Windows">TRACE;WINDOWS;DIRECTX;WINDOWS_MEDIA_SESSION;NET</Platform>
       <Platform Name="WindowsGL">TRACE;WINDOWS;OPENGL;OPENAL;NET;DESKTOPGL</Platform>
       <Platform Name="WindowsUniversal">TRACE;NETFX_CORE;WINDOWS_UAP;WINRT;DIRECTX;DIRECTX11_1;WINDOWS_MEDIA_ENGINE</Platform>		
+      <Platform Name="Headless">TRACE;HEADLESS</Platform>		
     </CustomDefinitions>
 	
   </Properties>
@@ -77,10 +79,10 @@
       <Platforms>Android,MacOS,Windows,WindowsGL,Linux</Platforms>
     </Compile>
     <Compile Include="GamerServices\GamerServicesDispatcher.cs">
-      <Platforms>MacOS,Windows,WindowsGL,Linux</Platforms>
+      <Platforms>MacOS,Windows,WindowsGL,Linux,Headless</Platforms>
     </Compile>
     <Compile Include="GamerServices\GamerServicesComponent.cs">
-      <Platforms>Android,iOS,Linux,MacOS,Windows,WindowsGL</Platforms>
+      <Platforms>Android,iOS,Linux,MacOS,Windows,WindowsGL,Headless</Platforms>
     </Compile>
  
 
@@ -251,13 +253,13 @@
 
     <!-- Windows Desktop Platform -->
     <Compile Include="Windows\GamerServices\Guide.cs">
-      <Platforms>Windows,WindowsUniversal</Platforms>
+      <Platforms>Windows,WindowsUniversal,Headless</Platforms>
     </Compile>
     <Compile Include="Windows\GamerServices\MonoGameGamerServicesHelper.cs">
-      <Platforms>Windows</Platforms>
+      <Platforms>Windows,Headless</Platforms>
     </Compile>
     <Compile Include="Windows\GamerServices\SignedInGamer.cs">
-      <Platforms>Windows</Platforms>
+      <Platforms>Windows,Headless</Platforms>
     </Compile>
  
   </Files>

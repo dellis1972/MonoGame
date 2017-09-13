@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Name="MonoGame.Framework" Path="MonoGame.Framework" Type="Library" Platforms="Android,Angle,iOS,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Web,tvOS,PSVita,XBoxOne,Switch">
+<Project Name="MonoGame.Framework" Path="MonoGame.Framework" Type="Library" Platforms="Android,Angle,iOS,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Web,tvOS,PSVita,XBoxOne,Switch,Headless">
   <!--
     Using Protobuild in your own project?  ProjectGuids are only in use here
     for backwards compatibility with existing users of MonoGame, and are not
@@ -16,6 +16,7 @@
   	<Platform Name="Windows">7DE47032-A904-4C29-BD22-2D235E8D91BA</Platform>
   	<Platform Name="WindowsGL">6D75E618-19CA-4C51-9546-F10965FBC0B8</Platform>
     <Platform Name="WindowsUniversal">09C41A48-7BF3-4A46-9EB8-CE95B4C27CA9</Platform>
+   <Platform Name="Headless">09C41A48-7BF3-4A46-9EB8-CE95B4C27CA0</Platform>
   </ProjectGuids>
 
   <!-- Common assembly references -->
@@ -44,6 +45,7 @@
       <Platform Name="Windows">TRACE;WINDOWS;DIRECTX;WINDOWS_MEDIA_SESSION</Platform>
       <Platform Name="WindowsUniversal">TRACE;NETFX_CORE;WINDOWS_UAP;DIRECTX;DIRECTX11_1;WINDOWS_MEDIA_ENGINE</Platform>
       <Platform Name="Web">TRACE;WEB</Platform>
+      <Platform Name="Headless">TRACE;HEADLESS</Platform>
     </CustomDefinitions>
 	
 	<DefineNET4DetectionConstant>True</DefineNET4DetectionConstant>
@@ -68,6 +70,9 @@
     </Uses>
     <Uses Name="WebGraphics">
       <Platforms>Web</Platforms>
+    </Uses>
+    <Uses Name="HeadlessGraphics">
+      <Platforms>Headless</Platforms>
     </Uses>
     <Uses Name="_XNADesignProvided">
       <Platforms>Windows,WindowsGL,Linux,MacOS</Platforms>
@@ -110,6 +115,11 @@
       <Conflicts>ANGLEGraphics,OpenGLGraphics,DirectXGraphics</Conflicts>
       <Requires>WebAudio</Requires>
     </Service>
+    <Service Name="HeadlessGraphics">
+      <Platforms>Headless</Platforms>
+      <Conflicts>ANGLEGraphics,OpenGLGraphics,DirectXGraphics</Conflicts>
+      <Requires>HeadlessAudio</Requires>
+    </Service>
 
     <!-- Audio APIs -->
     <Service Name="OpenALAudio">
@@ -122,6 +132,10 @@
     </Service>
     <Service Name="WebAudio">
       <Platforms>Web</Platforms>
+      <Conflicts>OpenALAudio,XAudioAudio</Conflicts>
+    </Service>
+    <Service Name="HeadlessAudio">
+      <Platforms>Headless</Platforms>
       <Conflicts>OpenALAudio,XAudioAudio</Conflicts>
     </Service>
     <Service Name="NVorbis">
@@ -167,6 +181,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.Web.cs">
         <Platforms>Web</Platforms>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.Headless.cs">
+        <Platforms>Headless</Platforms>
     </Compile>
 
     <None Include="..\ThirdParty\Dependencies\MonoGame.Framework.dll.config">
@@ -266,7 +283,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GamePlatform.cs" />
     <Compile Include="GamePlatform.Desktop.cs">
-      <Platforms>Angle,Linux,MacOS,Windows,WindowsGL,WindowsUniversal</Platforms>
+      <Platforms>Angle,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Headless</Platforms>
     </Compile>
     <Compile Include="GamePlatform.Mobile.cs">
       <Platforms>Android,iOS,Web,tvOS</Platforms>
@@ -298,10 +315,10 @@
     <Compile Include="Rectangle.cs" />
     <Compile Include="ReusableItemList.cs" />
     <Compile Include="TextInputEventArgs.cs">
-      <Platforms>Angle,Linux,MacOS,Windows,WindowsGL,WindowsUniversal</Platforms>
+      <Platforms>Angle,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Headless</Platforms>
     </Compile>
     <Compile Include="Threading.cs">
-      <Platforms>Android,Angle,iOS,Linux,MacOS,WindowsGL,tvOS</Platforms>
+      <Platforms>Android,Angle,iOS,Linux,MacOS,WindowsGL,tvOS,Headless</Platforms>
     </Compile>
     <Compile Include="TitleContainer.cs" />
     <Compile Include="TitleContainer.Android.cs">
@@ -309,6 +326,7 @@
     </Compile>
     <Compile Include="TitleContainer.Desktop.cs">
       <Platforms>Angle,Linux,Windows,WindowsGL,Web,MacOS</Platforms>
+      <Platforms>Angle,Linux,Windows,WindowsGL,Web,MacOS,Headless</Platforms>
     </Compile>
     <Compile Include="TitleContainer.MacOS.cs">
       <Platforms>iOS,tvOS</Platforms>
@@ -333,6 +351,9 @@
 	<Compile Include="Audio\DynamicSoundEffectInstance.cs" />
 	<Compile Include="Audio\DynamicSoundEffectInstance.OpenAL.cs">
 	  <Services>OpenALAudio</Services>
+	</Compile>
+	<Compile Include="Audio\DynamicSoundEffectInstance.Headless.cs">
+	  <Services>HeadlessAudio</Services>
 	</Compile>
 	<Compile Include="Audio\DynamicSoundEffectInstance.XAudio.cs">
 	  <Services>XAudioAudio</Services>
@@ -359,6 +380,9 @@
     <Compile Include="Audio\SoundEffect.OpenAL.cs">
       <Services>OpenALAudio</Services>
     </Compile>
+    <Compile Include="Audio\SoundEffect.Headless.cs">
+      <Services>HeadlessAudio</Services>
+    </Compile>
     <Compile Include="Audio\SoundEffect.XAudio.cs">
       <Services>XAudioAudio</Services>
     </Compile>
@@ -368,6 +392,9 @@
     <Compile Include="Audio\SoundEffectInstance.cs" />
     <Compile Include="Audio\SoundEffectInstance.OpenAL.cs">
       <Services>OpenALAudio</Services>
+    </Compile>
+    <Compile Include="Audio\SoundEffectInstance.Headless.cs">
+      <Services>HeadlessAudio</Services>
     </Compile>
     <Compile Include="Audio\SoundEffectInstance.XAudio.cs">
       <Services>XAudioAudio</Services>
@@ -382,7 +409,7 @@
       <Services>OpenALAudio</Services>
     </Compile>
 	<Compile Include="Audio\Microphone.Default.cs">
-      <Services>XAudioAudio,WebAudio</Services>
+      <Services>XAudioAudio,WebAudio,HeadLessAudio</Services>
     </Compile>
 	<Compile Include="Audio\NoMicrophoneConnectedException.cs" />
 
@@ -409,7 +436,7 @@
     <Compile Include="Audio\Xact\VolumeEvent.cs" />
     <Compile Include="Audio\Xact\WaveBank.cs" />
     <Compile Include="Audio\Xact\WaveBank.Default.cs">	
-      <Platforms>Android,Angle,iOS,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Web,tvOS</Platforms>
+      <Platforms>Android,Angle,iOS,Linux,MacOS,Windows,WindowsGL,WindowsUniversal,Web,tvOS,Headless</Platforms>
     </Compile>
     <Compile Include="Audio\Xact\XactClip.cs" />
     <Compile Include="Audio\Xact\XactHelpers.cs" />
@@ -490,7 +517,7 @@
     <Compile Include="Content\ContentReaders\VertexBufferReader.cs" />
     <Compile Include="Content\ContentReaders\VertexDeclarationReader.cs"/>
     <Compile Include="Content\ContentReaders\VideoReader.cs">
-      <ExcludePlatforms>Angle,Linux,WindowsGL,Web,tvOS</ExcludePlatforms>
+      <ExcludePlatforms>Angle,Linux,WindowsGL,Web,tvOS,Headless</ExcludePlatforms>
     </Compile>
     <Compile Include="Content\ContentSerializerAttribute.cs" />
     <Compile Include="Content\ContentSerializerCollectionItemNameAttribute.cs" />
@@ -501,7 +528,7 @@
     <Compile Include="Content\ContentTypeReaderManager.cs" />
     <Compile Include="Content\LzxDecoder.cs" />
     <Compile Include="Content\ResourceContentManager.cs">
-      <Platforms>Angle,Android,iOS,Linux,Windows,WindowsGL,tvOS</Platforms>
+      <Platforms>Angle,Android,iOS,Linux,Windows,WindowsGL,tvOS,Headless</Platforms>
     </Compile>
 
 
@@ -513,10 +540,13 @@
     <Compile Include="Graphics\DeviceNotResetException.cs" />
     <Compile Include="GraphicsDeviceInformation.cs" />
     <Compile Include="GraphicsDeviceManager.cs">
-		<Platforms>Windows,WindowsGL,Linux,WindowsUniversal,Web,MacOS</Platforms>
+		<Platforms>Windows,WindowsGL,Linux,WindowsUniversal,Web,MacOS,Headless</Platforms>
     </Compile>
     <Compile Include="GraphicsDeviceManager.SDL.cs">
       <Platforms>WindowsGL,Linux,MacOS</Platforms>
+    </Compile>
+    <Compile Include="GraphicsDeviceManager.Headless.cs">
+      <Platforms>Headless</Platforms>
     </Compile>
     <Compile Include="GraphicsDeviceManager.WinRT.cs">
 		<Platforms>WindowsUniversal</Platforms>
@@ -552,6 +582,9 @@
     <Compile Include="Graphics\Effect\EffectResource.OpenGL.cs">
       <Services>OpenGLGraphics,WebGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Effect\EffectResource.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Effect\EffectTechniqueCollection.cs" />
     <Compile Include="Graphics\Effect\EffectTechnique.cs" />
     <Compile Include="Graphics\Effect\EnvironmentMapEffect.cs">
@@ -565,10 +598,13 @@
     </Compile>
     <Compile Include="Graphics\Effect\SpriteEffect.cs" />
     <Compile Include="Graphics\GraphicsAdapter.cs">
-      <ExcludePlatforms>Android,Angle,iOS,Linux,MacOS,WindowsGL,tvOS,Web</ExcludePlatforms>
+      <ExcludePlatforms>Android,Angle,iOS,Linux,MacOS,WindowsGL,tvOS,Web,Headless</ExcludePlatforms>
     </Compile>
     <Compile Include="Graphics\GraphicsAdapter.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\GraphicsAdapter.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\GraphicsAdapter.Legacy.cs">
       <Platforms>Android,Angle,iOS,Linux,MacOS,WindowsGL,tvOS,Web</Platforms>
@@ -576,6 +612,9 @@
     <Compile Include="Graphics\GraphicsCapabilities.cs" />
     <Compile Include="Graphics\GraphicsCapabilities.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\GraphicsCapabilities.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\GraphicsCapabilities.OpenGL.cs">
       <Services>OpenGLGraphics,ANGLEGraphics</Services>
@@ -590,6 +629,9 @@
     <Compile Include="Graphics\GraphicsDebug.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\GraphicsDebug.Headless.cs">
+      <Services>HedlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\GraphicsDebug.Default.cs">
       <Services>OpenGLGraphics,WebGraphics,ANGLEGraphics</Services>
     </Compile>
@@ -597,6 +639,9 @@
     <Compile Include="Graphics\GraphicsDevice.cs" />
     <Compile Include="Graphics\GraphicsDevice.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\GraphicsDevice.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\GraphicsDevice.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
@@ -635,7 +680,7 @@
       <ExcludePlatforms>iOS,Android</ExcludePlatforms>
     </Compile>
     <Compile Include="Graphics\OcclusionQuery.Null.cs">
-      <Services>WebGraphics</Services>
+      <Services>WebGraphics,HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\OpenGL.cs">
       <Platforms>WindowsGL,Linux,iOS,MacOS,Android,Ouya,tvOS</Platforms>
@@ -678,6 +723,9 @@
     <Compile Include="Graphics\RenderTarget2D.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\RenderTarget2D.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\RenderTarget2D.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -690,10 +738,16 @@
     <Compile Include="Graphics\RenderTarget3D.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\RenderTarget3D.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\RenderTargetBinding.cs" />
     <Compile Include="Graphics\RenderTargetCube.cs" />
 	<Compile Include="Graphics\RenderTargetCube.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\RenderTargetCube.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\RenderTargetCube.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
@@ -708,6 +762,9 @@
     <Compile Include="Graphics\SamplerStateCollection.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\SamplerStateCollection.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\SamplerStateCollection.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -720,6 +777,9 @@
     <Compile Include="Graphics\Shader\ConstantBuffer.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Shader\ConstantBuffer.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Shader\ConstantBuffer.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -729,6 +789,9 @@
     <Compile Include="Graphics\Shader\Shader.cs" />
     <Compile Include="Graphics\Shader\Shader.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\Shader\Shader.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\Shader\Shader.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
@@ -752,6 +815,9 @@
     <Compile Include="Graphics\States\BlendState.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\States\BlendState.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\States\BlendState.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -765,6 +831,9 @@
     <Compile Include="Graphics\States\DepthStencilState.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\States\DepthStencilState.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\States\DepthStencilState.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -776,6 +845,9 @@
     <Compile Include="Graphics\States\RasterizerState.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\States\RasterizerState.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\States\RasterizerState.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -785,6 +857,9 @@
     <Compile Include="Graphics\States\SamplerState.cs" />
     <Compile Include="Graphics\States\SamplerState.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\States\SamplerState.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\States\SamplerState.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
@@ -805,6 +880,9 @@
     <Compile Include="Graphics\Texture2D.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Texture2D.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Texture2D.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -814,6 +892,9 @@
     <Compile Include="Graphics\Texture3D.cs" />
     <Compile Include="Graphics\Texture3D.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\Texture3D.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\Texture3D.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
@@ -825,6 +906,9 @@
     <Compile Include="Graphics\TextureCollection.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\TextureCollection.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\TextureCollection.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -835,6 +919,9 @@
     <Compile Include="Graphics\Texture.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Texture.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Texture.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -844,6 +931,9 @@
     <Compile Include="Graphics\TextureCube.cs" />
     <Compile Include="Graphics\TextureCube.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\TextureCube.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\TextureCube.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
@@ -861,6 +951,9 @@
     <Compile Include="Graphics\Vertices\IndexBuffer.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Vertices\IndexBuffer.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Vertices\IndexBuffer.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -877,6 +970,9 @@
     <Compile Include="Graphics\Vertices\VertexBuffer.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Vertices\VertexBuffer.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Vertices\VertexBuffer.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
     </Compile>
@@ -888,10 +984,16 @@
     <Compile Include="Graphics\Vertices\VertexBufferBindings.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Vertices\VertexBufferBindings.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Vertices\VertexDeclarationCache.cs" />
     <Compile Include="Graphics\Vertices\VertexDeclaration.cs" />
     <Compile Include="Graphics\Vertices\VertexDeclaration.OpenGL.cs">
       <Services>OpenGLGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\Vertices\VertexDeclaration.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\Vertices\VertexDeclaration.Web.cs">
       <Services>WebGraphics</Services>
@@ -900,11 +1002,17 @@
     <Compile Include="Graphics\Vertices\VertexElement.DirectX.cs">
       <Services>DirectXGraphics</Services>
     </Compile>
+    <Compile Include="Graphics\Vertices\VertexElement.Headless.cs">
+      <Services>HeadlessGraphics</Services>
+    </Compile>
     <Compile Include="Graphics\Vertices\VertexElementFormat.cs" />
     <Compile Include="Graphics\Vertices\VertexElementUsage.cs" />
     <Compile Include="Graphics\Vertices\VertexInputLayout.cs" />
     <Compile Include="Graphics\Vertices\VertexInputLayout.DirectX.cs">
       <Services>DirectXGraphics</Services>
+    </Compile>
+    <Compile Include="Graphics\Vertices\VertexInputLayout.Headless.cs">
+      <Services>HeadlessGraphics</Services>
     </Compile>
     <Compile Include="Graphics\Vertices\VertexPosition.cs" />
     <Compile Include="Graphics\Vertices\VertexPositionColor.cs" />
@@ -954,7 +1062,7 @@
     <Compile Include="Input\JoystickHat.cs" />
     <Compile Include="Input\JoystickState.cs" />
     <Compile Include="Input\Joystick.Default.cs">
-      <Platforms>Angle,Android,Windows,WindowsUniversal,iOS,tvOS</Platforms>
+      <Platforms>Angle,Android,Windows,WindowsUniversal,iOS,tvOS,Headless</Platforms>
     </Compile>
     <Compile Include="Input\Joystick.SDL.cs">
       <Platforms>Linux,WindowsGL,MacOS</Platforms>
@@ -1086,7 +1194,7 @@
     <Compile Include="Media\SongCollection.cs" />
     <Compile Include="Media\Song.cs" />
     <Compile Include="Media\Song.Default.cs">
-        <Platforms>Angle,Web</Platforms>
+        <Platforms>Angle,Web,Headless</Platforms>
     </Compile>
     <Compile Include="Media\Song.Android.cs">
         <Platforms>Android</Platforms>
@@ -1173,7 +1281,7 @@
       <Platforms>Angle,Linux,MacOS,Windows,WindowsGL</Platforms>
     </Compile>
     <Compile Include="Utilities\CurrentPlatform.cs">
-      <Platforms>Windows,MacOS,WindowsGL,Linux</Platforms>
+      <Platforms>Windows,MacOS,WindowsGL,Linux,Headless</Platforms>
     </Compile>
     <Compile Include="Utilities\Hash.cs" />
     <Compile Include="Utilities\FileHelpers.cs" />
@@ -1182,7 +1290,7 @@
       <Platforms>Android,iOS,WindowsUniversal,tvOS</Platforms>
     </Compile>
     <Compile Include="Utilities\ReflectionHelpers.Legacy.cs" >
-      <Platforms>Angle,Linux,MacOS,Windows,WindowsGL,Web</Platforms>
+      <Platforms>Angle,Linux,MacOS,Windows,WindowsGL,Web,Headless</Platforms>
     </Compile>
     <Compile Include="Utilities\Lz4Stream\Lz4DecoderStream.cs" />
     <Compile Include="Utilities\LzxStream\LzxDecoderStream.cs" />
@@ -1244,6 +1352,13 @@
       <Platforms>Android</Platforms>
     </Compile>
 
+    <!-- Headless Platform -->
+    <Compile Include="Headless\HeadlessGamePlatform.cs">
+      <Platforms>Headless</Platforms>
+    </Compile>
+    <Compile Include="Headless\HeadlessGameWindow.cs">
+      <Platforms>Headless</Platforms>
+    </Compile>
 
     <!-- Common Desktop Platform -->
     <Compile Include="SDL\SDLGamePlatform.cs">
