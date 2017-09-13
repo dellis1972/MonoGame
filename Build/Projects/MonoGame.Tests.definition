@@ -258,6 +258,10 @@
     <Compile Include="Framework\Input\KeyboardTest.cs" />
     <Compile Include="Framework\Input\MouseTest.cs" />
 
+    <Compile Include="Framework\Storage\StorageTest.cs">
+        <Platforms>Windows,Linux,MacOS</Platforms>
+    </Compile>
+
     <Compile Include="Framework\Graphics\DepthStencilStateTest.cs" />
     <Compile Include="Framework\Graphics\GraphicsDeviceManagerTest.cs" />
     <Compile Include="Framework\Graphics\RasterizerStateTest.cs" />

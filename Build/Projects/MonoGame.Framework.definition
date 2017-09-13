@@ -1257,8 +1257,20 @@
     <Compile Include="Utilities\Imaging\TinyJpeg.Generated.cs">
         <Platforms>WindowsGL,Linux</Platforms>
     </Compile>
-	
 
+    <!-- Storage -->
+    <Compile Include="Storage\StorageContainer.cs">
+        <Platforms>Windows,WindowsGL,Linux,MacOS</Platforms>
+    </Compile>
+    <Compile Include="Storage\StorageDevice.cs">
+        <Platforms>Windows,WindowsGL,Linux,MacOS</Platforms>
+    </Compile>
+    <Compile Include="Storage\StorageContainer.Desktop.cs">
+        <Platforms>Windows,WindowsGL,Linux,MacOS</Platforms>
+    </Compile>
+    <Compile Include="Storage\StorageDevice.Desktop.cs">
+        <Platforms>Windows,WindowsGL,Linux,MacOS</Platforms>
+    </Compile>
 
     <!-- Android Platform -->
     <Compile Include="Android\AndroidCompatibility.cs">
