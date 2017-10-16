@@ -433,6 +433,7 @@ namespace MonoGame.OpenGL
         UnsignedShort5551 = 0x8034,
         Float = 0x1406,
         HalfFloat = 0x140B,
+        HalfFloatOES = 0x8D61,
         Byte = 0x1400,
         UnsignedShort = 0x1403,
         UnsignedInt1010102 = 0x8036,
@@ -1354,10 +1355,14 @@ namespace MonoGame.OpenGL
                 InvalidateFramebuffer = (InvalidateFramebufferDelegate)LoadEntryPoint<InvalidateFramebufferDelegate> ("glDiscardFramebufferEXT");
             }
 
+            if (GL.BeginQuery != null)
+                BoundQueryTarget = QueryTarget.SamplesPassed;
+
             LoadExtensions ();
         }
 
         internal static List<string> Extensions = new List<string> ();
+        internal static QueryTarget BoundQueryTarget { get; private set; }
 
         //[Conditional("DEBUG")]
         //[DebuggerHidden]
@@ -1406,6 +1411,15 @@ namespace MonoGame.OpenGL
                     GL.RenderbufferStorageMultisample = (GL.RenderbufferStorageMultisampleDelegate)GL.LoadEntryPoint<GL.RenderbufferStorageMultisampleDelegate>("glRenderbufferStorageMultisampleNV");
                     GL.BlitFramebuffer = (GL.BlitFramebufferDelegate)GL.LoadEntryPoint<GL.BlitFramebufferDelegate>("glBlitFramebufferNV");
                 }
+            }
+            if (GL.BeginQuery == null && Extensions.Contains("GL_EXT_occlusion_query_boolean"))
+            {
+                GenQueries = (GenQueriesDelegate)LoadEntryPoint<GenQueriesDelegate>("glGenQueriesEXT");
+                BeginQuery = (BeginQueryDelegate)LoadEntryPoint<BeginQueryDelegate>("glBeginQueryEXT");
+                EndQuery = (EndQueryDelegate)LoadEntryPoint<EndQueryDelegate>("glEndQueryEXT");
+                GetQueryObject = (GetQueryObjectDelegate)LoadEntryPoint<GetQueryObjectDelegate>("glGetQueryObjectuivEXT");
+                DeleteQueries = (DeleteQueriesDelegate)LoadEntryPoint<DeleteQueriesDelegate>("glDeleteQueriesEXT");
+                BoundQueryTarget = QueryTarget.SamplesPassedExt;
             }
         }
 

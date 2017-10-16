@@ -94,5 +94,17 @@ namespace Microsoft.Xna.Framework.Graphics
         }
 
         internal bool SupportsInstancing { get; private set; }
+
+        /// <summary>
+        /// True, if SurfaceFormat.Float is supported. On Direct3D platforms, this is always <code>true</code>.
+        /// On OpenGL platforms, it is <code>true</code> if GL 3.x, GLES 3.x or GL_OES_texture_float are supported. 
+        /// </summary>
+        internal bool SupportsFloatTextures { get; private set; }
+
+        /// <summary>
+        /// True, if SurfaceFormat.Float is supported. On Direct3D platforms, this is always <code>true</code>.
+        /// On OpenGL platforms, it is <code>true</code> if GL 3.x, GLES 3.x or GL_OES_texture_half_float are supported. 
+        /// </summary>
+        internal bool SupportsHalfFloatTextures { get; private set; }
     }
 }

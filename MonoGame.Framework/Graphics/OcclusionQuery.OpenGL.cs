@@ -1,7 +1,7 @@
 // MonoGame - Copyright (C) The MonoGame Team
 // This file is subject to the terms and conditions defined in
 // file 'LICENSE.txt', which is part of this source code package.
-
+using System;
 using MonoGame.OpenGL;
 
 namespace Microsoft.Xna.Framework.Graphics
@@ -12,19 +12,21 @@ namespace Microsoft.Xna.Framework.Graphics
 
         private void PlatformConstruct()
         {
+            if (GL.GenQueries == null)
+                throw new NotSupportedException("OcclusionQuery is not supported on this device.");
             GL.GenQueries(1, out glQueryId);
             GraphicsExtensions.CheckGLError();
         }
 
         private void PlatformBegin()
         {
-            GL.BeginQuery(QueryTarget.SamplesPassed, glQueryId);
+            GL.BeginQuery(GL.BoundQueryTarget, glQueryId);
             GraphicsExtensions.CheckGLError();
         }
 
         private void PlatformEnd()
         {
-            GL.EndQuery(QueryTarget.SamplesPassed);
+            GL.EndQuery(GL.BoundQueryTarget);
             GraphicsExtensions.CheckGLError();
         }
 

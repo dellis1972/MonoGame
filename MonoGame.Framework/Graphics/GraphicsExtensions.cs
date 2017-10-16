@@ -508,6 +508,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			glType = PixelType.UnsignedByte;
 
 		    var supportsSRgb = graphicsDevice.GraphicsCapabilities.SupportsSRgb;
+            var supportsFloat = graphicsDevice.GraphicsCapabilities.SupportsFloatTextures;
+            var supportsHalfFloat = graphicsDevice.GraphicsCapabilities.SupportsHalfFloatTextures;
 			
 			switch (format) {
 			case SurfaceFormat.Color:
@@ -719,6 +721,20 @@ namespace Microsoft.Xna.Framework.Graphics
 				glInternalFormat = PixelInternalFormat.CompressedRgbaPvrtc4Bppv1Img;
 				glFormat = PixelFormat.CompressedTextureFormats;
 				break;
+            case SurfaceFormat.HalfSingle:
+                    if (!supportsHalfFloat)
+                        throw new NotSupportedException();
+                    glInternalFormat = PixelInternalFormat.Rgba;
+                    glFormat = GLPixelFormat.Rgba;
+                    glType = PixelType.HalfFloatOES;
+                break;
+            case SurfaceFormat.Single:
+                    if (!supportsFloat)
+                        throw new NotSupportedException();
+                    glInternalFormat = PixelInternalFormat.Rgba;
+                    glFormat = GLPixelFormat.Rgba;
+                    glType = PixelType.Float;
+                break;
 #endif
             default:
 				throw new NotSupportedException();
