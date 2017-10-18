@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using System.Security;
 using MonoGame.Utilities;
 
-namespace OpenGL
+namespace MonoGame.OpenGL
 {
-    public partial class GL
+    internal partial class GL
     {
 		static partial void LoadPlatformEntryPoints()
         {

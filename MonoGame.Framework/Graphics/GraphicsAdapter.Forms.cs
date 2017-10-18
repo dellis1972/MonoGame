@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MonoGame.OpenGL;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -13,7 +14,7 @@ namespace Microsoft.Xna.Framework.Graphics
         
         private static void PlatformInitializeAdapters(out ReadOnlyCollection<GraphicsAdapter> adapters)
         {
-            OpenGL.GL.LoadEntryPoints();
+            GL.LoadEntryPoints();
             var adapter = new GraphicsAdapter() {
                 _currentDisplayMode = new DisplayMode(0,0, SurfaceFormat.Color),
             };

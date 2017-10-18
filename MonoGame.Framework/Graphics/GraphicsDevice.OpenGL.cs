@@ -18,7 +18,7 @@ namespace Microsoft.Xna.Framework.Graphics
     public partial class GraphicsDevice
     {
 #if DESKTOPGL || ANGLE
-        public IGraphicsContext Context { get; set; }
+        internal IGraphicsContext Context { get; set; }
 #endif
 
 #if !GLES
@@ -305,7 +305,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 glMinorVersion = 1;
             }
 #else
-                try
+            try
             {
                 string version = GL.GetString(StringName.Version);
 
@@ -324,13 +324,13 @@ namespace Microsoft.Xna.Framework.Graphics
 #endif
 
 #if !GLES
-			// Initialize draw buffer attachment array
-			int maxDrawBuffers;
+            // Initialize draw buffer attachment array
+            int maxDrawBuffers;
             GL.GetInteger(GetPName.MaxDrawBuffers, out maxDrawBuffers);
-            GraphicsExtensions.CheckGLError ();
-			_drawBuffers = new DrawBuffersEnum[maxDrawBuffers];
-			for (int i = 0; i < maxDrawBuffers; i++)
-				_drawBuffers[i] = (DrawBuffersEnum)(FramebufferAttachment.ColorAttachment0Ext + i);
+            GraphicsExtensions.CheckGLError();
+            _drawBuffers = new DrawBuffersEnum[maxDrawBuffers];
+            for (int i = 0; i < maxDrawBuffers; i++)
+                _drawBuffers[i] = (DrawBuffersEnum)(FramebufferAttachment.ColorAttachment0Ext + i);
 #endif
         }
 
@@ -356,7 +356,7 @@ namespace Microsoft.Xna.Framework.Graphics
             for (int i = 0; i < _bufferBindingInfos.Length; i++)
                 _bufferBindingInfos[i] = new BufferBindingInfo(null, IntPtr.Zero, 0, -1);
         }
-        
+
         private DepthStencilState clearDepthStencilState = new DepthStencilState { StencilEnable = true };
 
         public void PlatformClear(ClearOptions options, Vector4 color, float depth, int stencil)
@@ -375,15 +375,15 @@ namespace Microsoft.Xna.Framework.Graphics
             // So overwrite these states with what is needed to perform
             // the clear correctly and restore it afterwards.
             //
-		    var prevScissorRect = ScissorRectangle;
-		    var prevDepthStencilState = DepthStencilState;
+            var prevScissorRect = ScissorRectangle;
+            var prevDepthStencilState = DepthStencilState;
             var prevBlendState = BlendState;
             ScissorRectangle = _viewport.Bounds;
             // DepthStencilState.Default has the Stencil Test disabled; 
             // make sure stencil test is enabled before we clear since
             // some drivers won't clear with stencil test disabled
             DepthStencilState = this.clearDepthStencilState;
-		    BlendState = BlendState.Opaque;
+            BlendState = BlendState.Opaque;
             ApplyState(false);
 
             ClearBufferMask bufferMask = 0;
@@ -397,18 +397,18 @@ namespace Microsoft.Xna.Framework.Graphics
                 }
                 bufferMask = bufferMask | ClearBufferMask.ColorBufferBit;
             }
-			if ((options & ClearOptions.Stencil) == ClearOptions.Stencil)
+            if ((options & ClearOptions.Stencil) == ClearOptions.Stencil)
             {
                 if (stencil != _lastClearStencil)
                 {
-				    GL.ClearStencil(stencil);
+                    GL.ClearStencil(stencil);
                     GraphicsExtensions.CheckGLError();
                     _lastClearStencil = stencil;
                 }
                 bufferMask = bufferMask | ClearBufferMask.StencilBufferBit;
-			}
+            }
 
-			if ((options & ClearOptions.DepthBuffer) == ClearOptions.DepthBuffer) 
+            if ((options & ClearOptions.DepthBuffer) == ClearOptions.DepthBuffer)
             {
                 if (depth != _lastClearDepth)
                 {
@@ -416,8 +416,8 @@ namespace Microsoft.Xna.Framework.Graphics
                     GraphicsExtensions.CheckGLError();
                     _lastClearDepth = depth;
                 }
-				bufferMask = bufferMask | ClearBufferMask.DepthBufferBit;
-			}
+                bufferMask = bufferMask | ClearBufferMask.DepthBufferBit;
+            }
 
 #if MONOMAC || FORMS
             if (GL.CheckFramebufferStatus(FramebufferTarget.FramebufferExt) == FramebufferErrorCode.FramebufferComplete)
@@ -428,11 +428,11 @@ namespace Microsoft.Xna.Framework.Graphics
 #if MONOMAC || FORMS
             }
 #endif
-           		
+
             // Restore the previous render state.
-		    ScissorRectangle = prevScissorRect;
-		    DepthStencilState = prevDepthStencilState;
-		    BlendState = prevBlendState;
+            ScissorRectangle = prevScissorRect;
+            DepthStencilState = prevDepthStencilState;
+            BlendState = prevBlendState;
         }
 
         private void PlatformDispose()
@@ -535,7 +535,9 @@ namespace Microsoft.Xna.Framework.Graphics
 
         public void PlatformPresent()
         {
-#if DESKTOPGL || ANGLE
+#if FORMS
+
+#elif DESKTOPGL || ANGLE
             Context.SwapBuffers();
 #endif
             GraphicsExtensions.CheckGLError();

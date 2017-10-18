@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OpenGL
+namespace MonoGame.OpenGL
 {
     public class WindowInfo : IWindowInfo
     {

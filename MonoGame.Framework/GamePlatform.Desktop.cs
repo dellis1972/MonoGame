@@ -14,10 +14,10 @@ namespace Microsoft.Xna.Framework
     {
         internal static GamePlatform PlatformCreate(Game game)
         {
-#if DESKTOPGL || ANGLE
-            return new SdlGamePlatform(game);
-#elif FORMS
+#if FORMS
             return null;
+#elif DESKTOPGL || ANGLE
+            return new SdlGamePlatform(game);
 #elif WINDOWS && DIRECTX
             return new MonoGame.Framework.WinFormsGamePlatform(game);
 #elif WINDOWS_UAP
