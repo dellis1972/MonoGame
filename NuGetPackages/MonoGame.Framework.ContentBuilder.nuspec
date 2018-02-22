@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>MonoGame.Framework.ContentBuilder</id>
+    <version>0.0.0.0</version>
+    <title>MonoGame.Framework.ContentBuilder</title>
+    <authors>MonoGame Team</authors>
+    <owners>MonoGame Team</owners>
+    <licenseUrl>https://github.com/mono/MonoGame/blob/develop/LICENSE.txt</licenseUrl>
+    <projectUrl>http://monogame.net/</projectUrl>
+    <iconUrl>https://pbs.twimg.com/profile_images/487954549441691649/O3KsHAsb_400x400.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>MonoGame Content Builder</description>
+    <summary></summary>
+    <copyright>Copyright © 2009-2017 The MonoGame Team</copyright>
+    <language>en-US</language>
+  </metadata>
+  <files>
+    <file src="..\MonoGame.Framework.Content.Pipeline\MonoGame.Content.Builder.targets" target="build\MonoGame.Content.Builder.targets" />
+    <file src="..\Tools\MonoGame.Build.Tasks\bin\Linux\AnyCpu\Release\MonoGame.Build.Tasks.dll" target="build\MonoGame.Build.Tasks.dll" />
+    <file src="..\Tools\MGCB\bin\Linux\AnyCpu\Release\**\*" target="build\Linux" />
+    <file src="..\Tools\MGCB\bin\MacOS\AnyCpu\Release\**\*" target="build\MacOS" exclude="..\Tools\MGCB\bin\MacOS\AnyCpu\Release\MGCB.app\**\*" />
+    <file src="..\Tools\MGCB\bin\Windows\AnyCpu\Release\**\*" target="build\Windows\" />
+    <file src="build\ContentBuilder\MonoGame.Framework.ContentBuilder.targets" target="build\MonoGame.Framework.ContentBuilder.targets" />
+  </files>
+</package>

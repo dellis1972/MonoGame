@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_RunningOnMac Condition="Exists ('/Applications') And Exists ('/Library/Frameworks')">true</_RunningOnMac>
+    <MonoGameContentBuilderExe Condition="'$(OS)' != 'Windows_NT' And '$(_RunningOnMac)' == 'true' And '$(MonoGameContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)MacOS\MGCB.exe</MonoGameContentBuilderExe>
+    <MonoGameContentBuilderExe Condition="'$(OS)' != 'Windows_NT' And '$(MonoGameContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)Linux\MGCB.exe</MonoGameContentBuilderExe>
+    <MonoGameContentBuilderExe Condition="'$(MonoGameContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)Windows\MGCB.exe</MonoGameContentBuilderExe>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)\MonoGame.Content.Builder.targets"/>
+</Project>
