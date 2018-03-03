@@ -1,0 +1,302 @@
+﻿// MonoGame - Copyright (C) The MonoGame Team
+// This file is subject to the terms and conditions defined in
+// file 'LICENSE.txt', which is part of this source code package.
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+// NOTE: This is the legacy graphics adapter implementation
+// which should no longer be updated.  All new development
+// should go into the new one.
+
+namespace Microsoft.Xna.Framework.Graphics
+{
+    public sealed class GraphicsAdapter : IDisposable
+    {
+        /// <summary>
+        /// Defines the driver type for graphics adapter. Usable only on DirectX platforms for now.
+        /// </summary>
+        public enum DriverType
+        {
+            /// <summary>
+            /// Hardware device been used for rendering. Maximum speed and performance.
+            /// </summary>
+            Hardware,
+            /// <summary>
+            /// Emulates the hardware device on CPU. Slowly, only for testing.
+            /// </summary>
+            Reference,
+            /// <summary>
+            /// Useful when <see cref="DriverType.Hardware"/> acceleration does not work.
+            /// </summary>
+            FastSoftware
+        }
+
+        private static ReadOnlyCollection<GraphicsAdapter> _adapters;
+
+        private DisplayModeCollection _supportedDisplayModes;
+
+
+        internal GraphicsAdapter()
+        {
+        }
+
+        public void Dispose()
+        {
+        }
+
+        string _description = string.Empty;
+        public string Description { get { return _description; } private set { _description = value; } }
+
+        public DisplayMode CurrentDisplayMode
+        {
+            get
+            {
+                return new DisplayMode(800, 600, SurfaceFormat.Color);
+            }
+        }
+
+        public static GraphicsAdapter DefaultAdapter
+        {
+            get { return Adapters[0]; }
+        }
+
+        public static ReadOnlyCollection<GraphicsAdapter> Adapters
+        {
+            get
+            {
+                if (_adapters == null)
+                {
+                    _adapters = new ReadOnlyCollection<GraphicsAdapter>(new[] { new GraphicsAdapter() });
+                }
+
+                return _adapters;
+            }
+        }
+
+        /// <summary>
+        /// Used to request creation of the reference graphics device, 
+        /// or the default hardware accelerated device (when set to false).
+        /// </summary>
+        /// <remarks>
+        /// This only works on DirectX platforms where a reference graphics
+        /// device is available and must be defined before the graphics device
+        /// is created. It defaults to false.
+        /// </remarks>
+        public static bool UseReferenceDevice
+        {
+            get { return UseDriverType == DriverType.Reference; }
+            set { UseDriverType = value ? DriverType.Reference : DriverType.Hardware; }
+        }
+
+        /// <summary>
+        /// Used to request creation of a specific kind of driver.
+        /// </summary>
+        /// <remarks>
+        /// These values only work on DirectX platforms and must be defined before the graphics device
+        /// is created. <see cref="DriverType.Hardware"/> by default.
+        /// </remarks>
+        public static DriverType UseDriverType { get; set; }
+
+        /// <summary>
+        /// Queries for support of the requested render target format on the adaptor.
+        /// </summary>
+        /// <param name="graphicsProfile">The graphics profile.</param>
+        /// <param name="format">The requested surface format.</param>
+        /// <param name="depthFormat">The requested depth stencil format.</param>
+        /// <param name="multiSampleCount">The requested multisample count.</param>
+        /// <param name="selectedFormat">Set to the best format supported by the adaptor for the requested surface format.</param>
+        /// <param name="selectedDepthFormat">Set to the best format supported by the adaptor for the requested depth stencil format.</param>
+        /// <param name="selectedMultiSampleCount">Set to the best count supported by the adaptor for the requested multisample count.</param>
+        /// <returns>True if the requested format is supported by the adaptor. False if one or more of the values was changed.</returns>
+		public bool QueryRenderTargetFormat(
+			GraphicsProfile graphicsProfile,
+			SurfaceFormat format,
+			DepthFormat depthFormat,
+			int multiSampleCount,
+			out SurfaceFormat selectedFormat,
+			out DepthFormat selectedDepthFormat,
+			out int selectedMultiSampleCount)
+		{
+			selectedFormat = format;
+            selectedDepthFormat = depthFormat;
+            selectedMultiSampleCount = multiSampleCount;
+
+            // fallback for unsupported renderTarget surface formats.
+            if (selectedFormat == SurfaceFormat.Alpha8 ||
+                selectedFormat == SurfaceFormat.NormalizedByte2 ||
+                selectedFormat == SurfaceFormat.NormalizedByte4 ||
+                selectedFormat == SurfaceFormat.Dxt1 ||
+                selectedFormat == SurfaceFormat.Dxt3 ||
+                selectedFormat == SurfaceFormat.Dxt5 ||
+                selectedFormat == SurfaceFormat.Dxt1a ||
+                selectedFormat == SurfaceFormat.Dxt1SRgb ||
+                selectedFormat == SurfaceFormat.Dxt3SRgb ||
+                selectedFormat == SurfaceFormat.Dxt5SRgb)
+                selectedFormat = SurfaceFormat.Color;
+
+
+            return (format == selectedFormat) && (depthFormat == selectedDepthFormat) && (multiSampleCount == selectedMultiSampleCount);
+		}
+
+        /*
+        public string Description
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int DeviceId
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Guid DeviceIdentifier
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DeviceName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DriverDll
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Version DriverVersion
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool IsDefaultAdapter
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool IsWideScreen
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public IntPtr MonitorHandle
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int Revision
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int SubSystemId
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+        */
+
+        public DisplayModeCollection SupportedDisplayModes
+        {
+            get
+            {
+                bool displayChanged = false;
+                if (_supportedDisplayModes == null || displayChanged)
+                {
+                    var modes = new List<DisplayMode>(new[] { CurrentDisplayMode, });
+
+                    modes.Sort(delegate(DisplayMode a, DisplayMode b)
+                    {
+                        if (a == b) return 0;
+                        if (a.Format <= b.Format && a.Width <= b.Width && a.Height <= b.Height) return -1;
+                        else return 1;
+                    });
+                    _supportedDisplayModes = new DisplayModeCollection(modes);
+                }
+
+                return _supportedDisplayModes;
+            }
+        }
+
+        /*
+        public int VendorId
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+        */
+
+        /// <summary>
+        /// Gets a <see cref="System.Boolean"/> indicating whether
+        /// <see cref="GraphicsAdapter.CurrentDisplayMode"/> has a
+        /// Width:Height ratio corresponding to a widescreen <see cref="DisplayMode"/>.
+        /// Common widescreen modes include 16:9, 16:10 and 2:1.
+        /// </summary>
+        public bool IsWideScreen
+        {
+            get
+            {
+                // Common non-widescreen modes: 4:3, 5:4, 1:1
+                // Common widescreen modes: 16:9, 16:10, 2:1
+                // XNA does not appear to account for rotated displays on the desktop
+                const float limit = 4.0f / 3.0f;
+                var aspect = CurrentDisplayMode.AspectRatio;
+                return aspect > limit;
+            }
+        }
+
+        public bool IsProfileSupported(GraphicsProfile graphicsProfile)
+        {
+            if(UseReferenceDevice)
+                return true;
+
+            switch(graphicsProfile)
+            {
+                case GraphicsProfile.Reach:
+                    return true;
+                case GraphicsProfile.HiDef:
+                    bool result = true;
+                    // TODO: check adapter capabilities...
+                    return result;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+    }
+}
