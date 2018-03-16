@@ -7,7 +7,7 @@ The MonoGame Framework [Game](T_Microsoft_Xna_Framework_Game.md) class implement
 *   [Making a New Game](#Making-a-New-Game)
 *   [Game Loop Timing](#Game-Loop-Timing)
 *   [Game Components](#Fixed-Step-Game-Loops)
-*   [Game Services](#Game Services)
+*   [Game Services](#Game-Services)
 *   [Game Components Consuming Game Services](#Game-Components-Consuming-Game-Services)
 
 # Making a New Game
