@@ -50,17 +50,17 @@ Game services are a mechanism for maintaining loose coupling between objects tha
 
 Game services are defined by an interface. A class specifies the services it provides by implementing interfaces and registering the services with [Game.Services](P_Microsoft_Xna_Framework_Game_Services.md). A service is registered by calling [Game.Services.AddService](M_Microsoft_Xna_Framework_GameServiceContainer_AddService.md) specifying the type of service being implemented and a reference to the object providing the service. For example, to register an object that provides a service represented by the interface IMyService, you would use the following code.
 
-Services.AddService( typeof( IMyService ), myobject );
+    Services.AddService( typeof( IMyService ), myobject );
 
 Once a service is registered, the object providing the service can be retrieved by [Game.Services.GetService](M_Microsoft_Xna_Framework_GameServiceContainer_GetService.md) and specifying the desired service. For example, to retrieve [IGraphicsDeviceService](T_Microsoft_Xna_Framework_Graphics_IGraphicsDeviceService.md), you would use the following code.
 
-IGraphicsDeviceService graphicsservice = (IGraphicsDeviceService)Services.GetService( typeof(IGraphicsDeviceService) );
+    IGraphicsDeviceService graphicsservice = (IGraphicsDeviceService)Services.GetService( typeof(IGraphicsDeviceService) );
 
 # Game Components Consuming Game Services
 
 The [GameComponent](T_Microsoft_Xna_Framework_GameComponent.md) class provides the [Game](P_Microsoft_Xna_Framework_GameComponent_Game.md) property so a [GameComponent](T_Microsoft_Xna_Framework_GameComponent.md) can determine what [Game](T_Microsoft_Xna_Framework_Game.md) it is attached to. With the [Game](P_Microsoft_Xna_Framework_GameComponent_Game.md) property, a [GameComponent](T_Microsoft_Xna_Framework_GameComponent.md) can call [Game.Services.GetService](M_Microsoft_Xna_Framework_GameServiceContainer_GetService.md) to find a provider of a particular service. For example, a [GameComponent](T_Microsoft_Xna_Framework_GameComponent.md) would find the [IGraphicsDeviceService](T_Microsoft_Xna_Framework_Graphics_IGraphicsDeviceService.md) provider by using the following code.
 
-IGraphicsDeviceService graphicsservice = (IGraphicsDeviceService)Game.Services.GetService( typeof( IGraphicsDeviceService ) );
+    IGraphicsDeviceService graphicsservice = (IGraphicsDeviceService)Game.Services.GetService( typeof( IGraphicsDeviceService ) );
 
 # In This Section
 
