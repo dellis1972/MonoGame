@@ -18,7 +18,8 @@ The code in the topic shows you the technique. You can download a complete code 
     
 2.  Create one set of [Vector2](T_Microsoft_Xna_Framework_Vector2.md) objects that represents the unrotated positions of the sprites and one set to hold the rotated values.
     
-                          `private Vector2[] myVectors;
+    ```
+    private Vector2[] myVectors;
     private Vector2[] drawVectors;
     protected override void Initialize()
     {
@@ -26,12 +27,14 @@ The code in the topic shows you the technique. You can download a complete code 
         drawVectors = new Vector2[9];
     
         base.Initialize();
-    }`
+    }
+    ```
                         
     
 3.  After loading the sprite, calculate the positions of the unrotated group of sprites based on the sprite's size.
     
-                          `private Texture2D SpriteTexture;
+    ```
+    private Texture2D SpriteTexture;
     private Vector2 origin;
     private Vector2 screenpos;
     protected override void LoadContent()
@@ -45,12 +48,14 @@ The code in the topic shows you the technique. You can download a complete code 
         Viewport viewport = graphics.GraphicsDevice.Viewport;
         screenpos.X = viewport.Width / 2;
         screenpos.Y = viewport.Height / 2;
-    }`
+    }
+    ```
                         
     
 4.  In your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, copy the unrotated vectors and determine the screen position around which all the sprites will rotate.
     
-                          `private float RotationAngle = 0f;
+    ```
+    private float RotationAngle = 0f;
     private Matrix rotationMatrix = Matrix.Identity;
     protected override void Update(GameTime gameTime)
     {
@@ -67,7 +72,8 @@ The code in the topic shows you the technique. You can download a complete code 
         RotatePoints(ref screenpos, RotationAngle, ref drawVectors);
     
         base.Update(gameTime);
-    }`
+    }
+    ```
                         
     
     Transform each vector using a rotation matrix created for the rotation angle.
@@ -76,8 +82,8 @@ The code in the topic shows you the technique. You can download a complete code 
     
 6.  Add the origin vector to the transformed vector to create the final rotated vector.
     
-                          `private static void RotatePoints(ref Vector2 origin, float radians,
-        ref Vector2[] Vectors)
+    ```
+    private static void RotatePoints(ref Vector2 origin, float radians, ref Vector2[] Vectors)
     {
         Matrix myRotationMatrix = Matrix.CreateRotationZ(radians);
     
@@ -90,12 +96,14 @@ The code in the topic shows you the technique. You can download a complete code 
             // Add origin to get final location.
             Vectors[i] = rotatedVector + origin;
         }
-    }`
+    }
+    ```
                         
     
 7.  Draw each sprite using the rotated vectors as screen locations.
     
-                          `private void DrawPoints()
+    ```
+    private void DrawPoints()
     {
         // Draw using manually rotated vectors
         spriteBatch.Begin();
@@ -104,7 +112,8 @@ The code in the topic shows you the technique. You can download a complete code 
                 Color.White, RotationAngle, origin, 1.0f,
                 SpriteEffects.None, 0f);
         spriteBatch.End();
-    }`
+    }
+    ```
                         
     
 8.  When all the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md).
