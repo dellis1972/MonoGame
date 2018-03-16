@@ -2,17 +2,17 @@
 
 # Writing Game Code
 
-This section describes how to use XNA Game Studio and the XNA Framework to develop games for Windows Phone.
+This section describes how to use MonoGame to develop games.
 
 # In This Section
 
 [Initializing, Updating, and Exiting a Game](ApplicationModel.md)
 
-The XNA Framework [Game Class](T_Microsoft_Xna_Framework_Game.md) provides a game loop for initializing, updating and exiting a game.
+The MonoGame [Game Class](T_Microsoft_Xna_Framework_Game.md) provides a game loop for initializing, updating and exiting a game.
 
 [Displaying Graphics](Graphics.md)
 
-Describes using XNA graphics for rendering 2D and 3D graphics.
+Describes using MonoGame graphics for rendering 2D and 3D graphics.
 
 [Responding to User Input](Input.md)
 
@@ -28,15 +28,12 @@ Provides overviews about how to use the Media API to retrieve system media, incl
 
 [Writing Data](Storage_HowTo_SaveDataMobile.md)
 
-Describes how to save game data on Windows Phone.
-
-[Adding Xbox LIVE Features to Your Game](GamerServices.md)
-
-Contains introductory articles describing how to add Xbox LIVE to your game with XNA Gamer Services.
+Describes how to save game data on various platforms.
 
 [Windows Phone Networking](WindowsPhoneNetworking.md)
 
-Describes the available methods for creating networked games with XNA Game Studio on Windows Phone.
+Describes the available methods for creating networked games with MonoGame.
 
-© 2012 Microsoft Corporation. All rights reserved.  
+© 2012 Microsoft Corporation. All rights reserved. 
+© 2018 @MonoGameTeam. All rights reserved. 
 Version: 2.0.61024.0
