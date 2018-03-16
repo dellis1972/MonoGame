@@ -27,5 +27,3 @@ The samples are located on the App Hub Web site. For a more advanced solution fo
 © 2012 Microsoft Corporation. All rights reserved.
 
 © The MonoGame Team.
-
-Version: 2.0.61024.0
