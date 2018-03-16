@@ -140,5 +140,6 @@ The code in this topic shows you the animation technique. You can download a com
 [Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
 [Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
