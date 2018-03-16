@@ -12,11 +12,11 @@ In general, the 3D pipeline requires the following state for initialization:
 
 As you become comfortable with these ideas, you may want to learn more about the following: manipulating vertices, creating your own effects, applying textures, or improving performance by using index buffers.
 
-The XNA Framework uses a shader-driven programmable pipeline. It requires a graphics card capable of at least Shader Model 2.0. The XNA Framework provides a class called [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) that encapsulates most of these common operations.
+The MonoGame Framework uses a shader-driven programmable pipeline. It requires a graphics card capable of at least Shader Model 2.0, but requirements depend on the platform being targeted. The MonoGame Framework provides a class called [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) that encapsulates most of these common operations.
 
 # The Graphics Device
 
-When you create a game with XNA Game Studio, the XNA application model initializes a graphics device for you.
+When you create a game with MonoGame, the framework initializes a graphics device for you.
 
 The [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) initializes the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) before you call [Game.Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md). Before you call [Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md), there are three ways to change the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) settings:
 
@@ -64,5 +64,6 @@ You can apply textures by using the [Texture](P_Microsoft_Xna_Framework_Graphics
 [Getting Started with 3D Games at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128882)  
 [Shader Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128870)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
+© 2012 Microsoft Corporation. All rights reserved. 
+© 2018 @MonoGameTeam. All rights reserved. 
 Version: 2.0.61024.0
