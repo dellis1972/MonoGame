@@ -20,7 +20,7 @@ A [Game](T_Microsoft_Xna_Framework_Game.md) is either fixed step or variable ste
 
 ## Fixed-Step Game Loops
 
-A fixed-step [Game](T_Microsoft_Xna_Framework_Game.md) tries to call its [Update](M_Microsoft_Xna_Framework_Game_Update.md) method on the fixed interval specified in [TargetElapsedTime](P_Microsoft_Xna_Framework_Game_TargetElapsedTime.md). Setting [Game.IsFixedTimeStep](P_Microsoft_Xna_Framework_Game_IsFixedTimeStep.md) to **true** causes a [Game](T_Microsoft_Xna_Framework_Game.md) to use a fixed-step game loop. A new XNA project uses a fixed-step game loop with a default [TargetElapsedTime](P_Microsoft_Xna_Framework_Game_TargetElapsedTime.md) of 1/60th of a second.
+A fixed-step [Game](T_Microsoft_Xna_Framework_Game.md) tries to call its [Update](M_Microsoft_Xna_Framework_Game_Update.md) method on the fixed interval specified in [TargetElapsedTime](P_Microsoft_Xna_Framework_Game_TargetElapsedTime.md). Setting [Game.IsFixedTimeStep](P_Microsoft_Xna_Framework_Game_IsFixedTimeStep.md) to **true** causes a [Game](T_Microsoft_Xna_Framework_Game.md) to use a fixed-step game loop. A new MonoGame project uses a fixed-step game loop with a default [TargetElapsedTime](P_Microsoft_Xna_Framework_Game_TargetElapsedTime.md) of 1/60th of a second.
 
 In a fixed-step game loop, [Game](T_Microsoft_Xna_Framework_Game.md) calls [Update](M_Microsoft_Xna_Framework_Game_Update.md) once the [TargetElapsedTime](P_Microsoft_Xna_Framework_Game_TargetElapsedTime.md) has elapsed. After [Update](M_Microsoft_Xna_Framework_Game_Update.md) is called, if it is not time to call [Update](M_Microsoft_Xna_Framework_Game_Update.md) again, [Game](T_Microsoft_Xna_Framework_Game.md) calls [Draw](M_Microsoft_Xna_Framework_Game_Draw.md). After [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) is called, if it is not time to call [Update](M_Microsoft_Xna_Framework_Game_Update.md) again, [Game](T_Microsoft_Xna_Framework_Game.md) idles until it is time to call [Update](M_Microsoft_Xna_Framework_Game_Update.md).
 
@@ -78,7 +78,7 @@ Demonstrates how to create a custom [GraphicsDeviceManager](T_Microsoft_Xna_Fram
 
 [Automatic Rotation and Scaling](AutomaticRotation.md)
 
-Describes automatic rotation and scaling in the XNA Framework. Rotation and scaling are done in hardware at no performance cost to the game.
+Describes rotation and scaling in the MonoGame Framework on Mobile Platforms.
 
 © 2012 Microsoft Corporation. All rights reserved. 
 © 2018 @MonoGameTeam. All rights reserved. 
