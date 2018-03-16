@@ -24,6 +24,8 @@ Create a dynamic vertex or index buffer using [DynamicVertexBuffer](T_Microsoft_
 
 The samples are located on the App Hub Web site. For a more advanced solution for dynamic vertex updating, download the [Generated Geometry Sample](http://go.microsoft.com/fwlink/?LinkId=93007). This sample uses the [MeshBuilder](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshBuilder.md) helper class and a custom processor to generate a terrain map from a bitmap loaded by the content manager. Specifically, examine the `Process` method, located in TerrainProcessor.cs, which programmatically creates the terrain geometry based on input from the specified bitmap.
 
-© 2012 Microsoft Corporation. All rights reserved. 
-© 2018 @MonoGameTeam. All rights reserved. 
+© 2012 Microsoft Corporation. All rights reserved.
+
+© 2018 The MonoGame Team.
+
 Version: 2.0.61024.0
