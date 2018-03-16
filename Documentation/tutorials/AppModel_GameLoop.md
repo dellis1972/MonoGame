@@ -2,13 +2,13 @@
 
 # Initializing a Game
 
-The XNA Framework [Game](T_Microsoft_Xna_Framework_Game.md) class implements a game loop, which provides not only the window which displays your game, but also provides overloadable methods that your game implements to facilitate communication between your game and the operating system. This topic provides an overview of the basic functionality provided by the game loop.
+The MonoGame Framework [Game](T_Microsoft_Xna_Framework_Game.md) class implements a game loop, which provides not only the window which displays your game, but also provides overloadable methods that your game implements to facilitate communication between your game and the operating system. This topic provides an overview of the basic functionality provided by the game loop.
 
-*   [Making a New Game](#ID4EMB)
-*   [Game Loop Timing](#ID4EJC)
-*   [Game Components](#ID4EXAAC)
-*   [Game Services](#GameServices)
-*   [Game Components Consuming Game Services](#ID4EQDAC)
+*   [Making a New Game](#Making a New Game)
+*   [Game Loop Timing](#Game Loop Timing)
+*   [Game Components](#Fixed-Step Game Loops)
+*   [Game Services](#Game Services)
+*   [Game Components Consuming Game Services](#Game Components Consuming Game Services)
 
 # Making a New Game
 
@@ -80,5 +80,6 @@ Demonstrates how to create a custom [GraphicsDeviceManager](T_Microsoft_Xna_Fram
 
 Describes automatic rotation and scaling in the XNA Framework. Rotation and scaling are done in hardware at no performance cost to the game.
 
-© 2012 Microsoft Corporation. All rights reserved.  
+© 2012 Microsoft Corporation. All rights reserved. 
+© 2018 @MonoGameTeam. All rights reserved. 
 Version: 2.0.61024.0
