@@ -22,7 +22,8 @@ The code in this topic shows you the technique. You can download a complete code
     
     Because you are scaling sprites, you should use only the x and y parameters to create the scaling matrix. Scaling the depth of sprites can result in their depth shifting above 1.0. If that happens, they will not render.
     
-                          `protected override void LoadContent()
+    ```
+    protected override void LoadContent()
     {
         // Create a new SpriteBatch, which can be used to draw textures.
         spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -36,14 +37,16 @@ The code in this topic shows you the technique. You can download a complete code
         // Create the scale transform for Draw. 
         // Do not scale the sprite depth (Z=1).
         SpriteScale = Matrix.CreateScale(screenscale, screenscale, 1);
-    }`
+    }
+    ```
                         
     
 3.  In your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, determine whether the game needs to change screen resolution.
     
     This example uses game pad buttons to switch between two resolutions.
     
-                          `protected override void Update(GameTime gameTime)
+    ```
+    protected override void Update(GameTime gameTime)
     {
         ...
         // Change the resolution dynamically based on input
@@ -76,7 +79,8 @@ The code in this topic shows you the technique. You can download a complete code
         }
     
         base.Update(gameTime);
-    }`
+    }
+    ```
                         
     
 4.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, call [SpriteBatch.Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md), passing the scaling matrix created in [LoadContent](M_MXF_Game_LoadContent.md).
@@ -85,7 +89,8 @@ The code in this topic shows you the technique. You can download a complete code
     
     All of the sprites you draw will be scaled according to the matrix.
     
-                          `protected override void Draw(GameTime gameTime)
+    ```
+    protected override void Draw(GameTime gameTime)
     {
         ...
         // Initialize the batch with the scaling matrix
@@ -98,7 +103,8 @@ The code in this topic shows you the technique. You can download a complete code
         }
         spriteBatch.End();
         base.Draw(gameTime);
-    }`
+    }
+    ```
                         
     
 
