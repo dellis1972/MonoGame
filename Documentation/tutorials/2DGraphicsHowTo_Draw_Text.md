@@ -14,25 +14,29 @@ The code in this topic shows you the draw technique. You can download a complete
 
 ### To add a sprite font
 
-1.  Right-click your Content project in Solution Explorer, click **Add**, and then click **New Item**.
+1.  Double click on your Content.mgcb file in Solution Explorer, click **New Item** Button.
     
-2.  In the **Add New Item** dialog box, click **Sprite Font**.
+2.  In the **Add New Item** dialog box, select **Sprite Font Description** and add the filename in the edit box at the top of the dialog.
     
     You may find it convenient at this point to change the name of the new file from "SpriteFont1" to the friendly name of the font you intend to load (keeping the .spritefont file extension). The friendly name identifies the font once it is installed on your computer, for example, "Courier New" or "Times New Roman." When you reference the font in your code, you must use the friendly name you have assigned it.
     
-    XNA Game Studio creates a new .spritefont file for your font and opens it.
+    Pipeline tool creates a new .spritefont file for your font.
     
-3.  If you did not name the new file with the font's friendly name, type the friendly name of the font to load into the FontName element.
+3. Right click on your new font file in the Pipeline project exporer and select Open (or Open With to choose your prefered editor).
+    
+4.  If you did not name the new file with the font's friendly name, type the friendly name of the font to load into the FontName element.
     
     Again, this is not the name of a font file, but rather the name that identifies the font once it is installed on your computer. You can use the Fonts folder in the **Control Panel** to see the names of fonts installed on your system, and to install new ones. The content pipeline supports the same fonts as the [System.Drawing.Font](http://msdn.microsoft.com/en-us/library/system.drawing.font.aspx) class, including TrueType fonts, but not bitmap (.fon) fonts. You may find it convenient to save the new .spritefont file using this friendly name. When you reference the font in your code, you must use the friendly name you have assigned it.
     
-4.  If necessary, change the **Size** entry to the point size you desire for your font.
+    If you want to use a custom font, you are put the .ttf or .oft in the same directory as the .spritefont file and the build system will pick it up. There is no need to install the font system wide.
     
-5.  If necessary, change the **Style** entry to the style of font to import.
+5.  If necessary, change the **Size** entry to the point size you desire for your font.
+    
+6.  If necessary, change the **Style** entry to the style of font to import.
     
     You can specify **Regular**, **Bold**, **Italic**, or **Bold, Italic**. The **Style** entry is case sensitive.
     
-6.  Specify the character regions to import for this font.
+7.  Specify the character regions to import for this font.
     
     Character regions specify which characters in the font are rendered by the [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md). You can specify the start and end of the region by using the characters themselves, or by using their decimal values with an &# prefix. The default character region includes all the characters between the space and tilde characters, inclusive.
     
@@ -49,7 +53,8 @@ The code in this topic shows you the draw technique. You can download a complete
     
 5.  Create your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object, passing the current [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md).
     
-                          `SpriteFont Font1;
+    ```
+    SpriteFont Font1;
     Vector2 FontPos;
     protected override void LoadContent()
     {
@@ -60,7 +65,8 @@ The code in this topic shows you the draw technique. You can download a complete
         // TODO: Load your game content here            
         FontPos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2,
             graphics.GraphicsDevice.Viewport.Height / 2);
-    }`
+    }
+    ```
                         
     
 6.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, call [Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md) on the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
@@ -75,7 +81,8 @@ The code in this topic shows you the draw technique. You can download a complete
     
 9.  Call [SpriteBatch.End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) after all text is drawn.
     
-                          `protected override void Draw(GameTime gameTime)
+    ```
+    protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
     
@@ -92,7 +99,8 @@ The code in this topic shows you the draw technique. You can download a complete
     
         spriteBatch.End();
         base.Draw(gameTime);
-    }`
+    }
+    ```
                         
     
 
@@ -113,5 +121,6 @@ The code in this topic shows you the draw technique. You can download a complete
 [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md)  
 [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
+© 2012 Microsoft Corporation. All rights reserved. 
+© 2018 @MonoGameTeam. All rights reserved. 
 Version: 2.0.61024.0
