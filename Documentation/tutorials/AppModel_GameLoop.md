@@ -4,11 +4,11 @@
 
 The MonoGame Framework [Game](T_Microsoft_Xna_Framework_Game.md) class implements a game loop, which provides not only the window which displays your game, but also provides overloadable methods that your game implements to facilitate communication between your game and the operating system. This topic provides an overview of the basic functionality provided by the game loop.
 
-*   [Making a New Game](#Making-a-New-Game)
-*   [Game Loop Timing](#Game-Loop-Timing)
-*   [Game Components](#Fixed-Step-Game-Loops)
-*   [Game Services](#Game-Services)
-*   [Game Components Consuming Game Services](#Game-Components-Consuming-Game-Services)
+*   [Making a New Game](#making-a-new-game)
+*   [Game Loop Timing](#game-loop-timing)
+*   [Game Components](#fixed-step-game-loops)
+*   [Game Services](#game-services)
+*   [Game Components Consuming Game Services](#game-components-consuming-game-services)
 
 # Making a New Game
 
