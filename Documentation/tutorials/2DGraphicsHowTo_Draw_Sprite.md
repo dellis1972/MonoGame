@@ -22,7 +22,7 @@ The code in this topic shows you the technique. You can download a complete code
     
 4.  Load the textures that will be used for drawing sprites in [LoadContent](M_MXF_Game_LoadContent.md).
     
-    In this case, the example uses the **Content** member to load a texture from the XNA Framework Content Pipeline. The texture must be in the project, with the same name passed to [Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md).
+    In this case, the example uses the **Content** member to load a texture from the MonoGame Framework Content Pipeline. The texture must be in the project, with the same name passed to [Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md).
     
     ```
     private Texture2D SpriteTexture;
@@ -73,5 +73,6 @@ The code in this topic shows you the technique. You can download a complete code
 [Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
 [Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
+© 2012 Microsoft Corporation. All rights reserved. 
+© 2018 @MonoGameTeam. All rights reserved. 
 Version: 2.0.61024.0
