@@ -20,38 +20,45 @@ Pausing your game often means more than just halting your simulation. It could a
     
 3.  Add a variable to track if the pause is due to user action or the [Guide](T_Microsoft_Xna_Framework_GamerServices_Guide.md).
     
-                          `private bool paused = false;
+    ```
+    private bool paused = false;
     private bool pauseKeyDown = false;
-    private bool pausedForGuide = false;`
+    private bool pausedForGuide = false;
+    ```
                         
     
 4.  Add a **BeginPause** method to initiate a pause, setting the variables appropriately.
     
-                          `private void BeginPause(bool UserInitiated)
+    ```
+    private void BeginPause(bool UserInitiated)
     {
         paused = true;
         pausedForGuide = !UserInitiated;
         //TODO: Pause audio playback
         //TODO: Pause controller vibration
-    }`
+    }
+    ```
                         
     
 5.  Add an **EndPause** method to resume from a paused state, resetting variables appropriately.
     
-                          `private void EndPause()
+    ```
+    private void EndPause()
     {
         //TODO: Resume audio
         //TODO: Resume controller vibration
         pausedForGuide = false;
         paused = false;
-    }`
+    }
+    ```
                         
     
 6.  Add a function to poll the state of the pause key with [Keyboard.GetState](O_M_MXFI_Keyboard_GetState.md) and [KeyboardState.IsKeyDown](M_Microsoft_Xna_Framework_Input_KeyboardState_IsKeyDown.md).
     
     If the key has changed from down to up, toggle the pause state using **BeginPause** or **EndPause**.
     
-                          `private void checkPauseKey(KeyboardState keyboardState,
+    ```
+    private void checkPauseKey(KeyboardState keyboardState,
         GamePadState gamePadState)
     {
         bool pauseKeyDownThisFrame = (keyboardState.IsKeyDown(Keys.P) ||
@@ -66,14 +73,16 @@ Pausing your game often means more than just halting your simulation. It could a
                 EndPause();
         }
         pauseKeyDown = pauseKeyDownThisFrame;
-    }`
+    }
+    ```
                         
     
 7.  During [Update](M_Microsoft_Xna_Framework_Game_Update.md), check to see if the user paused, or if the [Guide](T_Microsoft_Xna_Framework_GamerServices_Guide.md) is active.
     
     Add a conditional around any update code so it is called only if the game is not paused. Be sure to call **base.Update** even if the simulation is paused.
     
-                          `// Check to see if the user has paused or unpaused
+    ```
+    // Check to see if the user has paused or unpaused
     checkPauseKey(keyboardState, gamePadState);
     
     checkPauseGuide();
@@ -82,7 +91,8 @@ Pausing your game often means more than just halting your simulation. It could a
     if (!paused)
     {
         Simulate(gameTime);
-    }`
+    }
+    ```
                         
     
 8.  Add a function to poll the state of the [Guide](T_Microsoft_Xna_Framework_GamerServices_Guide.md).
@@ -91,7 +101,8 @@ Pausing your game often means more than just halting your simulation. It could a
     
     If the [Guide](T_Microsoft_Xna_Framework_GamerServices_Guide.md) is not visible, but the game was paused for the guide, call **EndPause**.
     
-                          `private void checkPauseGuide()
+    ```
+    private void checkPauseGuide()
     {
         // Pause if the Guide is up
         if (!paused && Guide.IsVisible)
@@ -100,7 +111,8 @@ Pausing your game often means more than just halting your simulation. It could a
         // went away
         else if (paused && pausedForGuide && !Guide.IsVisible)
             EndPause();
-    }`
+    }
+    ```
                         
     
 
@@ -117,4 +129,5 @@ You could implement a menu of options to display when a game is paused, such as 
 For a multiplayer game, a pause usually disables local input without pausing the game for remote players.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
