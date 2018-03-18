@@ -81,5 +81,5 @@ Demonstrates how to create a custom [GraphicsDeviceManager](T_Microsoft_Xna_Fram
 Describes rotation and scaling in the MonoGame Framework on Mobile Platforms.
 
 © 2012 Microsoft Corporation. All rights reserved. 
-© 2018 @MonoGameTeam. All rights reserved. 
-Version: 2.0.61024.0
+
+© The MonoGame Team.
