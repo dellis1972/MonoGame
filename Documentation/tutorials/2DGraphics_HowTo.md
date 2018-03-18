@@ -61,4 +61,5 @@ Demonstrates how to import a [SpriteFont](T_Microsoft_Xna_Framework_Graphics_Spr
 Demonstrates how to access pictures in a picture album using the Media API on Windows Phone.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
