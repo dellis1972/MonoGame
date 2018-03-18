@@ -128,4 +128,5 @@ For this sample, the camera is a standard arc ball camera, implemented by camera
 [What Is Color Blending?](WhatIs_ColorBlending.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
