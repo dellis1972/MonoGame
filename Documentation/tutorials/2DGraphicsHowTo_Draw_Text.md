@@ -122,5 +122,5 @@ The code in this topic shows you the draw technique. You can download a complete
 [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md)  
 
 © 2012 Microsoft Corporation. All rights reserved. 
-© 2018 @MonoGameTeam. All rights reserved. 
-Version: 2.0.61024.0
+
+© The MonoGame Team.
