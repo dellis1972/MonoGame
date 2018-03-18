@@ -59,4 +59,5 @@ Demonstrates how to use viewports to display different scenes simultaneously usi
 Provides classes and methods for manipulating vectors and matrices.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
