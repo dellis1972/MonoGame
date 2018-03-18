@@ -19,5 +19,5 @@ Contains topics related to update processing within the game loop of a MonoGame 
 Demonstrates different scenarios for exiting a MonoGame game.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-© 2018 @MonoGameTeam. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
