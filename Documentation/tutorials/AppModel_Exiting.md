@@ -19,4 +19,5 @@ Demonstrates how to exit a game in response to user input.
 Demonstrates how to detect and simulate trial mode to test the display of a Marketplace offer that allows a player to purchase your game.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
