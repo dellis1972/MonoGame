@@ -65,5 +65,5 @@ You can apply textures by using the [Texture](P_Microsoft_Xna_Framework_Graphics
 [Shader Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128870)  
 
 © 2012 Microsoft Corporation. All rights reserved. 
-© 2018 @MonoGameTeam. All rights reserved. 
-Version: 2.0.61024.0
+
+© The MonoGame Team.
