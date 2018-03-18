@@ -31,13 +31,15 @@ When the solution is built, the resources in the content project will be compile
     
     For flexibility, the path string may be a parameter passed to the constructor by the game client.
     
-                          `public static ContentManager LibContent;
+    ```
+    public static ContentManager LibContent;
     
     public GameLibComponent(Game game, string contentdirectory) : base(game)
     {
         LibContent = new ContentManager(game.Services);
         LibContent.RootDirectory = contentdirectory;
-    }`
+    }
+    ```
                         
     
 3.  In the [LoadContent](M_MXF_Game_LoadContent.md) method, load your content normally using your [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
@@ -87,7 +89,8 @@ Once content has been added to the **Resource Designer**, any code running from 
     
     The second parameter to the [ResourceContentManager](T_Microsoft_Xna_Framework_Content_ResourceContentManager.md) constructor identifies the resource project that contains your embedded resources.
     
-                          `public static ContentManager LibContent;
+    ```
+    public static ContentManager LibContent;
     
     public GameLibComponent(Game game)
         : base(game)
@@ -95,7 +98,8 @@ Once content has been added to the **Resource Designer**, any code running from 
         ResourceContentManager resxContent;
         resxContent = new ResourceContentManager(game.Services, ResourceFile.ResourceManager);
         LibContent = resxContent;
-    }`
+    }
+    ```
                         
     
 4.  In the [LoadContent](M_MXF_Game_LoadContent.md) method, load your content normally using your [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
@@ -123,4 +127,5 @@ Once content has been added to the **Resource Designer**, any code running from 
 [Microsoft.Xna.Framework Namespace](N_Microsoft_Xna_Framework.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
