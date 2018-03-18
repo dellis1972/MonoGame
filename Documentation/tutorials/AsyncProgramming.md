@@ -1,8 +1,8 @@
 
 
-# Working with Asynchronous Methods in XNA Game Studio
+# Working with Asynchronous Methods in MonoGame
 
-This topic decribes how you can work with asynchronous methods in XNA Game Studio.
+This topic decribes how you can work with asynchronous methods in MonoGame.
 
 # Complete Sample
 
@@ -10,7 +10,7 @@ This topic decribes how you can work with asynchronous methods in XNA Game Studi
 
 You must download the above sample code in order to access the 3D models used in this tutorial.
 
-XNA Game Studio provides many methods that operate _asynchronously_ for operations that may take longer than the desired render-cycle length.
+MonoGame provides many methods that operate _asynchronously_ for operations that may take longer than the desired render-cycle length.
 
 Asynchronous methods consist of four elements:
 
@@ -45,17 +45,14 @@ For exhaustive information about asynchronous methods, see [Asynchronous Program
 
 The following code, from the Windows Phone guide UI sample, demonstrates the callback method. First, a callback method is defined.
 
-    ```
     protected void GetTypedChars(IAsyncResult r)
     {
         typedText = Guide.EndShowKeyboardInput(r);
     }
-    ```
+
 Then, this callback is passed in when calling the **Begin** method.
 
-    ```
     kbResult = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Here's your Keyboard", "Type something...", ((typedText == null) ? "" : typedText), GetTypedChars, null);
-    ```
           
 
 # See Also
@@ -63,4 +60,5 @@ Then, this callback is passed in when calling the **Begin** method.
 [Asynchronous Programming Design Patterns](http://msdn.microsoft.com/library/ms228969.aspx)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
