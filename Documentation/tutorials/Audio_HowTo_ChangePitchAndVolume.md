@@ -16,29 +16,37 @@ The code in this topic shows you the technique for changing a sound's pitch or v
 
 1.  Declare [SoundEffect](T_MXFA_SoundEffect.md) and [Stream](http://msdn.microsoft.com/en-us/library/system.io.stream.aspx) by using the method shown in [Playing a Sound](Audio_HowTo_PlayASound.md). In addition to the method described in [Playing a Sound](Audio_HowTo_PlayASound.md), declare [SoundEffectInstance](T_MXFA_SoundEffectInstance.md).
     
-                          `SoundEffectInstance soundInstance;`
+    ```
+    SoundEffectInstance soundInstance;
+    ```
                         
     
 2.  In the [Game.LoadContent](M_MXF_Game_LoadContent.md) method, set the SoundEffectInstance object to the return value of [SoundEffect.CreateInstance](M_MXFA_SoundEffect_CreateInstance.md).
     
-                          `soundfile = TitleContainer.OpenStream(@"Content\tx0_fire1.wav");
+    ```
+    soundfile = TitleContainer.OpenStream(@"Content\tx0_fire1.wav");
     soundEffect = SoundEffect.FromStream(soundfile);
-    soundInstance = soundEffect.CreateInstance();`
+    soundInstance = soundEffect.CreateInstance();
+    ```
                         
     
 3.  Adjust the sound to the desired level using the [SoundEffectInstance.Pitch](P_MXFA_SoundEffectInstance_Pitch.md) and [SoundEffectInstance.Volume](P_MXFA_SoundEffectInstance_Volume.md) properties.
     
-                          `// Play Sound
-    soundInstance.Play();`
+    ```
+    // Play Sound
+    soundInstance.Play();
+    ```
                         
     
 4.  Play the sound using [SoundEffectInstance.Play](M_MXFA_SoundEffectInstance_Play.md).
     
-                          `// Pitch takes values from -1 to 1
+    ```
+    // Pitch takes values from -1 to 1
     soundInstance.Pitch = pitch;
     
     // Volume only takes values from 0 to 1
-    soundInstance.Volume = volume;`
+    soundInstance.Volume = volume;
+    ```
                         
     
 
@@ -67,4 +75,5 @@ Provides a loaded sound resource.
 Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
