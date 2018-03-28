@@ -20,15 +20,17 @@ Not much extra code is needed to continiously loop a sound file in your game. Si
     
 2.  To be able to loop a sound you will need to declare a [SoundEffectInstance](T_MXFA_SoundEffectInstance.md) object, and set it to the return value of [SoundEffect.CreateInstance](M_MXFA_SoundEffect_CreateInstance.md).
     
-                          `SoundEffectInstance instance = soundEffect.CreateInstance();`
+    ```
+    SoundEffectInstance instance = soundEffect.CreateInstance();
+    ```
                         
     
 3.  Set [SoundEffectInstance.IsLooped](P_MXFA_SoundEffectInstance_IsLooped.md) to **true** and then play the sound.
     
-                          `instance.IsLooped = true;`
+    ```
+    instance.IsLooped = true;
+    ```
                         
-    
-
 # Concepts
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
@@ -46,4 +48,5 @@ Provides a loaded sound resource.
 Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team.
