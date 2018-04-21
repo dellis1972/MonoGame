@@ -2,7 +2,7 @@
 
 # Sounds Overview
 
-The XNA Framework provides audio playback through several core audio classes.
+The MonoGame Framework provides audio playback through several core audio classes.
 
 # Introduction
 
@@ -22,7 +22,11 @@ The [SoundEffect](T_MXFA_SoundEffect.md) class provides the ability to place aud
 
 # Audio Constraints
 
-Windows Phone has a maximum of 64 sounds playing simultaneously. An [InstancePlayLimitException](T_MXFA_InstancePlayLimitException.md) exception is thrown if this limit is exceeded.
+Mobile platformns have a maximum of 32 sounds playing simultaneously.
+Dekstop platforms have a maximum of 256 sounds playing simultaneously.
+Consoles and other platforms have their own constraits, please look at the console sdk
+documentation for more information,
+An [InstancePlayLimitException](T_MXFA_InstancePlayLimitException.md) exception is thrown if this limit is exceeded.
 
 # Concepts
 
@@ -52,5 +56,6 @@ Provides properties, methods, and events for play back of the audio buffer.
 
 [Audio Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128877)
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
