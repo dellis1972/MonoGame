@@ -2,19 +2,15 @@
 
 # Working with Microphones
 
-This topic provides basic information about microphone usage in games for Windows Phone.
+This topic provides basic information about microphone usage in games.
 
 # Supported Microphone Devices
 
-The following microphone types are supported on Windows Phone:
-
-*   The mobile phone's built-in microphone
-*   Bluetooth-enabled headsets
-*   Microphones connected through the headset jack
+The Microphone API is only implelemented on OpenAL based platforms at this time. This includes iOS/Android and Desktop projects using DesktopGL.
 
 # Capabilities of the Microphone API
 
-The Windows Phone SDK 8.0 Extensions for XNA Game Studio 4.0 Microphone API has the following functionality:
+The MonoGame Microphone API has the following functionality:
 
 *   Captures the audio stream from a microphone.
 *   Submits and controls a stream of audio buffers for playback using the [DynamicSoundEffectInstance](T_MXFA_DynamicSoundEffectInstance.md) object.
@@ -47,5 +43,6 @@ Provides properties, methods, and events for play back of the audio buffer.
 
 Provides properties, methods, and fields and events for capturing audio data with microphones.
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
