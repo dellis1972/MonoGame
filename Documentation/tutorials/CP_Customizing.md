@@ -2,13 +2,13 @@
 
 # Loading Additional Content Types
 
-XNA Game Studio provides standard Content Pipeline components that import and process the most commonly used game asset file types. These file types include, for example, Content Importers for the Autodesk (.fbx) format and the DirectX (.x) format. A complete list of file types is available in the [Standard Content Importers and Content Processors](CP_StdImpsProcs.md) topic. Most digital Content creation (DCC) tools are capable of creating output in at least one of these standard formats.
+MonoGame provides standard Content Pipeline components that import and process the most commonly used game asset file types. These file types include, for example, Content Importers for the Autodesk (.fbx) format and the DirectX (.x) format. A complete list of file types is available in the [Standard Content Importers and Content Processors](CP_StdImpsProcs.md) topic. Most digital Content creation (DCC) tools are capable of creating output in at least one of these standard formats.
 
 # Choosing to Customize
 
-A custom Content Importer is required for game assets available only in formats unsupported by XNA Game Studio standard Content Importers. One may already be available from a third party. Custom Content Importers can be developed by DCC vendors, game-engine developers, and interested game hobbyists. Once a custom Content Importer is installed on your computer, you can associate art files with the Content Importer to invoke it when you build the art files (see [Adding a Custom Importer](CP_AddCustomProcImp.md)).
+A custom Content Importer is required for game assets available only in formats unsupported by MonoGame standard Content Importers. One may already be available from a third party. Custom Content Importers can be developed by DCC vendors, game-engine developers, and interested game hobbyists. Once a custom Content Importer is installed on your computer, you can associate art files with the Content Importer to invoke it when you build the art files (see [Adding a Custom Importer](CP_AddCustomProcImp.md)).
 
-You may need to write your own custom XNA Game Studio Content Pipeline components to:
+You may need to write your own custom MonoGame Content Pipeline components to:
 
 *   Support a new type of game asset or format from a DCC tool.
 *   Derive special-purpose content from another piece of content at the time the game is built.
@@ -23,7 +23,7 @@ Output options
 
 Content Importer
 
-*   A game asset created by a DCC tool is available only in a format unsupported by a XNA Game Studio standard Content Importer.
+*   A game asset created by a DCC tool is available only in a format unsupported by a MonoGame standard Content Importer.
 
 1.  [Content Document Object Model](CP_DOM.md) (DOM) object that can be consumed by a standard Content Processor.
 2.  A custom object that must be consumed by a custom Content Processor.
@@ -43,7 +43,7 @@ Content Loader
 *   A custom Content Loader is implemented by extending the [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md) method to load the new custom data type.
     
 
-1.  A standard XNA Framework class object.
+1.  A standard MonoGame Framework class object.
 2.  A custom class object.
 
 # Customization Scenarios
@@ -80,5 +80,6 @@ To read the nonstandard game asset file, a custom Content Importer is required t
 [What Is Content?](CP_Overview.md)  
 [What is the Content Pipeline?](CP_Architecture.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
