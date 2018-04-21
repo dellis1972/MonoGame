@@ -112,25 +112,27 @@ The code in this topic shows you the technique. You can download a complete code
     
 10.  Use the controller buttons to play and stop the sound stream.
     
-    protected override void Update(GameTime gameTime)
-    {
-        GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
-        if (lastGamePadState != gamePadState)
+        ```
+        protected override void Update(GameTime gameTime)
         {
-            if (gamePadState.Buttons.A == ButtonState.Pressed)
+            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+            if (lastGamePadState != gamePadState)
             {
-                dynamicSound.Play();
+                if (gamePadState.Buttons.A == ButtonState.Pressed)
+                {
+                    dynamicSound.Play();
+                }
+                if (gamePadState.Buttons.B == ButtonState.Pressed)
+                {
+                    dynamicSound.Stop();
+                }
+                lastGamePadState = gamePadState;
             }
-            if (gamePadState.Buttons.B == ButtonState.Pressed)
-            {
-                dynamicSound.Stop();
-            }
-            lastGamePadState = gamePadState;
+
+            base.Update(gameTime);
         }
-    
-        base.Update(gameTime);
-    }
-                        
+        ```
+
     
 
 # Concepts
