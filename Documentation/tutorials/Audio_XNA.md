@@ -24,7 +24,7 @@ The [SoundEffect](T_MXFA_SoundEffect.md) class provides the ability to place aud
 
 Mobile platformns have a maximum of 32 sounds playing simultaneously.
 Dekstop platforms have a maximum of 256 sounds playing simultaneously.
-Consoles and other platforms have their own constraits, please look at the console sdk
+Consoles and other platforms have their own constraints, please look at the console sdk
 documentation for more information,
 An [InstancePlayLimitException](T_MXFA_InstancePlayLimitException.md) exception is thrown if this limit is exceeded.
 
