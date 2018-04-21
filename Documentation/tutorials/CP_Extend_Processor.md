@@ -73,7 +73,9 @@ Consider, for example, the hierarchy of calls through which textures in a model 
 
 One reason you may want to change how this works is that the `ModelTextureProcessor.Process` method applies texture compression to all textures it processes. This could be DXT1, DXT5, PVRTC, ETC1, RGBA4444 or ATITC depending on target your platform. If textures in your game assets are compressed already, you may want to avoid a second compression.
 
-Note not all platforms support all types of texture compression. For example DXT1/5 are generally only supported on Desktop graphics cards and some NVidia mobile graphics cards. PVRTC is only supported on iOS and some Android devices with PowerVR graphics cards, and ATITC is only supported on ATI graphics cards. Using the `Compressed` setting for `TextureCompression` for the Texture Processor will let the Pipeline pick the best compression for your target platform.
+![](note.gif)Note
+
+Not all platforms support all types of texture compression. For example DXT1/5 are generally only supported on Desktop graphics cards and some NVidia mobile graphics cards. PVRTC is only supported on iOS and some Android devices with PowerVR graphics cards, and ATITC is only supported on ATI graphics cards. Using the `Compressed` setting for `TextureCompression` for the Texture Processor will let the Pipeline pick the best compression for your target platform.
 
 ### To prevent compression of textures during processing
 
