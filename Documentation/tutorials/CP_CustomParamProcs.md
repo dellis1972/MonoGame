@@ -67,9 +67,9 @@ The following code example defines a simple custom processor that switches the c
       #region Processor Parameters
       private bool switchCoordinateSystem = false;
 
-      \[DisplayName("Switch Coordinate System")\]
-      \[DefaultValue(false)\]
-      \[Description("Switches the coordinate system of a model.")\]
+      [DisplayName("Switch Coordinate System")]
+      [DefaultValue(false)]
+      [Description("Switches the coordinate system of a model.")]
       public bool SwitchCoordinateSystem
       {
         get { return switchCoordinateSystem; }
@@ -94,7 +94,7 @@ A user interface (UI) hint specifying the possible default value of the property
 
 Description
 
-Descriptive text displayed when you select the property in the Properties window of XNA Game Studio.
+Descriptive text displayed when you select the property in the Properties window of the MonoGame Pipeline Tool.
 
 This completes the definition of the `SwitchCoordinateSystem` property.
 
@@ -122,5 +122,6 @@ This code passes the `SwitchCoordinateSystem` property (declared earlier) value 
 [Adding New Content Types](CP_Content_Advanced.md)  
 [Parameterized Content Processors](CP_StdParamProcs.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
