@@ -59,14 +59,9 @@ A localized game should maintain its resources in resource (.resx) files in the 
     
     ![](CP_HowTo_Localize_Strings_ja.png)
 
-![](note.gif)Windows Phone Specific Information
+![](note.gif)Universal Windows Applications Specific Information
 
-To deploy resource files, Windows Phone developers must add values to the **<SupportedCultures>** element in the Visual Studio Project file (.csproj) for the Windows Phone game. For more information about how to use **<SupportedCultures>**, please see [How to: Build a Localized Application for Windows Phone](http://msdn.microsoft.com/library/ff637520(VS.92).aspx).
-
-1.  Close the Visual Studio Project file (.csproj) for the Windows Phone game project, then open the project file in a text editor.
-2.  Locate the **<SupportedCultures>** element and set the value to a semicolon delimited list of all supported cultures for the game. The default UI culture does not need to be included in this tag. For example:
-    
-    <SupportedCultures>ja-jp</SupportedCultures>
+Universal Windows Applications (UWP) do not use `resx` files. These have been replace with `resw` files, the format is slightly different but the process is the same as `resx`. It does however mean you need to maintain two copies of the lanuage files when targeting UWP and other platforms.
 
 # Associating Localization Data and Processors With Fonts
 
@@ -76,22 +71,15 @@ Now that project data is divided into resource files, and has a custom content p
 
 Create a new .spritefont file.
 
-1.  In **Solution Explorer**, right-click the content project node, select **Add**, and then click **New Item**.
+1.  In **Pipeline Tool**, right-click the content project node, select **Add**, and then click **New Item**.
     
-2.  In the **Add New Item** dialog box, select "Sprite Font," and then in the **Name** box, enter a name (for example, Font.spritefont) for the new file.
+2.  In the **Add New Item** dialog box, select "Localized Sprite Font," and then in the **Name** box, enter a name (for example, Font.spritefont) for the new file.
     
-3.  Click **Add** to create the new file.
+3.  Click **Add** to create the new file. This will create a new Localized Sprite Font which is already setup to work with localized resource files.
     
-4.  Double-click the newly created file to open it for editing.
-    
-5.  Change the asset type declaration to reference the previously created extended FontDescriptor class.
-    
-    ```
-    <Asset Type="LocalizationPipeline.LocalizedFontDescription">
-    ```
-                      
-    
-6.  Add a block within <ResourceFiles> tags that lists each resource file using the <Resx> elements.
+4.  Right Click on the new file and select Open or Open With to open it for editing.
+        
+5.  Add a block within <ResourceFiles> tags that lists each resource file using the <Resx> elements.
     
     The example tags below specify resource files for the default language, as well as for Danish (da), French (fr), Japanese (ja), and Korean (ko).
     
@@ -107,21 +95,6 @@ Create a new .spritefont file.
     
 7.  Save the file.
 
-### To assign the cusom content processor to the .spritefont file
-
-1.  Compile the solution to build the Content Pipeline Extension Library project.
-    
-2.  In **Solution Explorer**, right-click the project, and then click **Add Reference**.
-    
-3.  In the **Add Reference** dialog box, click the **Projects** tab, and then select the previously created Content Pipeline Extension Library project (for example, LocalizationPipeline).
-    
-4.  Click **OK**.
-    
-5.  In the content project, right-click the .spritefont file, and then select **Properties**.
-    
-6.  In the resulting **Properties** pane, choose your custom processor (for example, LocalizedFontProcessor) from the drop-down list associated with the **ContentProcessor** field.
-    
-
 # Using Localized Strings in the Game
 
 The localized strings will be available in your game as a class with the same name as the base file name of the resource file for the default language (for example, Strings).
@@ -135,7 +108,8 @@ Setting the **Culture** property of this class from the [CultureInfo.CurrentCult
 
 [Extending a Standard Content Processor](CP_Extend_Processor.md)  
 [Adding New Content Types](CP_Content_Advanced.md)  
-[Windows Phone SDK 8.0 Extensions for XNA Game Studio 4.0](XNA_Overview.md)  
+[MonoGame Overview](MonoGame_Overview.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
