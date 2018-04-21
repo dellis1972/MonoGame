@@ -86,7 +86,7 @@ Usage
 
 DisplayName
 
-Name of the property when it appears in the Properties window of XNA Game Studio. If not specified, the internal property name, declared in the source code, is used. For this example, "Switch Coordinate System" would be displayed.
+Name of the property when it appears in the Properties window of the MonoGame Pipeline tool. If not specified, the internal property name, declared in the source code, is used. For this example, "Switch Coordinate System" would be displayed.
 
 DefaultValue
 
