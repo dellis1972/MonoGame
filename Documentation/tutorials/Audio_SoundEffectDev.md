@@ -2,7 +2,7 @@
 
 # Audio API Developers Guide
 
-This topic provides developers with information about the audio buffer format used by the XNA Game Studio Audio API.
+This topic provides developers with information about the audio buffer format used by the MonoGame Audio API.
 
 # Audio Buffer Format
 
@@ -19,7 +19,7 @@ The audio format has the following constraints:
 
 [Sounds Overview](Audio_XNA.md)
 
-Provides a high-level overview about the capabilities of the Audio API in XNA Game Studio in addition to general audio terminology.
+Provides a high-level overview about the capabilities of the Audio API in MonoGame in addition to general audio terminology.
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
 
@@ -47,5 +47,6 @@ Provides properties, methods, and events for play back of the audio buffer.
 
 [Audio Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128877)
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
