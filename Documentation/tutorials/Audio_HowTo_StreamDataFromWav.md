@@ -26,9 +26,9 @@ The code in this topic shows you the technique. You can download a complete code
     
 2.  In the [Game.LoadContent](M_MXF_Game_LoadContent.md) method of your game, open the audio data using [TitleContainer.OpenStream](M_MXF_TitleContainer_OpenStream.md).
     
-   ```
-   System.IO.Stream waveFileStream = TitleContainer.OpenStream(@"Content\48K16BSLoop.wav");
-   ```
+    ```
+    System.IO.Stream waveFileStream = TitleContainer.OpenStream(@"Content\48K16BSLoop.wav");
+    ```
                         
     
 3.  Create a new binary reader to read from the audio stream.
@@ -112,7 +112,6 @@ The code in this topic shows you the technique. You can download a complete code
     
 10.  Use the controller buttons to play and stop the sound stream.
     
-    ```
     protected override void Update(GameTime gameTime)
     {
         GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
@@ -131,7 +130,6 @@ The code in this topic shows you the technique. You can download a complete code
     
         base.Update(gameTime);
     }
-    ```
                         
     
 
