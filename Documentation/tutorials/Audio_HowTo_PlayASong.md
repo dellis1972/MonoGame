@@ -51,7 +51,7 @@ Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song 
 
 [Media Overview](Media_XNA.md)
 
-Provides a high-level overview about the capabilities—such as playing music and video and accessing pictures—of the Media API in XNA Game Studio.
+Provides a high-level overview about the capabilities—such as playing music and video and accessing pictures—of the Media API in MonoGame.
 
 # Reference
 
@@ -71,5 +71,6 @@ Plays a song or collection of songs.
 
 Gets the [AlbumCollection](T_MXF_Media_AlbumCollection.md) that contains all albums in the media library.
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
