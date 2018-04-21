@@ -74,23 +74,45 @@ The last Unicode character to include in a `<CharacterRegion>`.
 
 Here is a sample .spritefont file:
 
-<?xml version="1.0" encoding="utf-8"?>
+    <?xml version="1.0" encoding="utf-8"?>
+    <XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
+      <Asset Type="Graphics:FontDescription">
+        <FontName>Courier New</FontName>
+        <Size>18</Size>
+        <Spacing>0</Spacing>
+        <UseKerning>true</UseKerning>
+        <Style>Regular</Style>
+        <CharacterRegions>
+          <CharacterRegion>
+            <Start>32</Start>
+            <End>127</End>
+          </CharacterRegion>
+        </CharacterRegions>
+      </Asset>
+    </XnaContent>
+    
+Here is a sample localized .spritefont file:
 
-<XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
-  <Asset Type="Graphics:FontDescription">
-    <FontName>Courier New</FontName>
-    <Size>18</Size>
-    <Spacing>0</Spacing>
-    <UseKerning>true</UseKerning>
-    <Style>Regular</Style>
-    <CharacterRegions>
-      <CharacterRegion>
-        <Start>32</Start>
-        <End>127</End>
-      </CharacterRegion>
-    </CharacterRegions>
-  </Asset>
-</XnaContent>
+    <?xml version="1.0" encoding="utf-8"?>
+    <XnaContent xmlns:Graphics="Microsoft.Xna.Framework.Content.Pipeline.Graphics">
+      <Asset Type="Graphics:LocalizedFontDescription">
+        <FontName>Courier New</FontName>
+        <Size>18</Size>
+        <Spacing>0</Spacing>
+        <UseKerning>true</UseKerning>
+        <Style>Regular</Style>
+        <CharacterRegions>
+          <CharacterRegion>
+            <Start>32</Start>
+            <End>127</End>
+          </CharacterRegion>
+        </CharacterRegions>
+        <ResourceFiles>
+          <Resx>Strings.resx</Resx>
+          <Resx>Strings-fr.resx</Resx>
+        </ResourceFiles>
+      </Asset>
+    </XnaContent>
 
 # See Also
 
@@ -102,5 +124,6 @@ Here is a sample .spritefont file:
 
 [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
