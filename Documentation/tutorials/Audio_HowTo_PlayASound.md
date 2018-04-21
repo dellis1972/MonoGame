@@ -29,20 +29,25 @@ The code in this topic shows you the technique for playing sound. You can downlo
 
 1.  Declare a [SoundEffect](T_MXFA_SoundEffect.md) object to hold the sound file.
     
-                        `// Audio objects
-    SoundEffect soundEffect;`
+    ```
+    // Audio objects
+    SoundEffect soundEffect;
+    ```
                       
     
 2.  Load the sound file using [Content.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md).
     
-                        `soundEffect = Content.Load<SoundEffect>("kaboom");`
+    ```
+    soundEffect = Content.Load<SoundEffect>("kaboom");
+    ```
                       
     
 3.  Play the sound.
     
-                        `// Play the sound
-    soundEffect.Play();`
-                      
+    ```
+    // Play the sound
+    soundEffect.Play();
+    ```               
     
 
 # Concepts
@@ -61,5 +66,6 @@ Provides a loaded sound resource.
 
 Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
