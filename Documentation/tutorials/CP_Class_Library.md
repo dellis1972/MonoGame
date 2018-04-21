@@ -2,7 +2,7 @@
 
 # Content Pipeline Class Library
 
-The Content Pipeline class library is a library of classes, interfaces, and value types that are included in XNA Game Studio. This library provides access to XNA Framework Content Pipeline functionality and is designed to be the foundation on which Content Pipeline–related applications, components, and controls are built.
+The Content Pipeline class library is a library of classes, interfaces, and value types that are included in MonoGame. This library provides access to MonoGame Framework Content Pipeline functionality and is designed to be the foundation on which Content Pipeline–related applications, components, and controls are built.
 
 # Namespaces
 
@@ -20,11 +20,11 @@ Provides intermediate classes and types for representing and manipulating graphi
 
 [Microsoft.Xna.Framework.Content.Pipeline.Processors](N_Microsoft_Xna_Framework_Content_Pipeline_Processors.md)
 
-Provides base classes that represent processors used by the XNA Framework Content Pipeline when processing specific game asset types.
+Provides base classes that represent processors used by the MonoGame Framework Content Pipeline when processing specific game asset types.
 
 [Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler](N_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Compiler.md)
 
-Provides base classes that represent compilers and writers used by the XNA Framework Content Pipeline when processing specific game asset types.
+Provides base classes that represent compilers and writers used by the MonoGame Framework Content Pipeline when processing specific game asset types.
 
 [Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate](N_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate.md)
 
@@ -42,5 +42,6 @@ Provides support for importing and processing game assets into the binary format
 [What Is Content?](CP_Overview.md)  
 [Content Pipeline Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128876)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
