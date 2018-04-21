@@ -2,15 +2,15 @@
 
 # What is the Content Pipeline?
 
-The XNA Game Studio Content Pipeline is a set of processes applied when a game that includes art assets is built. The process starts with an art asset in its original form as a file, and continues to its transformation as data that can be retrieved and used within an XNA Game Studio game through the XNA Framework Class Library.
+The MonoGame Content Pipeline is a set of processes applied when a game that includes art assets is built. The process starts with an art asset in its original form as a file, and continues to its transformation as data that can be retrieved and used within a MonoGame game through the MonoGame Framework Class Library.
 
 The Content Pipeline is designed to be extensible, so that it can easily support new input file formats and new types of conversion.
 
-Most XNA Game Studio developers can ignore the inner workings of the Content Pipeline. The most commonly used types of game assets and formats are inherently supported by XNA Game Studio. However, if you are a game developer who needs to support a new file format or game-engine capability, it is useful to understand the stages of the Content Pipeline that transform an asset from a digital-content creation (DCC) output file to part of the game binary.
+Most MonoGame developers can ignore the inner workings of the Content Pipeline. The most commonly used types of game assets and formats are inherently supported by MonoGame. However, if you are a game developer who needs to support a new file format or game-engine capability, it is useful to understand the stages of the Content Pipeline that transform an asset from a digital-content creation (DCC) output file to part of the game binary.
 
 # Content Pipeline Components
 
-A game asset is made available to an XNA Game Studio game after it is added to the Content project. Once the asset is part of the game solution, it is included in the Content Pipeline.
+A game asset is made available to an MonoGame game after it is added to the Content project. Once the asset is part of the game solution, it is included in the Content Pipeline.
 
 Here are the Content Pipeline processes.
 
@@ -52,31 +52,31 @@ Yes
 
 ## Design-Time Components
 
-The design-time components of the XNA Game Studio Content Pipeline that process your game assets execute within Visual Studio when you build your XNA Game Studio game as an executable file. These processes perform the initial transformation of an asset from its digital content creation (DCC) format to a managed code object that your game can use upon execution.
+The design-time components of the MonoGame Content Pipeline that process your game assets execute within Visual Studio when you build your MonoGame game as an executable file. These processes perform the initial transformation of an asset from its digital content creation (DCC) format to a managed code object that your game can use upon execution.
 
 Design-time components use the [Content Pipeline Class Library](CP_Class_Library.md), which can be used and extended to create custom Content Pipeline design-time components.
 
 Content Importer
 
-An _Content Importer_ converts game assets from a particular DCC file format into objects in the XNA Game Studio Content Document Object Model (DOM) that standard Content Processors can consume, or into some other custom form that a particular custom Content Processor can consume.
+An _Content Importer_ converts game assets from a particular DCC file format into objects in the MonoGame Content Document Object Model (DOM) that standard Content Processors can consume, or into some other custom form that a particular custom Content Processor can consume.
 
 An Content Importer typically converts content into managed objects based on the Content DOM, which includes strong typing for such assets as meshes, vertices, and materials. A custom Content Importer, however, may produce custom objects for a particular custom Content Processor to consume.
 
 Content Processor
 
-A _Content Processor_ takes one specific type of an imported game asset and compiles it into a managed code object that can be loaded and used by XNA Game Studio games on Windows Phone.
+A _Content Processor_ takes one specific type of an imported game asset and compiles it into a managed code object that can be loaded and used by MonoGame games.
 
 Each Content Processor acts upon a specific object type. For example, the [Effect Processor](CP_StdImpsProcs.md#Processors) accepts only [EffectContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_EffectContent.md) objects, representing a DirectX Effect asset.
 
-When you include a game asset file in your XNA Game Studio solution's content project, its [using dialog properties](UsingXNA_Dlg_Properties.md) page specifies the appropriate Content Importer and Content Processor. Thereafter, when you build your game (by pressing F5), the assigned Content Importer and Content Processor for each asset is invoked automatically. The asset is built into your game in a form that can be loaded at run time by your game.
+When you include a game asset file in your MonoGame .mgcb file, its [using dialog properties](UsingXNA_Dlg_Properties.md) page specifies the appropriate Content Importer and Content Processor. Thereafter, when you build your game (by pressing F5), the assigned Content Importer and Content Processor for each asset is invoked automatically. The asset is built into your game in a form that can be loaded at run time by your game.
 
 The managed code objects created by the Content Processor are serialized into a compact binary format (also referred to as an intermediate format) file with an .XNB extension by the Content Pipeline Content Compiler. This .XNB file is used by the runtime components of the Content Pipeline that assist your game in retrieving the transformed game assets.
 
-The format of data in the .XNB file is tightly coupled to the XNA Framework. It is not designed for use by other runtime libraries.
+The format of data in the .XNB file is tightly coupled to the MonoGame Framework. It is not designed for use by other runtime libraries.
 
 ## Runtime Components
 
-Runtime components of the Content Pipeline support loading and using the transformed game asset by your XNA Game Studio game. These components use the [XNA library](XNA_Class_Library.md), which can be extended to create custom components.
+Runtime components of the Content Pipeline support loading and using the transformed game asset by your MonoGame game. These components use the [MonoGame library](XNA_Class_Library.md), which can be extended to create custom components.
 
 Content Loader
 
@@ -88,5 +88,6 @@ When the game needs the game asset's managed code object, it must call the [Cont
 [What Is Content?](CP_Overview.md)  
 [Loading Additional Content Types](CP_Customizing.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
