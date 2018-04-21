@@ -2,7 +2,7 @@
 
 # Extending a Standard Content Processor
 
-Describes how XNA Game Studio lets you modify or extend the behavior of any standard Content Pipeline processor that ships with the product. See [Standard Content Importers and Content Processors](CP_StdImpsProcs.md) for a description of standard processors.
+Describes how MonoGame lets you modify or extend the behavior of any standard Content Pipeline processor that ships with the product. See [Standard Content Importers and Content Processors](CP_StdImpsProcs.md) for a description of standard processors.
 
 Because there are so many asset variants supported by different digital content creation (DCC) tools, it is often useful to be able to modify how one of the standard processors operates. The following examples illustrate some of the kinds of things you might want to do.
 
@@ -16,16 +16,16 @@ There are many reasons why you might want to modify the existing functionality o
 
 The following code illustrates this technique:
 
-\[ContentProcessor\]
-class ScalingModelProcessor : ModelProcessor
-{
-    public override ModelContent Process(
-        NodeContent input, ContentProcessorContext context )
+    [ContentProcessor]
+    class ScalingModelProcessor : ModelProcessor
     {
-        MeshHelper.TransformScene( input, Matrix.CreateScale( 10.0f ) );
-        return base.Process( input, context );
+        public override ModelContent Process(
+            NodeContent input, ContentProcessorContext context )
+        {
+            MeshHelper.TransformScene( input, Matrix.CreateScale( 10.0f ) );
+            return base.Process( input, context );
+        }
     }
-}
     
 
 # Generating Additional Data
@@ -34,30 +34,30 @@ In some cases, you may want to add information to a game asset that a standard p
 
 The following code shows how to do this:
 
-\[ContentProcessor\]
-class ModelProcessorWithTangents : ModelProcessor
-{
-    public override ModelContent Process( NodeContent input, ContentProcessorContext context )
+    [ContentProcessor]
+    class ModelProcessorWithTangents : ModelProcessor
     {
-        GenerateTangentFramesRecursive( input );
-        return base.Process( input, context );
-    }
-
-    private void GenerateTangentFramesRecursive( NodeContent node )
-    {
-        MeshContent mesh = node as MeshContent;
-        if (mesh != null)
+        public override ModelContent Process( NodeContent input, ContentProcessorContext context )
         {
-            MeshHelper.CalculateTangentFrames( mesh, VertexChannelNames.TextureCoordinate( 0 ), 
-                VertexChannelNames.Tangent( 0 ), VertexChannelNames.Binormal( 0 ) );
+            GenerateTangentFramesRecursive( input );
+            return base.Process( input, context );
         }
 
-        foreach (NodeContent child in node.Children)
+        private void GenerateTangentFramesRecursive( NodeContent node )
         {
-            GenerateTangentFramesRecursive( child );
+            MeshContent mesh = node as MeshContent;
+            if (mesh != null)
+            {
+                MeshHelper.CalculateTangentFrames( mesh, VertexChannelNames.TextureCoordinate( 0 ), 
+                    VertexChannelNames.Tangent( 0 ), VertexChannelNames.Binormal( 0 ) );
+            }
+
+            foreach (NodeContent child in node.Children)
+            {
+                GenerateTangentFramesRecursive( child );
+            }
         }
     }
-}
 
 # Changing the Processors Called for Child Objects
 
@@ -71,7 +71,9 @@ Consider, for example, the hierarchy of calls through which textures in a model 
 *   `MaterialProcessor.Process` in turn calls the [MaterialProcessor.BuildTexture](M_Microsoft_Xna_Framework_Content_Pipeline_Processors_MaterialProcessor_BuildTexture.md) method once for each texture in the [MaterialContent.Textures](P_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MaterialContent_Textures.md) collection in the `MaterialContent` object passed to it.
 *   `MaterialProcessor.BuildTexture` in turn invokes the [ModelTextureProcessor.Process](M_Microsoft_Xna_Framework_Content_Pipeline_Processors_TextureProcessor_81D8D80F_Process.md) method on the [TextureContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_TextureContent.md) object passed to it.
 
-One reason you may want to change how this works is that the `ModelTextureProcessor.Process` method applies DXT1 or DXT5 compression to all textures it processes. If textures in your game assets are compressed already, you may want to avoid a second compression.
+One reason you may want to change how this works is that the `ModelTextureProcessor.Process` method applies texture compression to all textures it processes. This could be DXT1, DXT5, PVRTC, ETC1, RGBA4444 or ATITC depending on target your platform. If textures in your game assets are compressed already, you may want to avoid a second compression.
+
+Note not all platforms support all types of texture compression. For example DXT1/5 are generally only supported on Desktop graphics cards and some NVidia mobile graphics cards. PVRTC is only supported on iOS and some Android devices with PowerVR graphics cards, and ATITC is only supported on ATI graphics cards. Using the `Compressed` setting for `TextureCompression` for the Texture Processor will let the Pipeline pick the best compression for your target platform.
 
 ### To prevent compression of textures during processing
 
@@ -82,15 +84,15 @@ Here is how to prevent compression from being applied to model textures during p
 
 The first of these overrides could be coded as:
 
-\[ContentProcessor\]
-class NoCompressionMaterialProcessor : MaterialProcessor
-{
-    protected override ExternalReference<TextureContent> BuildTexture( 
-        string textureName, ExternalReference<TextureContent> texture, ContentProcessorContext context )
+    [ContentProcessor]
+    class NoCompressionMaterialProcessor : MaterialProcessor
     {
-        return context.BuildAsset<TextureContent, TextureContent>( texture, "TextureProcessor" );
+        protected override ExternalReference<TextureContent> BuildTexture( 
+            string textureName, ExternalReference<TextureContent> texture, ContentProcessorContext context )
+        {
+            return context.BuildAsset<TextureContent, TextureContent>( texture, "TextureProcessor" );
+        }
     }
-}
 
 There are several things to note about this code.
 
@@ -100,16 +102,16 @@ There are several things to note about this code.
 
 Given the processor created by your first override above, you could code the second override:
 
-\[ContentProcessor\]
-class NoCompressionModelProcessor : ModelProcessor
-{
-    protected override MaterialContent ConvertMaterial(
-        MaterialContent material, ContentProcessorContext context )
+    [ContentProcessor]
+    class NoCompressionModelProcessor : ModelProcessor
     {
-        return context.Convert<MaterialContent, MaterialContent>(
-            material, "NoCompressionMaterialProcessor" );
+        protected override MaterialContent ConvertMaterial(
+            MaterialContent material, ContentProcessorContext context )
+        {
+            return context.Convert<MaterialContent, MaterialContent>(
+                material, "NoCompressionMaterialProcessor" );
+        }
     }
-}
 
 Because this override is processing `MaterialContent` objects in memory rather than `ExternalReference` objects, it uses the [ContentProcessorContext.Convert](M_MXFCP_ContentProcessorContext_FB6B4453_Convert``2.md) function instead of [BuildAsset](O_M_Microsoft_Xna_Framework_Content_Pipeline_ContentProcessorContext_BuildAsset.md) to invoke the processor created by your first override.
 
@@ -126,5 +128,6 @@ After building and installing your new `NoCompressionModelProcessor` (see [Addin
 [Adding a Custom Importer](CP_AddCustomProcImp.md)  
 [Content Pipeline Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128876)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
