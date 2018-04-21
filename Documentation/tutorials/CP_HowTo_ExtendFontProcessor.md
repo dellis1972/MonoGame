@@ -149,9 +149,10 @@ System.Diagnostics.Debugger.Launch();
 
 # See Also
 
-[Windows Phone SDK 8.0 Extensions for XNA Game Studio 4.0](XNA_Overview.md)  
+[MonoGame Overview](MonoGame_Overview.md)  
 [Extending a Standard Content Processor](CP_Extend_Processor.md)  
 [Adding New Content Types](CP_Content_Advanced.md)  
 
-© 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+© 2012 Microsoft Corporation. All rights reserved.
+
+© The MonoGame Team.
