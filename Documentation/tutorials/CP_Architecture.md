@@ -18,41 +18,9 @@ Here are the Content Pipeline processes.
 
 Processes fall into two types depending on when they execute: design time components and runtime components.
 
-Here is a summary of how the two components differ:
-
-Activity
-
-Design time
-
-Runtime
-
-Executes on
-
-Development computer
-
-Game device
-
-Runs under
-
-Visual Studio (on Windows)
-
-Windows Phone
-
-Uses framework
-
-[Content Pipeline Class Library](CP_Class_Library.md)
-
-[XNA library](XNA_Class_Library.md) (redistributable)
-
-Distributed with game?
-
-No
-
-Yes
-
 ## Design-Time Components
 
-The design-time components of the MonoGame Content Pipeline that process your game assets execute within Visual Studio when you build your MonoGame game as an executable file. These processes perform the initial transformation of an asset from its digital content creation (DCC) format to a managed code object that your game can use upon execution.
+The design-time components of the MonoGame Content Pipeline that process your game assets execute when you build your MonoGame game as an executable file. These processes perform the initial transformation of an asset from its digital content creation (DCC) format to a managed code object that your game can use upon execution.
 
 Design-time components use the [Content Pipeline Class Library](CP_Class_Library.md), which can be used and extended to create custom Content Pipeline design-time components.
 
