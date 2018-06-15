@@ -8,7 +8,7 @@ This section describes how to use MonoGame to develop games.
 
 [Initializing, Updating, and Exiting a Game](ApplicationModel.md)
 
-The MonoGame [Game Class](T_Microsoft_Xna_Framework_Game.md) provides a game loop for initializing, updating and exiting a game.
+The MonoGame [Game Class](xref:Microsoft.Xna.Framework.Game) provides a game loop for initializing, updating and exiting a game.
 
 [Displaying Graphics](Graphics.md)
 

@@ -2,7 +2,7 @@
 
 # Creating a Render Target
 
-Demonstrates how to create a render target using the [RenderTarget2D](T_Microsoft_Xna_Framework_Graphics_RenderTarget2D.md) class.
+Demonstrates how to create a render target using the [RenderTarget2D](xref:Microsoft.Xna.Framework.Graphics.RenderTarget2D) class.
 
 # The Complete Sample
 
@@ -16,7 +16,7 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To create a render target
 
-1.  Declare variables for a render target using the [RenderTarget2D](T_Microsoft_Xna_Framework_Graphics_RenderTarget2D.md) class and the render target texture using a [Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md) class.
+1.  Declare variables for a render target using the [RenderTarget2D](xref:Microsoft.Xna.Framework.Graphics.RenderTarget2D) class and the render target texture using a [Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D) class.
     
     ```
     SpriteBatch spriteBatch;
@@ -47,7 +47,7 @@ The code in this topic shows you the technique. You can download a complete code
     
 4.  Render the texture to the render target.
     
-    This function sets the render target on the device, draws the texture (to the render target) using a [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md), and sets the device render target to null (which resets the device to the back buffer).
+    This function sets the render target on the device, draws the texture (to the render target) using a [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch), and sets the device render target to null (which resets the device to the back buffer).
     
     ```
     private void DrawRenderTarget()

@@ -27,7 +27,7 @@ This architecture also provides several other benefits.
 
 For MonoGame games that use the most common types of art assets and formats, a detailed knowledge of how the Content Pipeline works is unnecessary. MonoGame supplies standard importers and processors for many popular DCC file formats. The only procedure necessary is to add these assets to the game's content project. For a list of formats MonoGame inherently supports, see [Standard Content Importers and Content Processors](CP_StdImpsProcs.md).
 
-To use a DirectX Effect (.fx) file in your game, for example, just [add](UsingMonoGame_HowTo_AddAResource.md) the file to the MonoGame game content project (.mgcb). The MonoGame Pipeline tool recognizes the .fx file type as one it supports, and it assigns the correct components to it that are used to process it when the game is built. The game then can access the effect through the standard [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md) method of the MonoGame Framework. The game programmer does not need to be concerned about all the steps taken by the Content Pipeline to ready it for this straghtforward use.
+To use a DirectX Effect (.fx) file in your game, for example, just [add](UsingMonoGame_HowTo_AddAResource.md) the file to the MonoGame game content project (.mgcb). The MonoGame Pipeline tool recognizes the .fx file type as one it supports, and it assigns the correct components to it that are used to process it when the game is built. The game then can access the effect through the standard [ContentManager.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1) method of the MonoGame Framework. The game programmer does not need to be concerned about all the steps taken by the Content Pipeline to ready it for this straghtforward use.
 
 There are other circumstances, however, when it helps to understand how the Content Pipeline works.
 
@@ -57,7 +57,7 @@ Content processor
 
 A _processor_ takes one specific type of imported art asset, such as a set of meshes, and compiles it into a managed code object that can be loaded and used by MonoGame games at runtime.
 
-When you include an art asset file in your MonoGame solution's content project (.mgcb), its Properties page in the Pipeline tool specifies the appropriate importer and processor. Thereafter, when you build your game (by pressing F5), the assigned importer and processor for each asset is invoked automatically. The asset is built into your game in a form that can be loaded at run time by your game by using [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md).
+When you include an art asset file in your MonoGame solution's content project (.mgcb), its Properties page in the Pipeline tool specifies the appropriate importer and processor. Thereafter, when you build your game (by pressing F5), the assigned importer and processor for each asset is invoked automatically. The asset is built into your game in a form that can be loaded at run time by your game by using [ContentManager.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1).
 
 ## Run-time Components
 

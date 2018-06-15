@@ -4,7 +4,7 @@
 
 # XML Elements
 
-The following base elements are recognized by [XmlImporter Class](T_Microsoft_Xna_Framework_Content_Pipeline_XmlImporter.md):
+The following base elements are recognized by [XmlImporter Class](xref:Microsoft.Xna.Framework.Content.Pipeline.XmlImporter):
 
 Element
 

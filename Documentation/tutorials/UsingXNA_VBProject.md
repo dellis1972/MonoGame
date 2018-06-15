@@ -102,7 +102,7 @@ The icon file Game.ico is not used by Windows Phone games and should be ignored.
 
     Game1.vb
 
-The VB source file Game1.vb is a good starting point for adding simple game logic and basic features. It implements a single class derived from [Game](T_Microsoft_Xna_Framework_Game.md) and called `Game1`, and it overrides five methods: [LoadContent](M_MXF_Game_LoadContent.md), [UnloadContent](M_MXF_Game_UnloadContent.md), [Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md), [Draw](M_Microsoft_Xna_Framework_Game_Draw.md), and [Update](M_Microsoft_Xna_Framework_Game_Update.md). In addition, the `Game1` constructor is defined. Use these methods to initialize your game components, to load and render your game content, and to handle any input from the user or changes to the game environment.
+The VB source file Game1.vb is a good starting point for adding simple game logic and basic features. It implements a single class derived from [Game](xref:Microsoft.Xna.Framework.Game) and called `Game1`, and it overrides five methods: [LoadContent](xref:MXF.Game.LoadContent), [UnloadContent](xref:MXF.Game.UnloadContent), [Initialize](xref:Microsoft.Xna.Framework.Game.Initialize), [Draw](xref:Microsoft.Xna.Framework.Game.Draw), and [Update](xref:Microsoft.Xna.Framework.Game.Update). In addition, the `Game1` constructor is defined. Use these methods to initialize your game components, to load and render your game content, and to handle any input from the user or changes to the game environment.
 
     PhoneGameThumb.png
 

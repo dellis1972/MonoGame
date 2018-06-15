@@ -4,7 +4,7 @@
 
 Depth stencil state controls how the depth buffer and the stencil buffer are used.
 
-The depth buffer stores floating-point depth or z data for each pixel while the stencil buffer stores integer data for each pixel. The depth-stencil state class, [DepthStencilState](T_Microsoft_Xna_Framework_Graphics_DepthStencilState.md), contains state that controls how depth and stencil data impacts rendering.
+The depth buffer stores floating-point depth or z data for each pixel while the stencil buffer stores integer data for each pixel. The depth-stencil state class, [DepthStencilState](xref:Microsoft.Xna.Framework.Graphics.DepthStencilState), contains state that controls how depth and stencil data impacts rendering.
 
 During rendering, the z position (or depth) of each pixel is stored in the depth buffer. When rendering pixels more than once -- such as when objects overlap -- depth data is compared between the current pixel and the previous pixel to determine which pixel is closer to the camera. When a pixel passes the depth test, the pixel color is written to a render target and the pixel depth is written to the depth buffer. For more information about a depth buffer, see [What Is a Depth Buffer?](WhatIs_DepthBuffer.md).
 

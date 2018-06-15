@@ -14,11 +14,11 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To exit the game loop without running any remaining code in the update handler
 
-1.  Derive a class from [Game](T_Microsoft_Xna_Framework_Game.md).
+1.  Derive a class from [Game](xref:Microsoft.Xna.Framework.Game).
     
-2.  Create a method that checks [KeyboardState.IsKeyDown](M_Microsoft_Xna_Framework_Input_KeyboardState_IsKeyDown.md) for the state of the ESC key.
+2.  Create a method that checks [KeyboardState.IsKeyDown](xref:Microsoft.Xna.Framework.Input.KeyboardState.IsKeyDown) for the state of the ESC key.
     
-3.  If the ESC key has been pressed, call [Game.Exit](M_Microsoft_Xna_Framework_Game_Exit.md) and return **true**.
+3.  If the ESC key has been pressed, call [Game.Exit](xref:Microsoft.Xna.Framework.Game.Exit) and return **true**.
     
     ```
     bool checkExitKey(KeyboardState keyboardState, GamePadState gamePadState)
@@ -35,7 +35,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-4.  Call the method in [Game.Update](M_Microsoft_Xna_Framework_Game_Update.md), and return from [Update](M_Microsoft_Xna_Framework_Game_Update.md) if the method returned **true**.
+4.  Call the method in [Game.Update](xref:Microsoft.Xna.Framework.Game.Update), and return from [Update](xref:Microsoft.Xna.Framework.Game.Update) if the method returned **true**.
     
     ```
     GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
@@ -51,7 +51,7 @@ The code in this topic shows you the technique. You can download a complete code
     
 5.  Create a method to handle the [Game.Exiting](E_Microsoft_Xna_Framework_Game_Exiting.md) event.
     
-    The [Exiting](E_Microsoft_Xna_Framework_Game_Exiting.md) event is issued at the end of the tick in which [Game.Exit](M_Microsoft_Xna_Framework_Game_Exit.md) is called.
+    The [Exiting](E_Microsoft_Xna_Framework_Game_Exiting.md) event is issued at the end of the tick in which [Game.Exit](xref:Microsoft.Xna.Framework.Game.Exit) is called.
     
     ```
     void Game1_Exiting(object sender, EventArgs e)

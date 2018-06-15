@@ -2,11 +2,11 @@
 
 # Enable XNA Framework Events in Windows Phone Applications
 
-Event-based systems place messages in a queue where they wait to be dispatched. XNA Framework event messages are placed in a queue that is processed by the XNA [FrameworkDispatcher](T_MXF_FrameworkDispatcher.md).
+Event-based systems place messages in a queue where they wait to be dispatched. XNA Framework event messages are placed in a queue that is processed by the XNA [FrameworkDispatcher](xref:MXF.FrameworkDispatcher).
 
-In an application that implements the [Game](T_Microsoft_Xna_Framework_Game.md) class, the [FrameworkDispatcher.Update](M_MXF_FrameworkDispatcher_Update.md) method is called automatically whenever [Game.Update](M_Microsoft_Xna_Framework_Game_Update.md) is processed. This [FrameworkDispatcher.Update](M_MXF_FrameworkDispatcher_Update.md) method triggers event processing in the XNA Framework.
+In an application that implements the [Game](xref:Microsoft.Xna.Framework.Game) class, the [FrameworkDispatcher.Update](xref:MXF.FrameworkDispatcher.Update) method is called automatically whenever [Game.Update](xref:Microsoft.Xna.Framework.Game.Update) is processed. This [FrameworkDispatcher.Update](xref:MXF.FrameworkDispatcher.Update) method triggers event processing in the XNA Framework.
 
-If you use the XNA Framework from an application that does not implement the [Game](T_Microsoft_Xna_Framework_Game.md) class—for example, a Windows Phone application that uses the Silverlight application model—you must call the [FrameworkDispatcher.Update](M_MXF_FrameworkDispatcher_Update.md) method yourself to dispatch messages that are in the XNA Framework message queue. You can do this once per frame in a ticking timer loop, or you can implement the [IApplicationService](http://msdn.microsoft.com/en-us/library/system.windows.iapplicationservice.aspx) interface with a [DispatcherTimer](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.aspx) and a [Tick](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.tick.aspx) event handler.
+If you use the XNA Framework from an application that does not implement the [Game](xref:Microsoft.Xna.Framework.Game) class—for example, a Windows Phone application that uses the Silverlight application model—you must call the [FrameworkDispatcher.Update](xref:MXF.FrameworkDispatcher.Update) method yourself to dispatch messages that are in the XNA Framework message queue. You can do this once per frame in a ticking timer loop, or you can implement the [IApplicationService](http://msdn.microsoft.com/en-us/library/system.windows.iapplicationservice.aspx) interface with a [DispatcherTimer](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.aspx) and a [Tick](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.tick.aspx) event handler.
 
 To do this, you can create an application service, and then register the service with the application.
 
@@ -41,7 +41,7 @@ To do this, you can create an application service, and then register the service
     
     *   Create a [DispatcherTimer](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.aspx) object and configure it to tick at 30fps, which is the standard rendering rate.
     *   Subscribe to the [Tick](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.tick.aspx) event handler of the [DispatcherTimer](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.aspx)
-    *   Call [FrameworkDispatcher.Update](M_MXF_FrameworkDispatcher_Update.md) once. This is important and must be done in the constructor to ensure proper behavior from the XNA Framework.
+    *   Call [FrameworkDispatcher.Update](xref:MXF.FrameworkDispatcher.Update) once. This is important and must be done in the constructor to ensure proper behavior from the XNA Framework.
     
                         `public XNAFrameworkDispatcherService()
     {
@@ -52,7 +52,7 @@ To do this, you can create an application service, and then register the service
     }`
                       
     
-6.  Call [FrameworkDispatcher.Update](M_MXF_FrameworkDispatcher_Update.md) in the [Tick](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.tick.aspx) event handler.
+6.  Call [FrameworkDispatcher.Update](xref:MXF.FrameworkDispatcher.Update) in the [Tick](http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatchertimer.tick.aspx) event handler.
     
     ```
     void frameworkDispatcherTimer_Tick(object sender, EventArgs e) { FrameworkDispatcher.Update(); }
@@ -106,9 +106,9 @@ Your implementation of the [IApplicationService](http://msdn.microsoft.com/en-us
 
 #### Reference
 
-[SoundEffect](T_MXFA_SoundEffect.md)  
-[DynamicSoundEffectInstance](T_MXFA_DynamicSoundEffectInstance.md)  
-[Microphone](T_MXFA_Microphone.md)  
+[SoundEffect](xref:MXFA.SoundEffect)  
+[DynamicSoundEffectInstance](xref:MXFA.DynamicSoundEffectInstance)  
+[Microphone](xref:MXFA.Microphone)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

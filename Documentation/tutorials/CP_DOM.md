@@ -4,7 +4,7 @@
 
 The MonoGame Content Document Object Model (DOM) represents the set of built-in classes that can be consumed by standard content processors.
 
-Currently, the DOM provides support for meshes, materials, textures, sprite-fonts, and animations. Outside of these, a custom importer can return a [ContentItem](T_Microsoft_Xna_Framework_Content_Pipeline_ContentItem.md) with custom information in its opaque data, or a custom type you have developed.
+Currently, the DOM provides support for meshes, materials, textures, sprite-fonts, and animations. Outside of these, a custom importer can return a [ContentItem](xref:Microsoft.Xna.Framework.Content.Pipeline.ContentItem) with custom information in its opaque data, or a custom type you have developed.
 
 The following diagram lists the complete Content DOM.
 

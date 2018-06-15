@@ -40,7 +40,7 @@ Content Loader
 
 *   Must load custom output of a customized Content Processor.
     
-*   A custom Content Loader is implemented by extending the [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md) method to load the new custom data type.
+*   A custom Content Loader is implemented by extending the [ContentManager.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1) method to load the new custom data type.
     
 
 1.  A standard MonoGame Framework class object.
@@ -72,7 +72,7 @@ Illustrated in this example is a nonstandard game asset file containing data tha
 
 ![](CP_CustomData.png)
 
-To read the nonstandard game asset file, a custom Content Importer is required that outputs a **CustomContent** object. Since the output of the Content Importer is a custom class, a custom Content Processor also is needed, and the [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md) method must be extended to support the custom data object.
+To read the nonstandard game asset file, a custom Content Importer is required that outputs a **CustomContent** object. Since the output of the Content Importer is a custom class, a custom Content Processor also is needed, and the [ContentManager.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1) method must be extended to support the custom data object.
 
 # See Also
 

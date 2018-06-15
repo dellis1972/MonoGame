@@ -2,7 +2,7 @@
 
 # Testing for Collisions
 
-Demonstrates how to use the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) class to check whether two models are colliding.
+Demonstrates how to use the [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) class to check whether two models are colliding.
 
 # The Complete Sample
 
@@ -47,7 +47,7 @@ The code in the topic shows you the technique. You can download a complete code 
         
     2.  Offset the bounding spheres by the current positions of the models.
         
-    3.  Call the [BoundingSphere.Intersects](O_M_Microsoft_Xna_Framework_BoundingSphere_Intersects.md) method to check the pairs of bounding spheres for collision.
+    3.  Call the [BoundingSphere.Intersects](xref:Microsoft.Xna.Framework.BoundingSphere.Intersects) method to check the pairs of bounding spheres for collision.
         
         If the method returns **true**, the objects are colliding.
         
@@ -82,7 +82,7 @@ The code in the topic shows you the technique. You can download a complete code 
 
 ![](note.gif)Note
 
-For an example of determining a particle's path after it hits a surface, see [Vector3.Reflect](O_M_Microsoft_Xna_Framework_Vector3_Reflect.md).
+For an example of determining a particle's path after it hits a surface, see [Vector3.Reflect](xref:Microsoft.Xna.Framework.Vector3.Reflect).
 
 # See Also
 

@@ -2,7 +2,7 @@
 
 # Drawing Text with a Sprite
 
-Demonstrates how to import a [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) into a project and to draw text using [DrawString](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_DrawString.md).
+Demonstrates how to import a [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) into a project and to draw text using [DrawString](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.DrawString).
 
 # Complete Sample
 
@@ -38,20 +38,20 @@ The code in this topic shows you the draw technique. You can download a complete
     
 7.  Specify the character regions to import for this font.
     
-    Character regions specify which characters in the font are rendered by the [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md). You can specify the start and end of the region by using the characters themselves, or by using their decimal values with an &# prefix. The default character region includes all the characters between the space and tilde characters, inclusive.
+    Character regions specify which characters in the font are rendered by the [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont). You can specify the start and end of the region by using the characters themselves, or by using their decimal values with an &# prefix. The default character region includes all the characters between the space and tilde characters, inclusive.
     
 
 ### To draw text on the screen
 
 1.  Add a Sprite Font to your project as described above.
     
-2.  Create a [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) object to encapsulate the imported font.
+2.  Create a [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) object to encapsulate the imported font.
     
-3.  Create a [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object for drawing the font on the screen.
+3.  Create a [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object for drawing the font on the screen.
     
-4.  In your [LoadContent](M_MXF_Game_LoadContent.md) method, call [ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md), specifying the [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) class and the asset name of the imported font.
+4.  In your [LoadContent](xref:MXF.Game.LoadContent) method, call [ContentManager.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1), specifying the [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) class and the asset name of the imported font.
     
-5.  Create your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object, passing the current [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md).
+5.  Create your [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object, passing the current [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice).
     
     ```
     SpriteFont Font1;
@@ -69,17 +69,17 @@ The code in this topic shows you the draw technique. You can download a complete
     ```
                         
     
-6.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, call [Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md) on the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
+6.  In your [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, call [Begin](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Begin) on the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object.
     
 7.  If necessary, determine the origin of your text.
     
-    If you want to draw your text centered on a point, you can find the center of the text by calling [MeasureString](O_M_Microsoft_Xna_Framework_Graphicsx_SpriteFont_MeasureString.md) and dividing the returned vector by 2.
+    If you want to draw your text centered on a point, you can find the center of the text by calling [MeasureString](xref:Microsoft.Xna.Framework.Graphicsx.SpriteFont.MeasureString) and dividing the returned vector by 2.
     
-8.  Call [DrawString](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_DrawString.md) to draw your output text, specifying the [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) object for the font you want to use.
+8.  Call [DrawString](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.DrawString) to draw your output text, specifying the [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) object for the font you want to use.
     
-    All other parameters of [DrawString](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_DrawString.md) produce the same effects as a call to [SpriteBatch.Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md).
+    All other parameters of [DrawString](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.DrawString) produce the same effects as a call to [SpriteBatch.Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw).
     
-9.  Call [SpriteBatch.End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) after all text is drawn.
+9.  Call [SpriteBatch.End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End) after all text is drawn.
     
     ```
     protected override void Draw(GameTime gameTime)
@@ -116,10 +116,10 @@ The code in this topic shows you the draw technique. You can download a complete
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[DrawString](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_DrawString.md)  
-[SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md)  
-[ContentManager.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[DrawString](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.DrawString)  
+[SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont)  
+[ContentManager.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1)  
 
 © 2012 Microsoft Corporation. All rights reserved. 
 

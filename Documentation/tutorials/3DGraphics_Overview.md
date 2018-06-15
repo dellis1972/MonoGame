@@ -12,26 +12,26 @@ In general, the 3D pipeline requires the following state for initialization:
 
 As you become comfortable with these ideas, you may want to learn more about the following: manipulating vertices, creating your own effects, applying textures, or improving performance by using index buffers.
 
-The MonoGame Framework uses a shader-driven programmable pipeline. It requires a graphics card capable of at least Shader Model 2.0, but requirements depend on the platform being targeted. The MonoGame Framework provides a class called [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) that encapsulates most of these common operations.
+The MonoGame Framework uses a shader-driven programmable pipeline. It requires a graphics card capable of at least Shader Model 2.0, but requirements depend on the platform being targeted. The MonoGame Framework provides a class called [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) that encapsulates most of these common operations.
 
 # The Graphics Device
 
 When you create a game with MonoGame, the framework initializes a graphics device for you.
 
-The [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) initializes the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) before you call [Game.Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md). Before you call [Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md), there are three ways to change the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) settings:
+The [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) initializes the [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) before you call [Game.Initialize](xref:Microsoft.Xna.Framework.Game.Initialize). Before you call [Initialize](xref:Microsoft.Xna.Framework.Game.Initialize), there are three ways to change the [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) settings:
 
-1.  Set the appropriate properties (e.g. [PreferredBackBufferHeight](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferredBackBufferHeight.md), [PreferredBackBufferWidth](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferredBackBufferWidth.md)) on the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) in your game's constructor.
+1.  Set the appropriate properties (e.g. [PreferredBackBufferHeight](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferHeight), [PreferredBackBufferWidth](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferWidth)) on the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) in your game's constructor.
     
-2.  Handle the [PreparingDeviceSettings](E_Microsoft_Xna_Framework_GraphicsDeviceManager_PreparingDeviceSettings.md) event on the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md), and change the [PreparingDeviceSettingsEventArgs.GraphicsDeviceInformation.PresentationParameters](T_Microsoft_Xna_Framework_Graphics_PresentationParameters.md) member properties.
+2.  Handle the [PreparingDeviceSettings](E_Microsoft_Xna_Framework_GraphicsDeviceManager_PreparingDeviceSettings.md) event on the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager), and change the [PreparingDeviceSettingsEventArgs.GraphicsDeviceInformation.PresentationParameters](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters) member properties.
     
-    Any changes made to the [PreparingDeviceSettingsEventArgs](T_Microsoft_Xna_Framework_PreparingDeviceSettingsEventArgs.md) will override the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) preferred settings.
+    Any changes made to the [PreparingDeviceSettingsEventArgs](xref:Microsoft.Xna.Framework.PreparingDeviceSettingsEventArgs) will override the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) preferred settings.
     
-3.  Handle the [DeviceCreated](E_Microsoft_Xna_Framework_GraphicsDeviceManager_DeviceCreated.md) event on the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md), and change the [PresentationParameters](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_PresentationParameters.md) of the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) directly.
+3.  Handle the [DeviceCreated](E_Microsoft_Xna_Framework_GraphicsDeviceManager_DeviceCreated.md) event on the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager), and change the [PresentationParameters](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.PresentationParameters) of the [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) directly.
     
 
-When you call [Game.Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md), [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) creates and configures [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md). You can safely access [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) settings such as the backbuffer, depth/stencil buffer, viewport, and render states in [Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md).
+When you call [Game.Initialize](xref:Microsoft.Xna.Framework.Game.Initialize), [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) creates and configures [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice). You can safely access [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) settings such as the backbuffer, depth/stencil buffer, viewport, and render states in [Initialize](xref:Microsoft.Xna.Framework.Game.Initialize).
 
-After you call [Game.Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md), changes to the [PresentationParameters](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_PresentationParameters.md) of the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) will not take effect until you call [GraphicsDeviceManager.ApplyChanges](M_Microsoft_Xna_Framework_GraphicsDeviceManager_ApplyChanges.md). Other changes, such as render states, will take effect immediately.
+After you call [Game.Initialize](xref:Microsoft.Xna.Framework.Game.Initialize), changes to the [PresentationParameters](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.PresentationParameters) of the [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) will not take effect until you call [GraphicsDeviceManager.ApplyChanges](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.ApplyChanges). Other changes, such as render states, will take effect immediately.
 
 # Resources
 
@@ -41,7 +41,7 @@ Based on the resource management mode that was used when a resource is created, 
 
 ## Vertex and Index Buffers
 
-A vertex buffer contains a list of 3D vertices to be streamed to the graphics device. Each vertex in a vertex buffer may contain data about not only the 3D coordinate of the vertex, but also other information describing the vertex, such as the vertex normal, color, or texture coordinate. The MonoGame Framework contains several classes to describe common vertex declaration types, such as [VertexPositionColor](T_Microsoft_Xna_Framework_Graphics_VertexPositionColor.md), [VertexPositionColorTexture](T_Microsoft_Xna_Framework_Graphics_VertexPositionColorTexture.md), [VertexPositionNormalTexture](T_Microsoft_Xna_Framework_Graphics_VertexPositionNormalTexture.md), and [VertexPositionTexture](T_Microsoft_Xna_Framework_Graphics_VertexPositionTexture.md). Use the [VertexElement](T_Microsoft_Xna_Framework_Graphics_VertexElement.md) class to compose custom vertex types.
+A vertex buffer contains a list of 3D vertices to be streamed to the graphics device. Each vertex in a vertex buffer may contain data about not only the 3D coordinate of the vertex, but also other information describing the vertex, such as the vertex normal, color, or texture coordinate. The MonoGame Framework contains several classes to describe common vertex declaration types, such as [VertexPositionColor](xref:Microsoft.Xna.Framework.Graphics.VertexPositionColor), [VertexPositionColorTexture](xref:Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture), [VertexPositionNormalTexture](xref:Microsoft.Xna.Framework.Graphics.VertexPositionNormalTexture), and [VertexPositionTexture](xref:Microsoft.Xna.Framework.Graphics.VertexPositionTexture). Use the [VertexElement](xref:Microsoft.Xna.Framework.Graphics.VertexElement) class to compose custom vertex types.
 
 Vertex buffers contain indexed or non-indexed vertex data.
 
@@ -49,13 +49,13 @@ If a vertex buffer is not indexed, all of the vertices are placed in the vertex 
 
 Index buffers allow you to list each vertex only once in the vertex buffer. An index buffer is a list of indices into the vertex buffer, given in the order that you want the vertices to render.
 
-To render a non-indexed vertex buffer, call the [GraphicsDevice.DrawPrimitives Method](M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawPrimitives.md) or [GraphicsDevice.DrawUserPrimitives Method](O_M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawUserPrimitives.md). To render an indexed buffer, call the [GraphicsDevice.DrawIndexedPrimitives Method](M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawIndexedPrimitives.md) or [GraphicsDevice.DrawUserIndexedPrimitives Method](O_M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawUserIndexedPrimitives.md).
+To render a non-indexed vertex buffer, call the [GraphicsDevice.DrawPrimitives Method](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawPrimitives) or [GraphicsDevice.DrawUserPrimitives Method](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawUserPrimitives). To render an indexed buffer, call the [GraphicsDevice.DrawIndexedPrimitives Method](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawIndexedPrimitives) or [GraphicsDevice.DrawUserIndexedPrimitives Method](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawUserIndexedPrimitives).
 
 ## Textures
 
 A texture resource is a structured collection of texture data. The data in a texture resource is made up of one or more subresources that are organized into arrays and mipmap chains. Textures are filtered by a texture sampler as they are read. The type of texture influences how the texture is filtered.
 
-You can apply textures by using the [Texture](P_Microsoft_Xna_Framework_Graphics_BasicEffect_Texture.md) property of the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class, or choose to write your own effect methods to apply textures.
+You can apply textures by using the [Texture](xref:Microsoft.Xna.Framework.Graphics.BasicEffect.Texture) property of the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class, or choose to write your own effect methods to apply textures.
 
 # See Also
 

@@ -2,7 +2,7 @@
 
 # Sprite Font XML Schema Reference
 
-Describes the valid tags and values for Sprite-Font (.spritefont) XML files used by the Content Pipeline to create [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) textures.
+Describes the valid tags and values for Sprite-Font (.spritefont) XML files used by the Content Pipeline to create [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) textures.
 
 Tag name
 
@@ -122,7 +122,7 @@ Here is a sample localized .spritefont file:
 
 #### Reference
 
-[SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md)  
+[SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont)  
 
 © 2012 Microsoft Corporation. All rights reserved.
 

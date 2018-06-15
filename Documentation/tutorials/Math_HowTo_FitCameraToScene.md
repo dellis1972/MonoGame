@@ -14,11 +14,11 @@ The code in the topic shows you the technique. You can download a complete code 
 
 ### To position the camera to view all objects in a scene
 
-1.  Create a [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) class that contains all of the objects in the scene. To create the sphere, loop through all of the objects in the scene, merging the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) classes that contain them with [BoundingSphere.CreateMerged](O_M_Microsoft_Xna_Framework_BoundingSphere_CreateMerged.md).
+1.  Create a [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) class that contains all of the objects in the scene. To create the sphere, loop through all of the objects in the scene, merging the [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) classes that contain them with [BoundingSphere.CreateMerged](xref:Microsoft.Xna.Framework.BoundingSphere.CreateMerged).
     
-2.  If you are not already tracking the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) classes for collision detection, use [CreateFromBoundingBox](O_M_Microsoft_Xna_Framework_BoundingSphere_CreateFromBoundingBox.md) or [CreateFromPoints](M_Microsoft_Xna_Framework_BoundingSphere_CreateFromPoints.md) to create them from [BoundingBox](T_Microsoft_Xna_Framework_BoundingBox.md) classes or points.
+2.  If you are not already tracking the [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) classes for collision detection, use [CreateFromBoundingBox](xref:Microsoft.Xna.Framework.BoundingSphere.CreateFromBoundingBox) or [CreateFromPoints](xref:Microsoft.Xna.Framework.BoundingSphere.CreateFromPoints) to create them from [BoundingBox](xref:Microsoft.Xna.Framework.BoundingBox) classes or points.
     
-    In this example, the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) classes are created from [BoundingBox](T_Microsoft_Xna_Framework_BoundingBox.md) classes.
+    In this example, the [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) classes are created from [BoundingBox](xref:Microsoft.Xna.Framework.BoundingBox) classes.
     
     ```
     BoundingSphere GetSceneSphere()
@@ -42,13 +42,13 @@ The code in the topic shows you the technique. You can download a complete code 
     }
     ```
     
-3.  Set the position of the camera to the center of the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) that contains the scene.
+3.  Set the position of the camera to the center of the [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) that contains the scene.
     
     ```
     cameraPosition = sceneSphere.Center;
     ```
     
-4.  Determine the distance from the center of the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) that the camera needs to be to view the entire scene.
+4.  Determine the distance from the center of the [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) that the camera needs to be to view the entire scene.
     
     This distance is equal to the hypotenuse of the triangle formed by the center of the sphere, the desired camera position, and the point where the sphere touches the view frustum. One angle of the triangle is known to be the field of view of the camera divided by two. One leg of the triangle is known to be the radius of the sphere. Given these two measurements, you can calculate the hypotenuse as the radius of the sphere divided by the sine of half the field of view.
     
@@ -57,7 +57,7 @@ The code in the topic shows you the technique. You can download a complete code 
         sceneSphere.Radius / (float)Math.Sin(FOV / 2);
     ```
     
-5.  Get the [Backward](P_Microsoft_Xna_Framework_Matrix_Backward.md) vector of the view [Matrix](T_Microsoft_Xna_Framework_Matrix.md) and flip its X component.
+5.  Get the [Backward](xref:Microsoft.Xna.Framework.Matrix.Backward) vector of the view [Matrix](xref:Microsoft.Xna.Framework.Matrix) and flip its X component.
     
     ```
     Vector3 back = view.Backward;

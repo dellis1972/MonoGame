@@ -14,11 +14,11 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To scale sprites based on screen size
 
-1.  Use the [PreferredBackBufferHeight](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferredBackBufferHeight.md) and [PreferredBackBufferWidth](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferredBackBufferWidth.md) properties of [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) during your game's [Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md) to set the default screen size of your game.
+1.  Use the [PreferredBackBufferHeight](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferHeight) and [PreferredBackBufferWidth](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferWidth) properties of [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) during your game's [Initialize](xref:Microsoft.Xna.Framework.Game.Initialize) to set the default screen size of your game.
     
-2.  In your [LoadContent](M_MXF_Game_LoadContent.md) method, use [Matrix.CreateScale](O_M_Microsoft_Xna_Framework_Matrix_CreateScale.md) to create a scaling matrix.
+2.  In your [LoadContent](xref:MXF.Game.LoadContent) method, use [Matrix.CreateScale](xref:Microsoft.Xna.Framework.Matrix.CreateScale) to create a scaling matrix.
     
-    This matrix is recreated any time the resolution of the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) changes.
+    This matrix is recreated any time the resolution of the [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) changes.
     
     Because you are scaling sprites, you should use only the x and y parameters to create the scaling matrix. Scaling the depth of sprites can result in their depth shifting above 1.0. If that happens, they will not render.
     
@@ -41,7 +41,7 @@ The code in this topic shows you the technique. You can download a complete code
     ```
                         
     
-3.  In your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, determine whether the game needs to change screen resolution.
+3.  In your [Update](xref:Microsoft.Xna.Framework.Game.Update) method, determine whether the game needs to change screen resolution.
     
     This example uses game pad buttons to switch between two resolutions.
     
@@ -83,9 +83,9 @@ The code in this topic shows you the technique. You can download a complete code
     ```
                         
     
-4.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, call [SpriteBatch.Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md), passing the scaling matrix created in [LoadContent](M_MXF_Game_LoadContent.md).
+4.  In your [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, call [SpriteBatch.Begin](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Begin), passing the scaling matrix created in [LoadContent](xref:MXF.Game.LoadContent).
     
-5.  Draw your scene normally, then call [SpriteBatch.End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md).
+5.  Draw your scene normally, then call [SpriteBatch.End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End).
     
     All of the sprites you draw will be scaled according to the matrix.
     
@@ -120,10 +120,10 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
-[Matrix.CreateScale](O_M_Microsoft_Xna_Framework_Matrix_CreateScale.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
+[Matrix.CreateScale](xref:Microsoft.Xna.Framework.Matrix.CreateScale)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

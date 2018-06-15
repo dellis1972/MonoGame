@@ -16,11 +16,11 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To use a variable time step
 
-1.  Create a class that derives from [Game](T_Microsoft_Xna_Framework_Game.md).
+1.  Create a class that derives from [Game](xref:Microsoft.Xna.Framework.Game).
     
-2.  Set [IsFixedTimeStep](P_Microsoft_Xna_Framework_Game_IsFixedTimeStep.md) to **false**.
+2.  Set [IsFixedTimeStep](xref:Microsoft.Xna.Framework.Game.IsFixedTimeStep) to **false**.
     
-    This causes the [Update](M_Microsoft_Xna_Framework_Game_Update.md) method to be called as often as possible, instead of being called on a fixed interval.
+    This causes the [Update](xref:Microsoft.Xna.Framework.Game.Update) method to be called as often as possible, instead of being called on a fixed interval.
     
     ```
     this.IsFixedTimeStep = false;
@@ -31,15 +31,15 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To use a fixed time step
 
-1.  Create a class that derives from [Game](T_Microsoft_Xna_Framework_Game.md).
+1.  Create a class that derives from [Game](xref:Microsoft.Xna.Framework.Game).
     
-2.  Set [IsFixedTimeStep](P_Microsoft_Xna_Framework_Game_IsFixedTimeStep.md) to **true**.
+2.  Set [IsFixedTimeStep](xref:Microsoft.Xna.Framework.Game.IsFixedTimeStep) to **true**.
     
     ```
     this.IsFixedTimeStep = true;
     ```
     
-    This causes the [Update](M_Microsoft_Xna_Framework_Game_Update.md) method to be called each time the fixed time interval has passed.
+    This causes the [Update](xref:Microsoft.Xna.Framework.Game.Update) method to be called each time the fixed time interval has passed.
     
 3.  Set **TargetElapsedTime** to a fixed interval of time.
     

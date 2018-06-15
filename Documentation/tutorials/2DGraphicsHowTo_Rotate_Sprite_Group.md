@@ -16,7 +16,7 @@ The code in the topic shows you the technique. You can download a complete code 
 
 1.  Follow the steps of [Drawing a Sprite](2DGraphicsHowTo_Draw_Sprite.md).
     
-2.  Create one set of [Vector2](T_Microsoft_Xna_Framework_Vector2.md) objects that represents the unrotated positions of the sprites and one set to hold the rotated values.
+2.  Create one set of [Vector2](xref:Microsoft.Xna.Framework.Vector2) objects that represents the unrotated positions of the sprites and one set to hold the rotated values.
     
     ```
     private Vector2[] myVectors;
@@ -52,7 +52,7 @@ The code in the topic shows you the technique. You can download a complete code 
     ```
                         
     
-4.  In your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, copy the unrotated vectors and determine the screen position around which all the sprites will rotate.
+4.  In your [Update](xref:Microsoft.Xna.Framework.Game.Update) method, copy the unrotated vectors and determine the screen position around which all the sprites will rotate.
     
     ```
     private float RotationAngle = 0f;
@@ -116,7 +116,7 @@ The code in the topic shows you the technique. You can download a complete code 
     ```
                         
     
-8.  When all the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md).
+8.  When all the sprites have been drawn, call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End).
     
 
 # See Also
@@ -131,9 +131,9 @@ The code in the topic shows you the technique. You can download a complete code 
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

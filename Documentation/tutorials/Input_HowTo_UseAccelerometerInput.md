@@ -30,7 +30,7 @@ Once you have a reference to Microsoft.Devices.Sensors in your project and an as
 
 1.  Add a data member to your game to hold accelerometer data.
     
-    Accelerometer data is returned in an [AccelerometerReadingEventArgs](http://msdn.microsoft.com/en-us/library/microsoft.devices.sensors.accelerometerreadingeventargs.aspx) class. You can declare an instance of this structure in your class, declare an instance of a similar structure (such as [Vector3](T_Microsoft_Xna_Framework_Vector3.md)), or create separate data members to read [AccelerometerReadingEventArgs](http://msdn.microsoft.com/en-us/library/microsoft.devices.sensors.accelerometerreadingeventargs.aspx)'s **X**, **Y**, and **Z** members.
+    Accelerometer data is returned in an [AccelerometerReadingEventArgs](http://msdn.microsoft.com/en-us/library/microsoft.devices.sensors.accelerometerreadingeventargs.aspx) class. You can declare an instance of this structure in your class, declare an instance of a similar structure (such as [Vector3](xref:Microsoft.Xna.Framework.Vector3)), or create separate data members to read [AccelerometerReadingEventArgs](http://msdn.microsoft.com/en-us/library/microsoft.devices.sensors.accelerometerreadingeventargs.aspx)'s **X**, **Y**, and **Z** members.
     
                           `Accelerometer accelSensor;
     Vector3 accelReading = new Vector3();`

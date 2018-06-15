@@ -2,7 +2,7 @@
 
 # Drawing a Masked Sprite over a Background
 
-Demonstrates how to draw a foreground and background sprite using the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) class, where only part of the foreground sprite masks the background.
+Demonstrates how to draw a foreground and background sprite using the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) class, where only part of the foreground sprite masks the background.
 
 The foreground sprite in this example must include masking information.
 
@@ -39,13 +39,13 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-2.  In [Draw](M_Microsoft_Xna_Framework_Game_Draw.md), call [Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md) for the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md).
+2.  In [Draw](xref:Microsoft.Xna.Framework.Game.Draw), call [Begin](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Begin) for the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch).
     
-3.  Specify [BlendState.None](T_Microsoft_Xna_Framework_Graphics_BlendState.md).
+3.  Specify [BlendState.None](xref:Microsoft.Xna.Framework.Graphics.BlendState).
     
-    This will tell the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) to ignore alpha color values when drawing sprites. By default, the z-order of sprites is the order in which they are drawn.
+    This will tell the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) to ignore alpha color values when drawing sprites. By default, the z-order of sprites is the order in which they are drawn.
     
-4.  Draw the background sprites, and then call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md).
+4.  Draw the background sprites, and then call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End).
     
     ```
     spriteBatch.Begin();
@@ -53,13 +53,13 @@ The code in this topic shows you the technique. You can download a complete code
     spriteBatch.End();
     ```
     
-5.  Call [Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md) for the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) again.
+5.  Call [Begin](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Begin) for the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) again.
     
-6.  This time, specify [BlendState.AlphaBlend](T_Microsoft_Xna_Framework_Graphics_BlendState.md).
+6.  This time, specify [BlendState.AlphaBlend](xref:Microsoft.Xna.Framework.Graphics.BlendState).
     
-    This will cause pixels on the sprite with an alpha value less than 255 to become progressively transparent based on the magnitude of the alpha value. An alpha of 0 will make the pixel completely transparent. Calling [Begin](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Begin.md) with no parameters causes [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) to default to [BlendState.AlphaBlend](T_Microsoft_Xna_Framework_Graphics_BlendState.md).
+    This will cause pixels on the sprite with an alpha value less than 255 to become progressively transparent based on the magnitude of the alpha value. An alpha of 0 will make the pixel completely transparent. Calling [Begin](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Begin) with no parameters causes [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) to default to [BlendState.AlphaBlend](xref:Microsoft.Xna.Framework.Graphics.BlendState).
     
-7.  Draw the foreground sprites, then call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md).
+7.  Draw the foreground sprites, then call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End).
     
     ```
     spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
@@ -80,9 +80,9 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

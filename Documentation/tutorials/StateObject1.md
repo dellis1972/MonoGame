@@ -2,7 +2,7 @@
 
 # Creating a State Object
 
-Demonstrates how to create a state object using any of the state object classes: [BlendState](T_Microsoft_Xna_Framework_Graphics_BlendState.md), [DepthStencilState](T_Microsoft_Xna_Framework_Graphics_DepthStencilState.md), [RasterizerState](T_Microsoft_Xna_Framework_Graphics_RasterizerState.md), or [SamplerState](T_Microsoft_Xna_Framework_Graphics_SamplerState.md).
+Demonstrates how to create a state object using any of the state object classes: [BlendState](xref:Microsoft.Xna.Framework.Graphics.BlendState), [DepthStencilState](xref:Microsoft.Xna.Framework.Graphics.DepthStencilState), [RasterizerState](xref:Microsoft.Xna.Framework.Graphics.RasterizerState), or [SamplerState](xref:Microsoft.Xna.Framework.Graphics.SamplerState).
 
 # The Complete Sample
 
@@ -24,7 +24,7 @@ The code in this topic shows you the technique. You can download a complete code
     
 2.  Create a customizable state object.
     
-    Create a state object from the [RasterizerState](T_Microsoft_Xna_Framework_Graphics_RasterizerState.md) class and initialize it by explicitly setting the cull mode.
+    Create a state object from the [RasterizerState](xref:Microsoft.Xna.Framework.Graphics.RasterizerState) class and initialize it by explicitly setting the cull mode.
     
     ```
     rsCullNone = new RasterizerState();

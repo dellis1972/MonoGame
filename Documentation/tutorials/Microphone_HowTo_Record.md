@@ -10,7 +10,7 @@ The procedure shows the bare basics of using the microphone to record audio. In 
 
 ### To record audio from the microphone
 
-1.  Get the device's default microphone by using [Microphone.Default](P_MXFA_Microphone_Default.md).
+1.  Get the device's default microphone by using [Microphone.Default](xref:MXFA.Microphone.Default).
     
                           `Microphone  mic = Microphone.Default;
     if (mic == null)
@@ -28,7 +28,7 @@ The procedure shows the bare basics of using the microphone to record audio. In 
     int bytesRead = 0;` 
                         
     
-3.  Begin recording audio, calling method [Microphone.Start](M_MXFA_Microphone_Start.md).
+3.  Begin recording audio, calling method [Microphone.Start](xref:MXFA.Microphone.Start).
     
                           `if (!isMicrophoneRecording)
     {
@@ -40,12 +40,12 @@ The procedure shows the bare basics of using the microphone to record audio. In 
     isMicrophoneRecording = !isMicrophoneRecording;`
                         
     
-4.  While the microphone is recording, call [Microphone.GetData (Byte\[\], Int32, Int32)](M_MXFA_Microphone_8B8BD934_GetData.md) in your game's [Game.Update](M_Microsoft_Xna_Framework_Game_Update.md) method to save the latest recorded audio to the buffer.
+4.  While the microphone is recording, call [Microphone.GetData (Byte\[\], Int32, Int32)](xref:MXFA.Microphone.8B8BD934.GetData) in your game's [Game.Update](xref:Microsoft.Xna.Framework.Game.Update) method to save the latest recorded audio to the buffer.
     
                           `bytesRead += Microphone.Default.GetData(buffer, bytesRead, (buffer.Length - bytesRead));`
                         
     
-5.  When you are finished recording, set the microphone state to stopped by calling method [Stop](M_MXFA_Microphone_Stop.md).
+5.  When you are finished recording, set the microphone state to stopped by calling method [Stop](xref:MXFA.Microphone.Stop).
     
                           `if (!isMicrophoneRecording)
     {
@@ -70,11 +70,11 @@ Provides basic information about microphone usage in games for Windows Phone.
 
 # Reference
 
-[Microphone](T_MXFA_Microphone.md)
+[Microphone](xref:MXFA.Microphone)
 
 Provides properties, methods, and fields and events for capturing audio data with microphones.
 
-[DynamicSoundEffectInstance](T_MXFA_DynamicSoundEffectInstance.md)
+[DynamicSoundEffectInstance](xref:MXFA.DynamicSoundEffectInstance)
 
 Provides properties, methods, and events for play back of the audio buffer.
 

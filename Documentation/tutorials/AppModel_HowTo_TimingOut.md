@@ -14,7 +14,7 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To make a game time out
 
-1.  Create a class that derives from [Game](T_Microsoft_Xna_Framework_Game.md).
+1.  Create a class that derives from [Game](xref:Microsoft.Xna.Framework.Game).
     
 2.  Determine the desired time-out limit in milliseconds.
     
@@ -38,7 +38,7 @@ The code in this topic shows you the technique. You can download a complete code
         new GamePadDPad());
     ```
     
-5.  In [Update](M_Microsoft_Xna_Framework_Game_Update.md), if there has not been any user activity, increment the tracking variable by the elapsed time since the last call to [Update](M_Microsoft_Xna_Framework_Game_Update.md).
+5.  In [Update](xref:Microsoft.Xna.Framework.Game.Update), if there has not been any user activity, increment the tracking variable by the elapsed time since the last call to [Update](xref:Microsoft.Xna.Framework.Game.Update).
     
 6.  If there has been some user activity, set the tracking variable to zero.
     

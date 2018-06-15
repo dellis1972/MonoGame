@@ -14,11 +14,11 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To create a full-screen game
 
-1.  Derive a class from [Game](T_Microsoft_Xna_Framework_Game.md).
+1.  Derive a class from [Game](xref:Microsoft.Xna.Framework.Game).
     
-2.  After creating the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md), set its [PreferredBackBufferWidth](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferredBackBufferWidth.md) and [PreferredBackBufferHeight](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferredBackBufferHeight.md) to the desired screen height and width.
+2.  After creating the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager), set its [PreferredBackBufferWidth](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferWidth) and [PreferredBackBufferHeight](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferredBackBufferHeight) to the desired screen height and width.
     
-3.  Set [IsFullScreen](P_Microsoft_Xna_Framework_GraphicsDeviceManager_IsFullScreen.md) to **true**.
+3.  Set [IsFullScreen](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.IsFullScreen) to **true**.
     
     ```
     this.graphics.PreferredBackBufferWidth = 480;

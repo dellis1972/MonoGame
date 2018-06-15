@@ -50,9 +50,9 @@ The remaining parts render the model and add some user control of the model. All
     ```
                         
     
-    This code loads the model into the `gameShip` member (using [Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md)).
+    This code loads the model into the `gameShip` member (using [Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1)).
     
-4.  Create a new **private** method (called **DrawModel**) in the **Game1** class by adding the following code before the existing [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method.
+4.  Create a new **private** method (called **DrawModel**) in the **Game1** class by adding the following code before the existing [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method.
     
     ```
     private void DrawModel(Model m)
@@ -87,7 +87,7 @@ The remaining parts render the model and add some user control of the model. All
     
     ![](note.gif)Note
     
-    This render code is designed for only those models with a [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md). For custom effects, the inner `for-each` loop should be changed to use the [Effect](T_Microsoft_Xna_Framework_Graphics_Effect.md) class instead of the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class. In addition, you must use [EffectParameter](T_Microsoft_Xna_Framework_Graphics_EffectParameter.md) objects to manually set the world, view, and projection matrices.
+    This render code is designed for only those models with a [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect). For custom effects, the inner `for-each` loop should be changed to use the [Effect](xref:Microsoft.Xna.Framework.Graphics.Effect) class instead of the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class. In addition, you must use [EffectParameter](xref:Microsoft.Xna.Framework.Graphics.EffectParameter) objects to manually set the world, view, and projection matrices.
     
 5.  Modify the **Game1.Draw** method by replacing the following code `**`// TODO: Add your drawing code here` with the following code:
     ```
@@ -114,7 +114,7 @@ At this point, the rendering code for the model is complete, but the user contro
     
     These members store the current position, zoom, and rotation values. In addition, the `gameWorldRotation` simplifies the `UpdateGamePad` code.
     
-2.  Add a private method (called **UpdateGamePad**) before the call to [Update](M_Microsoft_Xna_Framework_Game_Update.md).
+2.  Add a private method (called **UpdateGamePad**) before the call to [Update](xref:Microsoft.Xna.Framework.Game.Update).
     
     ```
     private void UpdateGamePad()
@@ -146,7 +146,7 @@ At this point, the rendering code for the model is complete, but the user contro
     
     This code implements an exit method for the game (pressing the **A** button), and updates the position members with the current input of the game controller.
     
-3.  Modify the **Update** method by adding a call to `UpdateGamePad`, before the call to [Update](M_Microsoft_Xna_Framework_Game_Update.md).
+3.  Modify the **Update** method by adding a call to `UpdateGamePad`, before the call to [Update](xref:Microsoft.Xna.Framework.Game.Update).
     
     ```
     UpdateGamePad();

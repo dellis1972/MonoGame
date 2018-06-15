@@ -8,7 +8,7 @@ Demonstrates how to check whether the mouse (or touch location) is positioned ov
 
 This example applies most directly to Windows development where mice are ubiquitous.
 
-Because the [Mouse](T_Microsoft_Xna_Framework_Input_Mouse.md) class and [MouseState](T_Microsoft_Xna_Framework_Input_MouseState.md) structure do provide limited functionality on Windows Phone, this sample should work, as is, on that platform as well. However, a better solution on Windows Phone would be to substitute a call to the [TouchPanel.GetState](M_MXFIT_TouchPanel_GetState.md) method for the call to the [Mouse.GetState](M_Microsoft_Xna_Framework_Input_Mouse_GetState.md) method in order to retrieve alternative X and Y coordinates from a Windows Phone touch screen. In general, games and other applications designed for Windows Phone should use the [TouchPanel](T_MXFIT_TouchPanel.md) class to retrieve user input.
+Because the [Mouse](xref:Microsoft.Xna.Framework.Input.Mouse) class and [MouseState](xref:Microsoft.Xna.Framework.Input.MouseState) structure do provide limited functionality on Windows Phone, this sample should work, as is, on that platform as well. However, a better solution on Windows Phone would be to substitute a call to the [TouchPanel.GetState](xref:MXFIT.TouchPanel.GetState) method for the call to the [Mouse.GetState](xref:Microsoft.Xna.Framework.Input.Mouse.GetState) method in order to retrieve alternative X and Y coordinates from a Windows Phone touch screen. In general, games and other applications designed for Windows Phone should use the [TouchPanel](xref:MXFIxref:TouchPanel) class to retrieve user input.
 
 As written, this sample is least applicable to Xbox 360, although the technique of creating a ray and then keeping track of the closest object that intersects the ray remains potentially useful.
 
@@ -22,26 +22,26 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To check whether the mouse is positioned over a 3D object
 
-1.  Get the current state of the mouse by using [GetState](M_Microsoft_Xna_Framework_Input_Mouse_GetState.md).
+1.  Get the current state of the mouse by using [GetState](xref:Microsoft.Xna.Framework.Input.Mouse.GetState).
     
     ```
     MouseState mouseState = Mouse.GetState();
     ```
     
-2.  Get the current screen coordinates of the mouse from [X](P_Microsoft_Xna_Framework_Input_MouseState_X.md) and [Y](P_Microsoft_Xna_Framework_Input_MouseState_Y.md).
+2.  Get the current screen coordinates of the mouse from [X](xref:Microsoft.Xna.Framework.Input.MouseState.X) and [Y](xref:Microsoft.Xna.Framework.Input.MouseState.Y).
     
     ```
     int mouseX = mouseState.X;
     int mouseY = mouseState.Y;
     ```
     
-3.  Using [Viewport.Unproject](M_Microsoft_Xna_Framework_Graphics_Viewport_Unproject.md), determine points in world space on the near and far clipping planes. For the point on the near plane, pass a source vector with x and y set to the mouse position, and z set to 0.
+3.  Using [Viewport.Unproject](xref:Microsoft.Xna.Framework.Graphics.Viewport.Unproject), determine points in world space on the near and far clipping planes. For the point on the near plane, pass a source vector with x and y set to the mouse position, and z set to 0.
     
 4.  For the point on the far plane, pass a source vector with x and y set to the mouse position, and z set to 1.
     
 5.  Create a translation matrix for a point that is the origin, (0,0,0).
     
-6.  For both points, pass [Unproject](M_Microsoft_Xna_Framework_Graphics_Viewport_Unproject.md) the current projection matrix, the view matrix.
+6.  For both points, pass [Unproject](xref:Microsoft.Xna.Framework.Graphics.Viewport.Unproject) the current projection matrix, the view matrix.
     
     ```
     Vector3 nearsource = new Vector3((float)mouseX, (float)mouseY, 0f);
@@ -56,7 +56,7 @@ The code in this topic shows you the technique. You can download a complete code
         proj, view, world);
     ```
     
-7.  Create a [Ray](T_Microsoft_Xna_Framework_Ray.md) whose origin is at the near point and whose direction points to the far point.
+7.  Create a [Ray](xref:Microsoft.Xna.Framework.Ray) whose origin is at the near point and whose direction points to the far point.
     
     ```
     // Create a ray from the near clip plane to the far clip plane.
@@ -65,9 +65,9 @@ The code in this topic shows you the technique. You can download a complete code
     Ray pickRay = new Ray(nearPoint, direction);
     ```
     
-8.  Loop throught each object in the scene using the [Intersects](O_M_Microsoft_Xna_Framework_Ray_Intersects.md) method to check whether the [Ray](T_Microsoft_Xna_Framework_Ray.md) intersects each object.
+8.  Loop throught each object in the scene using the [Intersects](xref:Microsoft.Xna.Framework.Ray.Intersects) method to check whether the [Ray](xref:Microsoft.Xna.Framework.Ray) intersects each object.
     
-9.  If the [Ray](T_Microsoft_Xna_Framework_Ray.md) intersects an object, check whether it is the closest object intersected so far. If it is, store the object and the distance at which it was intersected, replacing any previously stored object.
+9.  If the [Ray](xref:Microsoft.Xna.Framework.Ray) intersects an object, check whether it is the closest object intersected so far. If it is, store the object and the distance at which it was intersected, replacing any previously stored object.
     
 10.  When you completely loop through the objects, the last object stored will be the closest object underneath the area the user clicked.
     

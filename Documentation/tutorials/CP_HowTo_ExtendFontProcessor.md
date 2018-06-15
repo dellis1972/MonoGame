@@ -2,13 +2,13 @@
 
 # How to: Extend the Font Description Processor to Support Additional Characters
 
-Describes the process of developing a custom content processor needed to add additional characters to a [FontDescription](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_FontDescription.md) object based on the text that is required by the game.
+Describes the process of developing a custom content processor needed to add additional characters to a [FontDescription](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.FontDescription) object based on the text that is required by the game.
 
-In a font description (.spritefont) file, the `<CharacterRegions>` area can be used to add additional characters to a font description. This enables you to use a [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) to render an additional range of characters.
+In a font description (.spritefont) file, the `<CharacterRegions>` area can be used to add additional characters to a font description. This enables you to use a [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) to render an additional range of characters.
 
 For some languages, this approach is not ideal. For example, Chinese and Japanese both have many thousands of characters. Adding the full range of characters to `<CharacterRegions>` dramatically increases the size of the font asset and the time required to build the font asset. A better solution adds individual characters whenever the specific characters are needed. You can create a custom content processor to implement this solution.
 
-In this example, a file called _messages.txt_ contains all the text rendered by the game. The custom processor adds all the characters contained in the text in this file to a [FontDescription](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_FontDescription.md). Then it processes the object in the standard way using the base [FontDescriptionProcessor](T_Microsoft_Xna_Framework_Content_Pipeline_Processors_FontDescriptionProcessor.md) functionality. All the characters in messages.txt will then be available to the [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) object at run time.
+In this example, a file called _messages.txt_ contains all the text rendered by the game. The custom processor adds all the characters contained in the text in this file to a [FontDescription](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.FontDescription). Then it processes the object in the standard way using the base [FontDescriptionProcessor](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors.FontDescriptionProcessor) functionality. All the characters in messages.txt will then be available to the [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) object at run time.
 
 # Using the Font Description Processor
 
@@ -75,9 +75,9 @@ It is assumed that you have an existing game project that you will modify. For t
     private string messageFile = "messages.txt";
     ```
     
-4.  Change the derivation of ContentProcessor1 from [ContentProcessor](T_Microsoft_Xna_Framework_Content_Pipeline_ContentProcessor`2.md) to [FontDescriptionProcessor](T_Microsoft_Xna_Framework_Content_Pipeline_Processors_FontDescriptionProcessor.md).
+4.  Change the derivation of ContentProcessor1 from [ContentProcessor](xref:Microsoft.Xna.Framework.Content.Pipeline.ContentProcessor`2) to [FontDescriptionProcessor](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors.FontDescriptionProcessor).
     
-5.  Modify the [Process](M_Microsoft_Xna_Framework_Content_Pipeline_Processors_FontTextureProcessor_454393FF_Process.md) method override to match the following code:
+5.  Modify the [Process](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors.FontTextureProcessor.454393FF.Process) method override to match the following code:
     
     ```
     public override SpriteFontContent Process(FontDescription input, ContentProcessorContext context)
@@ -95,7 +95,7 @@ It is assumed that you have an existing game project that you will modify. For t
     context.AddDependency(fullPath);
     ```
     
-7.  Read the contents of the file, and add each letter to the input font one by one. Note that the [Characters](P_Microsoft_Xna_Framework_Content_Pipeline_Graphics_FontDescription_Characters.md) collection keeps track of duplicates automatically. It is not necessary for the user to make sure that each letter is added only once. The **Characters** collection will contain only one instance of each character, no matter how many times **Add** has been called.
+7.  Read the contents of the file, and add each letter to the input font one by one. Note that the [Characters](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.FontDescription.Characters) collection keeps track of duplicates automatically. It is not necessary for the user to make sure that each letter is added only once. The **Characters** collection will contain only one instance of each character, no matter how many times **Add** has been called.
     
     ```
     string letters = File.ReadAllText(fullPath, System.Text.Encoding.UTF8);
@@ -111,7 +111,7 @@ It is assumed that you have an existing game project that you will modify. For t
     string letters = File.ReadAllText( fullPath, System.Text.Encoding.GetEncoding( 1252
                 ) );
     
-8.  Call the existing **Process** method of the base [FontDescriptionProcessor](T_Microsoft_Xna_Framework_Content_Pipeline_Processors_FontDescriptionProcessor.md) to build the font with the newly requested characters.
+8.  Call the existing **Process** method of the base [FontDescriptionProcessor](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors.FontDescriptionProcessor) to build the font with the newly requested characters.
     
     ```
     return base.Process(input, context);
@@ -139,7 +139,7 @@ It is assumed that you have an existing game project that you will modify. For t
 7.  Select the .spritefont file, and then in the **Properties** window, choose your custom processor from the drop-down list associated with the **ContentProcessor** field.
     
 
-When you build the solution, the new processor adds the characters in the messages.txt file to the list of characters available to the [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md).
+When you build the solution, the new processor adds the characters in the messages.txt file to the list of characters available to the [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont).
 
 ![](note.gif)Tip
 

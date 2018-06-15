@@ -16,29 +16,29 @@ The following information should help you import basic graphics objects.
     
     The default culling mode removes triangles that have a counterclockwise winding order.
     
-*   Call [SwapWindingOrder](M_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshHelper_SwapWindingOrder.md) to change the winding order of a triangle.
+*   Call [SwapWindingOrder](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshHelper.SwapWindingOrder) to change the winding order of a triangle.
     
 *   Set the scale for graphical objects to 1 unit = 1 meter.
     
-*   Call [TransformScene](M_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshHelper_TransformScene.md) to change the scale of an object.
+*   Call [TransformScene](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshHelper.TransformScene) to change the scale of an object.
     
 
 # Taking Advantage of Content Pipeline Mesh Classes
 
-There are several properties and classes that are particularly useful when using [NodeContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_NodeContent.md) objects to represent a 3D scene or mesh.
+There are several properties and classes that are particularly useful when using [NodeContent](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent) objects to represent a 3D scene or mesh.
 
-*   The [NodeContent.Children](P_Microsoft_Xna_Framework_Content_Pipeline_Graphics_NodeContent_Children.md) property represents hierarchical information.
+*   The [NodeContent.Children](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent.Children) property represents hierarchical information.
     
-*   The [NodeContent.Transform](P_Microsoft_Xna_Framework_Content_Pipeline_Graphics_NodeContent_Transform.md) property contains the local transform of the 3D object.
+*   The [NodeContent.Transform](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent.Transform) property contains the local transform of the 3D object.
     
-*   The [Pipeline.Graphics.MeshContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshContent.md) class (a subclass of [Pipeline.Graphics.NodeContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_NodeContent.md)) is used to represent meshes.
+*   The [Pipeline.Graphics.MeshContent](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshContent) class (a subclass of [Pipeline.Graphics.NodeContent](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.NodeContent)) is used to represent meshes.
     
 
-The Content Pipeline provides two classes that make it easier to create and work with [Pipeline.Graphics.MeshContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshContent.md) objects.
+The Content Pipeline provides two classes that make it easier to create and work with [Pipeline.Graphics.MeshContent](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshContent) objects.
 
-*   The [Pipeline.Graphics.MeshBuilder](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshBuilder.md) class creates new [Pipeline.Graphics.MeshContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshContent.md) objects, when necessary.
+*   The [Pipeline.Graphics.MeshBuilder](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshBuilder) class creates new [Pipeline.Graphics.MeshContent](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshContent) objects, when necessary.
     
-*   The [Pipeline.Graphics.MeshHelper](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshHelper.md) class implements useful operations on existing [Pipeline.Graphics.MeshContent](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshContent.md) objects.
+*   The [Pipeline.Graphics.MeshHelper](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshHelper) class implements useful operations on existing [Pipeline.Graphics.MeshContent](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshContent) objects.
     
 
 # Debugging Custom Importers and Processors

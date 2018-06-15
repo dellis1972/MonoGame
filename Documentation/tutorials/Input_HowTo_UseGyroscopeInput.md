@@ -24,7 +24,7 @@ After adding a reference to Microsoft.Devices.Sensors you can use Gyroscope APIs
 
 ### To Get Gyroscope Values
 
-1.  Add a data member to your game to hold gyroscope data. Declaring an instance of [Vector3](T_Microsoft_Xna_Framework_Vector3.md)) will hold the data returned from the gyroscope. The other members show here are used to draw the data later in the example.
+1.  Add a data member to your game to hold gyroscope data. Declaring an instance of [Vector3](xref:Microsoft.Xna.Framework.Vector3)) will hold the data returned from the gyroscope. The other members show here are used to draw the data later in the example.
     
                           `SpriteFont Font1;
     Vector2 FontPos;

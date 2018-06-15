@@ -14,18 +14,18 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To add player window resizing to a game
 
-1.  Derive a class from [Game](T_Microsoft_Xna_Framework_Game.md).
+1.  Derive a class from [Game](xref:Microsoft.Xna.Framework.Game).
     
-2.  Set [Game.GameWindow.AllowUserResizing](P_Microsoft_Xna_Framework_GameWindow_AllowUserResizing.md) to **true**.
+2.  Set [Game.GameWindow.AllowUserResizing](xref:Microsoft.Xna.Framework.GameWindow.AllowUserResizing) to **true**.
     
-3.  Add an event handler for the [ClientSizeChanged](E_Microsoft_Xna_Framework_GameWindow_ClientSizeChanged.md) event of [Game.Window](P_Microsoft_Xna_Framework_Game_Window.md).
+3.  Add an event handler for the [ClientSizeChanged](E_Microsoft_Xna_Framework_GameWindow_ClientSizeChanged.md) event of [Game.Window](xref:Microsoft.Xna.Framework.Game.Window).
     
     ```
     this.Window.AllowUserResizing = true;
     this.Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
     ```
     
-4.  Implement a method to handle the [ClientSizeChanged](E_Microsoft_Xna_Framework_GameWindow_ClientSizeChanged.md) event of [Game.Window](P_Microsoft_Xna_Framework_Game_Window.md).
+4.  Implement a method to handle the [ClientSizeChanged](E_Microsoft_Xna_Framework_GameWindow_ClientSizeChanged.md) event of [Game.Window](xref:Microsoft.Xna.Framework.Game.Window).
     
     ```
     void Window_ClientSizeChanged(object sender, EventArgs e)

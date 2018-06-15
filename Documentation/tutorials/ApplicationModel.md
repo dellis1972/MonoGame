@@ -2,13 +2,13 @@
 
 # Initializing, Updating, and Exiting a Game
 
-The MonoGame Framework [Game Class](T_Microsoft_Xna_Framework_Game.md) provides a game loop for initializing, updating and exiting a game.
+The MonoGame Framework [Game Class](xref:Microsoft.Xna.Framework.Game) provides a game loop for initializing, updating and exiting a game.
 
 # In This Section
 
 [Initializing a Game](AppModel_GameLoop.md)
 
-Provides an overview of the basic functionality implemented by the game loop in the MonoGame Framework [Game](T_Microsoft_Xna_Framework_Game.md) class.
+Provides an overview of the basic functionality implemented by the game loop in the MonoGame Framework [Game](xref:Microsoft.Xna.Framework.Game) class.
 
 [Update Processing Within a Game](AppModel_Updating.md)
 
