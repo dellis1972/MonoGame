@@ -2,7 +2,7 @@
 
 # Exiting a Game
 
-This section provides topics that demonstrate different scenarios for exiting an XNA Game Studio game.
+This section provides topics that demonstrate different scenarios for exiting a MonoGame game.
 
 # In This Section
 

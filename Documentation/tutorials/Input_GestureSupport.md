@@ -2,7 +2,7 @@
 
 # Detecting Gestures on a Multitouch Screen
 
-This topic demonstrates how to detect and use multitouch gestures in an XNA Game Studio game.
+This topic demonstrates how to detect and use multitouch gestures in a MonoGame game.
 
 # Complete Sample
 

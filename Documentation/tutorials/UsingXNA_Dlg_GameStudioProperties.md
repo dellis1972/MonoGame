@@ -54,7 +54,7 @@ The default image is "Background.png".
 
 The **Game Startup Type** box specifies the initial type (object) for the game program that will be called when the game starts.
 
-The default startup type is the **Game1** object of the game's primary namespace ([Microsoft.XNA.Framework.Game](http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.game.aspx)), as defined in the standard templates for an XNA Game Studio game.
+The default startup type is the **Game1** object of the game's primary namespace ([Microsoft.XNA.Framework.Game](http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.game.aspx)), as defined in the standard templates for a MonoGame game.
 
 If your game requires the use of a different startup type other than the default, you may select it in this property. For the startup type to appear in the drop-down list, it must be a public type derived from [Microsoft.XNA.Framework.Game](http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.game.aspx), and contain no private default constructor.
 

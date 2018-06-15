@@ -2,7 +2,7 @@
 
 # Retrieving Accelerometer Input
 
-This topic demonstrates how to detect and use accelerometer input in an XNA Game Studio game.
+This topic demonstrates how to detect and use accelerometer input in a MonoGame game.
 
 # Complete Sample
 

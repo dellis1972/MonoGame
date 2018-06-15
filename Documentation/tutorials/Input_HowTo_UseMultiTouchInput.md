@@ -2,7 +2,7 @@
 
 # Working with Touch Input
 
-This topic demonstrates how to detect and use multitouch input in an XNA Game Studio game.
+This topic demonstrates how to detect and use multitouch input in a MonoGame game.
 
 # Complete Sample
 

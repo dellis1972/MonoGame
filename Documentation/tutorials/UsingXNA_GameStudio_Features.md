@@ -24,7 +24,7 @@ Describes the steps required to add a Windows Phone background agent to an XNA F
 
 [How to: Create a Localized Game](CP_HowTo_Localize.md)
 
-Describes the process of creating an XNA Game Studio game that can be localized.
+Describes the process of creating a MonoGame game that can be localized.
 
 [Localizing the Title of a Windows Phone Game](UsingXNA_GameTitle_Localize.md)
 

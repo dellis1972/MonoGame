@@ -12,7 +12,7 @@ The code in this topic shows you the technique for playing sound. You can downlo
 
 ### To add a sound file to your project
 
-1.  Load your XNA Game Studio game in Visual Studio.
+1.  Load your MonoGame game in Visual Studio.
     
 2.  In **Solution Explorer**, right-click the solution's **Content** project.
     

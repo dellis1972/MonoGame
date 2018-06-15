@@ -8,7 +8,7 @@ Describes how to add custom game data as an XML file through the Content Pipelin
 
 Custom game data that is expressed in an XML format can be easily integrated into your game through the XNA Game Studio Content Pipeline.
 
-This example demonstrates the procedure for integrating custom XML data into the content project of a simple XNA Game Studio game for the Windows platform.
+This example demonstrates the procedure for integrating custom XML data into the content project of a simple MonoGame game for the Windows platform.
 
 ### To define game data
 
