@@ -1,4 +1,4 @@
-﻿
+
 
 # Transformations and Collision Testing
 
@@ -41,4 +41,5 @@ Demonstrates how to use the [BoundingSphere](T_Microsoft_Xna_Framework_BoundingS
 [Math Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128874)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

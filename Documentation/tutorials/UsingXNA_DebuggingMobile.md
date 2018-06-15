@@ -1,4 +1,4 @@
-﻿
+
 
 # Debugging a Windows Phone Game
 
@@ -43,4 +43,5 @@ You cannot attach the debugger to a process that is already executing.
 [Getting Started with XNA Game Studio Development](Getting_Started.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

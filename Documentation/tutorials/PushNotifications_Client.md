@@ -1,4 +1,4 @@
-﻿
+
 
 # Responding to Push Notifications on the Client
 
@@ -51,4 +51,5 @@ The following code demonstrates this process:
 [Pushing Notifications from a Server](PushNotifications_Server.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Setting up Push Notifications
 
@@ -72,4 +72,5 @@ You should detect and respond to events about the channel status or incoming pus
 [Pushing Notifications from a Server](PushNotifications_Server.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

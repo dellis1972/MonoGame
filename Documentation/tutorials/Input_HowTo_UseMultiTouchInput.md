@@ -1,4 +1,4 @@
-﻿
+
 
 # Working with Touch Input
 
@@ -82,4 +82,5 @@ foreach (TouchLocation tl in touchCollection)
 [TouchLocationState](T_MXFIT_TouchLocationState.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

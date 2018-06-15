@@ -1,4 +1,4 @@
-﻿
+
 
 # MonoGame Overview
 
@@ -35,5 +35,5 @@ The XNA Framework class library is a library of classes, interfaces, and value t
 The Content Pipeline class library is a library of classes, interfaces, and value types that are included with MonoGame. This library provides access to MonoGame Framework Content Pipeline functionality and is designed to be the foundation on which Content Pipeline–related applications, components, and controls are built.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-© 2018 @MonoGameTeam. All rights reserved. 
-Version: 2.0.61024.0
+
+© The MonoGame Team

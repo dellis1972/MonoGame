@@ -1,4 +1,4 @@
-﻿
+
 
 # Sprite Font XML Schema Reference
 

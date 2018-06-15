@@ -1,4 +1,4 @@
-﻿
+
 
 # Initializing and Updating Gamer Services
 
@@ -49,4 +49,5 @@ In some cases, a program may not use the XNA Framework application model or comp
 [Introduction to Gamer Services](GamerServices_Overview.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

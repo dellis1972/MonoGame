@@ -1,4 +1,4 @@
-﻿
+
 
 # XNA Game Studio Properties Page
 
@@ -65,4 +65,5 @@ If no valid startup type exists, or if you select "Not Set" in this property whe
 [Advanced Windows Phone Development](UsingXNA_GameStudio_Overviews.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

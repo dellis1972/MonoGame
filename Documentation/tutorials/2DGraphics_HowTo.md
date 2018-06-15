@@ -1,4 +1,4 @@
-﻿
+
 
 # Rendering 2D with Sprites and Text
 

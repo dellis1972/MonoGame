@@ -1,4 +1,4 @@
-﻿
+
 
 # Working with Text and Keyboard Input
 
@@ -27,4 +27,5 @@ Describes how to show a message box.
 [Overview of User Input and Input Devices](Input_XNA.md) [Responding to User Input](Input.md)
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Tiling a Sprite
 

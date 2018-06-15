@@ -1,4 +1,4 @@
-﻿
+
 
 # Visual Basic Example
 
@@ -182,4 +182,5 @@ End Sub
 To test your Visual Basic code and see it running on the Windows Phone Emulator in Visual Studio, press F5 or right click your project in **Solution Explorer**, select **Debug**, then click **Start new instance**.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

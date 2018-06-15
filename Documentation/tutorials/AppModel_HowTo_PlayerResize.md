@@ -1,4 +1,4 @@
-﻿
+
 
 # Resizing a Game
 

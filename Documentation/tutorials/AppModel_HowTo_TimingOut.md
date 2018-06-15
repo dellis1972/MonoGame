@@ -1,4 +1,4 @@
-﻿
+
 
 # Exiting a Game After a Time Out
 

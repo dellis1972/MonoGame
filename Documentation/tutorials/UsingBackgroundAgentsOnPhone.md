@@ -1,4 +1,4 @@
-﻿
+
 
 # Adding a Windows Phone Background Agent to an XNA Game
 
@@ -111,4 +111,5 @@ Once the background agent is added to your game, you must add it to your game co
 [BackgroundAgent Class](http://go.microsoft.com/fwlink/?LinkID=219521)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Advanced Windows Phone Development
 
@@ -19,4 +19,5 @@ Provides information about several advanced aspects of Windows Phone game progra
 [Getting Started with XNA Game Studio Development](Getting_Started.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

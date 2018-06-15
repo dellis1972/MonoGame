@@ -1,4 +1,4 @@
-﻿
+
 
 # Loading XML Content at Runtime
 
@@ -49,4 +49,5 @@ Add the "MyDataTypes" library as a reference in the game project.
 [Adding Content to a Game](CP_TopLevel.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

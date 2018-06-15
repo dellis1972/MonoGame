@@ -1,4 +1,4 @@
-﻿
+
 
 # Localizing the Title of a Windows Phone Game
 
@@ -227,4 +227,5 @@ AppResLib.dll.0c0a.mui
 [Getting Started with XNA Game Studio Development](Getting_Started.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Push Notifications
 
@@ -70,4 +70,5 @@ Describes how to push a toast, tile, or raw notification to a client phone from 
 [Making Web Requests](WebRequestPhone.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

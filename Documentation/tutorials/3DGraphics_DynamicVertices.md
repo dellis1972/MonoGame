@@ -1,4 +1,4 @@
-﻿
+
 
 # Dynamically Updating Vertex Data
 

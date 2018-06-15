@@ -1,4 +1,4 @@
-﻿
+
 
 # Drawing a Sprite Over a Model
 

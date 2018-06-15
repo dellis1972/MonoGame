@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is Color Blending?
 
@@ -54,4 +54,5 @@ By default, the alpha channel is blended along with the red, green, and blue cha
 [3D Pipeline Basics](3DGraphics_Overview.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

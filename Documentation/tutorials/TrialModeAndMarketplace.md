@@ -1,4 +1,4 @@
-﻿
+
 
 # Simulating Trial Mode for Marketplace Content
 
@@ -54,4 +54,5 @@ Enclose any calls to [SimulateTrialMode](P_Microsoft_Xna_Framework_GamerServices
 [Creating Trial Applications for Windows Phone](http://go.microsoft.com/fwlink/?LinkId=254837)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

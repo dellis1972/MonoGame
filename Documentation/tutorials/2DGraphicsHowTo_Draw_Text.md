@@ -1,4 +1,4 @@
-﻿
+
 
 # Drawing Text with a Sprite
 

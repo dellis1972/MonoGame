@@ -1,4 +1,4 @@
-﻿
+
 
 # Creating an XML File
 
@@ -91,4 +91,5 @@ You will create a new project in Visual Studio.
 [IntermediateSerializer Class](T_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Responding to User Input
 
@@ -25,4 +25,5 @@ Topics that provide guidance on writing code to support text and keyboard input 
 [Input Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128875)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

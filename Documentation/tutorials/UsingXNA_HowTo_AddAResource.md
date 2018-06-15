@@ -1,4 +1,4 @@
-﻿
+
 
 # How to: Add Game Assets to a Content Project
 
@@ -71,4 +71,5 @@ For more information about the **Properties** window of a game asset, see **Game
 [Adding Content to a Game](CP_TopLevel.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

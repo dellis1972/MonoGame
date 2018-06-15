@@ -1,4 +1,4 @@
-﻿
+
 
 # Best Practices for Windows Phone Games
 
@@ -88,4 +88,5 @@ If you implement automatic game saving, check for an automatically saved state w
 [Exploring Windows Phone Programming](Mobile_Programming.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

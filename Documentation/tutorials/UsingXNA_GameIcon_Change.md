@@ -1,4 +1,4 @@
-﻿
+
 
 # Changing your Game Thumbnail on Windows Phone
 
@@ -81,4 +81,5 @@ Since the thumbnails for **Games Hub** and the **Start** menu require the same d
 [XNA Game Studio Properties Page](UsingXNA_Dlg_GameStudioProperties.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

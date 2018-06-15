@@ -1,4 +1,4 @@
-﻿
+
 
 # Using an XML File to Specify Content
 
@@ -38,4 +38,5 @@ Describes the valid tags and values for Sprite-Font (.spritefont) XML files used
 [Writing Game Code](ProgrammingGuide.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

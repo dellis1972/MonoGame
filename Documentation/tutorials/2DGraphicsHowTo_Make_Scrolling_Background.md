@@ -1,4 +1,4 @@
-﻿
+
 
 # Making a Scrolling Background
 

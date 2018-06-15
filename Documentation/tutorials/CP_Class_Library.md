@@ -1,4 +1,4 @@
-﻿
+
 
 # Content Pipeline Class Library
 

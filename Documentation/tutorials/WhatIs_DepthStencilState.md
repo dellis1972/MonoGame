@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is Depth Stencil State?
 
@@ -11,4 +11,5 @@ During rendering, the z position (or depth) of each pixel is stored in the depth
 A depth buffer may also contain stencil data, which is why a depth buffer is often called a depth-stencil buffer. Use a stencil function to compare a reference stencil value -- a global value you set -- to the per-pixel value in the stencil buffer to mask which pixels get saved and which are discarded. For more information about a stencil buffer, see [What Is a Stencil Buffer?](WhatIs_StencilBuffer.md)
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

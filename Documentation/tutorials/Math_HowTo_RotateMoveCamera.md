@@ -1,4 +1,4 @@
-﻿
+
 
 # Rotating and Moving the Camera
 
@@ -171,4 +171,5 @@ For the sake of simplicity, the sample limits the camera object to rotation abou
     ```
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

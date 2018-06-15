@@ -1,4 +1,4 @@
-﻿
+
 
 # Drawing a Masked Sprite over a Background
 

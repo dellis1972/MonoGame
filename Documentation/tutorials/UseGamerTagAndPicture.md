@@ -1,4 +1,4 @@
-﻿
+
 
 # Getting Gamer Profiles
 
@@ -29,4 +29,5 @@ The [GamerProfile](T_Microsoft_Xna_Framework_GamerServices_GamerProfile.md) retu
 If the gamer is a [SignedInGamer](T_Microsoft_Xna_Framework_GamerServices_SignedInGamer.md), you can retrieve the local player's preferred settings for gameplay by using the [SignedInGamer.GameDefaults](P_Microsoft_Xna_Framework_Graphics_SignedInGamer_GameDefaults.md) property. You also can retrieve the local player's privileges by using [SignedInGamer.Privileges](P_Microsoft_Xna_Framework_Graphics_SignedInGamer_Privileges.md). Unlike [Gamer.GetProfile](M_Microsoft_Xna_Framework_GamerServices_Gamer_GetProfile.md), which can be slow for remote players, the properties of a [SignedInGamer](T_Microsoft_Xna_Framework_GamerServices_SignedInGamer.md) return instantly.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

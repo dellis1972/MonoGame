@@ -1,4 +1,4 @@
-﻿
+
 
 # Enabling Antialiasing (Multisampling)
 
@@ -75,4 +75,5 @@ The code in this topic shows you the technique. You can download a complete code
 [PresentationParameters](T_Microsoft_Xna_Framework_Graphics_PresentationParameters.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

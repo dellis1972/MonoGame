@@ -1,4 +1,4 @@
-﻿
+
 
 # Adding Art, Music, and Other Game Assets
 
@@ -51,4 +51,5 @@ Provides overviews about how to use the Media API to retrieve system media, incl
 Provides introductory information about developing games with XNA Game Studio.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

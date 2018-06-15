@@ -1,4 +1,4 @@
-﻿
+
 
 # Restricting Aspect Ratio on a Graphics Device
 

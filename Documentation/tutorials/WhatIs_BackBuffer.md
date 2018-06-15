@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is a Back Buffer?
 
@@ -17,4 +17,5 @@ In addition, if you request a back-buffer resolution that is not supported by th
 [Viewport](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_Viewport.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

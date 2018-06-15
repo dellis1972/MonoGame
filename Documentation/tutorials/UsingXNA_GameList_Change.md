@@ -1,4 +1,4 @@
-﻿
+
 
 # Configuring the Genre of Your Windows Phone Game
 
@@ -51,4 +51,5 @@ When you submit your application or game to the Windows Phone Marketplace, you w
 [Changing your Game Thumbnail on Windows Phone](UsingXNA_GameIcon_Change.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

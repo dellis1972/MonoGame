@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is Sampler State?
 
@@ -37,4 +37,5 @@ These are the corresponding API states:
 Built-in state objects make it easy to create objects with the most common sampler state settings. The most common settings are **LinearClamp**, **LinearWrap**, **PointClamp**, **PointWrap**, **AnisotropicClamp**, and **AnisotropicWrap**. For an example of creating a state object, see [Creating a State Object](StateObject1.md).
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

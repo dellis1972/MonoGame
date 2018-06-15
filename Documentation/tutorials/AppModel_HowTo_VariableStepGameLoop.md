@@ -1,4 +1,4 @@
-﻿
+
 
 # Updating with Variable or Fixed Timing
 

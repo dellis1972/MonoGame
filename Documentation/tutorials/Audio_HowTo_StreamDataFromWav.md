@@ -1,4 +1,4 @@
-﻿
+
 
 # Streaming Data from a WAV File
 

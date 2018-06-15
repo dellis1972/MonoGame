@@ -1,4 +1,4 @@
-﻿
+
 
 # How to: Extend the Font Description Processor to Support Additional Characters
 

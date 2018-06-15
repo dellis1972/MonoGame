@@ -1,4 +1,4 @@
-﻿
+
 
 # Developing XNA Framework games in Visual Basic
 
@@ -19,4 +19,5 @@ Describes how to use the Visual Basic project templates included with XNA Game S
 Provides an example of programming XNA Game Studio with Visual Basic.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

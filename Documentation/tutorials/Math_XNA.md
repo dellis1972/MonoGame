@@ -1,4 +1,4 @@
-﻿
+
 
 # What are Vectors, Matrices, and Quaternions?
 
@@ -62,4 +62,5 @@ A 32-bit floating-point number ranges from –3.402823e38> to +3.402823e38. The 
 [Math Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128874)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

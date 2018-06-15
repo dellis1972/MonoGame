@@ -1,4 +1,4 @@
-﻿
+
 
 # Game Asset Properties
 
@@ -36,4 +36,5 @@ The name of the processor for the related game asset. The list contains both cus
 [Getting Started with XNA Game Studio Development](Getting_Started.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Adding an XML Content File to a Visual Studio Project
 
@@ -69,4 +69,5 @@ To load the data at runtime, see the tutorial [Loading XML Content at Runtime](C
 [Adding Content to a Game](CP_TopLevel.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

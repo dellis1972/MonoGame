@@ -1,4 +1,4 @@
-﻿
+
 
 # Transforming a Point
 
@@ -41,4 +41,5 @@ static Vector3 RotatePointOnYAxis(Vector3 point, float angle)
 [CreateTranslation](O_M_Microsoft_Xna_Framework_Matrix_CreateTranslation.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

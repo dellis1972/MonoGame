@@ -1,4 +1,4 @@
-﻿
+
 
 # Overview of User Input and Input Devices
 
@@ -25,4 +25,5 @@ The microphone on Windows Phone can be used to capture audio that can be used in
 [Input Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128875)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

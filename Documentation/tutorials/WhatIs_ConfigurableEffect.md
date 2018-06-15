@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is a Configurable Effect?
 
@@ -54,4 +54,5 @@ Pseudo code for the lighting calculations looks similar to this:
     
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

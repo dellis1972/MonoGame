@@ -1,4 +1,4 @@
-﻿
+
 
 # Your First Game - XNA Game Studio in 2D
 
@@ -221,4 +221,5 @@ Here are some more ideas to extend this sample:
 [Getting Started with XNA Game Studio Development](Getting_Started.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

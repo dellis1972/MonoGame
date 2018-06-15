@@ -1,4 +1,4 @@
-﻿
+
 
 # Windows Phone Networking
 
@@ -32,4 +32,5 @@ Demonstrates how to make a web request using HTTP on Windows Phone.
 Introduces push notifications on Windows Phone, and describes how to implement them in your game title.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

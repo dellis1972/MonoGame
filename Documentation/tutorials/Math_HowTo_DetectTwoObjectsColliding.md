@@ -1,4 +1,4 @@
-﻿
+
 
 # Testing for Collisions
 
@@ -96,4 +96,5 @@ For an example of determining a particle's path after it hits a surface, see [Ve
 [Collision Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128869)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

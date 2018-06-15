@@ -1,4 +1,4 @@
-﻿
+
 
 # Playing a Song from a URI
 
@@ -56,4 +56,5 @@ Provides methods and properties to play, pause, resume, and stop songs. **MediaP
 Provides access to a song in the song library.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Using the Windows Phone Emulator
 
@@ -7,4 +7,5 @@ The Windows Phone Emulator is a software version of the Windows Phone environmen
 For complete information about using the Windows Phone Emulator, including topics on system requirements and troubleshooting, see [Windows Phone Emulator](http://go.microsoft.com/fwlink/?LinkId=254756) in the Windows Phone documentation.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

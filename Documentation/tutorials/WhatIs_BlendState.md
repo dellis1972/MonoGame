@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is Blend State?
 
@@ -11,4 +11,5 @@ You have a lot of control over how you blend the source and the destination data
 For an example that creates and uses a state object, see [Creating a State Object](StateObject1.md).
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

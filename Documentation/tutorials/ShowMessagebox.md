@@ -1,4 +1,4 @@
-﻿
+
 
 # Displaying a Message Box
 
@@ -52,4 +52,5 @@ protected void GetMBResult(IAsyncResult r)
 [IAsyncResult](http://msdn.microsoft.com/en-us/library/system.iasyncresult.aspx)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

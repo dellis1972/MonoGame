@@ -1,4 +1,4 @@
-﻿
+
 
 # Creating a Windows Phone Game or Library Project
 
@@ -182,4 +182,5 @@ In addition to these standard assemblies, you can add references to other assemb
 This C# source file Class1.cs begins as an empty C# class within a namespace. It provides a starting point for adding functionality to your Windows Phone game library.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

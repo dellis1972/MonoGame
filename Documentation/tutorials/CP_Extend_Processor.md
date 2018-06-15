@@ -1,4 +1,4 @@
-﻿
+
 
 # Extending a Standard Content Processor
 

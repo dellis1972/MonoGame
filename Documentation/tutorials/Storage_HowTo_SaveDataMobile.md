@@ -1,4 +1,4 @@
-﻿
+
 
 # Writing Data
 
@@ -105,4 +105,5 @@ Reading saved data written in this way uses a very similar process. For example:
 [Handling Interruptions on Windows Phone](RespondingtoShutdownEvents.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

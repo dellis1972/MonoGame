@@ -1,4 +1,4 @@
-﻿
+
 
 # Detecting Gestures on a Multitouch Screen
 
@@ -80,4 +80,5 @@ The following code illustrates the procedure for detecting gestures on a multito
 [GestureSample](T_Microsoft_Xna_Framework_Input_Touch_GestureSample.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

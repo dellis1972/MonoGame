@@ -1,4 +1,4 @@
-﻿
+
 
 # Scaling a Sprite
 

@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is a Render Target?
 
@@ -17,4 +17,5 @@ A render target has a surface format, which describes how many bits are allocate
 A render target works in cooperation with a depth-stencil buffer. When creating a render target, the depth format for the depth-stencil buffer is specified as one of the parameters to the render target constructor. Anytime you set a new render target to the device, the matching depth buffer is also set to the device.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

@@ -1,4 +1,4 @@
-﻿
+
 
 # Recording Sounds with Microphones
 
@@ -25,4 +25,5 @@ Provides a high-level overview about the capabilities of the Audio API in XNA Ga
 Demonstrates techniques for accessing various input devices and responding to user input.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

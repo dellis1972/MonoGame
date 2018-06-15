@@ -1,4 +1,4 @@
-﻿
+
 
 # Adding Content to a Game
 
@@ -38,4 +38,5 @@ Describes how parameterized Content Processors work in XNA Game Studio. Many of 
 [Content Pipeline Content Catalog at App Hub Online](http://go.microsoft.com/fwlink/?LinkId=128876)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

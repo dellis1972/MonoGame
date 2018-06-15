@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is a Profile?
 
@@ -221,4 +221,5 @@ XNA Game Studio has introduced the Reach profile for Xbox 360, Windows, and Wind
 [XNA Game Studio Properties Page](UsingXNA_Dlg_GameStudioProperties.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

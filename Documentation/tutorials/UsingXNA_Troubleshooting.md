@@ -1,4 +1,4 @@
-﻿
+
 
 # Troubleshooting XNA Game Studio Projects
 
@@ -18,4 +18,5 @@ Also, you can either use Solution Explorer to select the project or, on the **Pr
 This condition can occur after Visual Studio encounters errors in a .csproj file. These errors may have been introduced by a faulty manual edit of that file. In this circumstance, Visual Studio may reset the startup project to the content project. This setting will persist even after the error in the .csproj file has been corrected.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

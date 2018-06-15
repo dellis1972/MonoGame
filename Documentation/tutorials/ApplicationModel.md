@@ -1,4 +1,4 @@
-﻿
+
 
 # Initializing, Updating, and Exiting a Game
 

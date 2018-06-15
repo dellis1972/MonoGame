@@ -1,4 +1,4 @@
-﻿
+
 
 # Media Overview
 
@@ -41,4 +41,5 @@ Provides access to a picture in the media library.
 Provides access to a song in the song library.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

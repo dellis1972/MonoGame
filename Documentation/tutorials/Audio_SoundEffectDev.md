@@ -1,4 +1,4 @@
-﻿
+
 
 # Audio API Developers Guide
 

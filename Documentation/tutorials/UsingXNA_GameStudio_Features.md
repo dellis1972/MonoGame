@@ -1,4 +1,4 @@
-﻿
+
 
 # Advanced Windows Phone Game Configuration
 
@@ -31,4 +31,5 @@ Describes the process of creating an XNA Game Studio game that can be localized.
 Describes how to create a localized title of the game that is displayed on the Windows Phone device.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

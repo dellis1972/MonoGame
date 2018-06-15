@@ -1,4 +1,4 @@
-﻿
+
 
 # Writing Game Code
 
@@ -35,5 +35,5 @@ Describes how to save game data on various platforms.
 Describes the available methods for creating networked games with MonoGame.
 
 © 2012 Microsoft Corporation. All rights reserved. 
-© 2018 @MonoGameTeam. All rights reserved. 
-Version: 2.0.61024.0
+
+© The MonoGame Team

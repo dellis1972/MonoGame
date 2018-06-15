@@ -1,4 +1,4 @@
-﻿
+
 
 # Automatic Rotation and Scaling
 

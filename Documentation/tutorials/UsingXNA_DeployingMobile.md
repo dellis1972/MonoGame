@@ -1,4 +1,4 @@
-﻿
+
 
 # Deploying a Windows Phone Game
 
@@ -9,4 +9,5 @@ You can deploy your Windows Phone game to either the Windows Phone Emulator or t
 The process of deploying a Windows Phone game, whether to the Windows Phone Emulator or to a physical Windows Phone device, is the same as for any other Windows Phone application. For more information, see [How to: Build and Deploy a Windows Phone Application Using Visual Studio](http://go.microsoft.com/fwlink/?LinkId=254754) in the Windows Phone documentation.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

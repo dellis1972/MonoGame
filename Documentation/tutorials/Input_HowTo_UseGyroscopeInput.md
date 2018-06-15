@@ -1,4 +1,4 @@
-﻿
+
 
 # Retrieving Gyroscope Input
 
@@ -71,4 +71,5 @@ After adding a reference to Microsoft.Devices.Sensors you can use Gyroscope APIs
 [Input Overviews](Input.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

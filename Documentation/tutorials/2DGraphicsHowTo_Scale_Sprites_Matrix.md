@@ -1,4 +1,4 @@
-﻿
+
 
 # Scaling Sprites Based On Screen Size
 

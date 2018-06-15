@@ -1,4 +1,4 @@
-﻿
+
 
 # Displaying Graphics
 
@@ -23,4 +23,5 @@ These articles provide a brief introduction into graphics pipeline functionality
 [Getting Started with 2D Games at App Hub](http://go.microsoft.com/fwlink/?LinkId=128880)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

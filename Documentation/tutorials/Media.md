@@ -1,4 +1,4 @@
-﻿
+
 
 # Displaying Pictures and Playing Video
 
@@ -25,4 +25,5 @@ Demonstrates how to play a song from a user's media library.
 Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song from a Uniform Resource Identifier (URI).
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

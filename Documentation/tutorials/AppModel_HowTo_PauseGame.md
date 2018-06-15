@@ -1,4 +1,4 @@
-﻿
+
 
 # Pausing a Game
 

@@ -1,4 +1,4 @@
-﻿
+
 
 # XNA Game Studio Project Version Support
 
@@ -17,4 +17,5 @@ Microsoft Visual Studio projects for Windows or Xbox 360 games or game libraries
 [Getting Started with XNA Game Studio Development](Getting_Started.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

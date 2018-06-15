@@ -1,4 +1,4 @@
-﻿
+
 
 # Tips for Developing Custom Importers and Processors
 
@@ -86,4 +86,5 @@ Debugging ProjCP causes MSBuild to compile your test content while running under
 [Adding New Content Types](CP_Content_Advanced.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

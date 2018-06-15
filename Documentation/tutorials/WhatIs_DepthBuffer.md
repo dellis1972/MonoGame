@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is a Depth Buffer?
 
@@ -17,4 +17,5 @@ In previous versions of XNA Game Studio, **DepthStencilBuffer** is a class; you 
 In Windows Phone SDK 8.0 Extensions for XNA Game Studio 4.0, there is no **DepthStencilBuffer** type. The runtime automatically creates a depth buffer when a render target is created, and you specify the format for the depth buffer in a render target's constructor along with the surface format. This prevents a render target from being created without a matching depth buffer.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

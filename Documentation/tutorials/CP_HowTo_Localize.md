@@ -1,4 +1,4 @@
-﻿
+
 
 # How to: Create a Localized Game
 

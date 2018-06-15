@@ -1,4 +1,4 @@
-﻿
+
 
 # Enable XNA Framework Events in Windows Phone Applications
 
@@ -111,4 +111,5 @@ Your implementation of the [IApplicationService](http://msdn.microsoft.com/en-us
 [Microphone](T_MXFA_Microphone.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

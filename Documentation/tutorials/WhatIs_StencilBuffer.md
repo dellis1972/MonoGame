@@ -1,4 +1,4 @@
-﻿
+
 
 # What Is a Stencil Buffer?
 
@@ -13,4 +13,5 @@ A stencil buffer can be used in more sophisticated ways such as specifying [Sten
 To use a stencil buffer, the [DepthFormat](T_Microsoft_Xna_Framework_Graphics_DepthFormat.md) of the depth buffer must reserve some bits for the stencil data; the [DepthFormat.Depth24Stencil8](T.md#DepthFormat_Microsoft_Xna_Framework_Graphics_DepthFormat.Depth24Stencil8) format uses 8 bits for a stencil buffer as an example. Combining stencil data with an 8 bit [DepthStencilState.StencilMask Property](P_Microsoft_Xna_Framework_Graphics_DepthStencilState_StencilMask.md) provide up to eight different stencil buffers.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

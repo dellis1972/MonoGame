@@ -1,4 +1,4 @@
-﻿
+
 
 # Running a Windows Phone Game at 60 HZ
 
@@ -56,4 +56,5 @@ This procedure updates a Windows Phone Game that only uses XNA for rendering to 
     
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

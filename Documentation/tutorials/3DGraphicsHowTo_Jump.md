@@ -1,4 +1,4 @@
-﻿
+
 
 # Rendering 3D with Effects
 

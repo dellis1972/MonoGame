@@ -1,4 +1,4 @@
-﻿
+
 
 # Working with Multitouch and Accelerometer Input
 
@@ -28,4 +28,5 @@ Demonstrates how to detect and use gyroscope input in an XNA Game Studio game.
 [Responding to User Input](Input.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

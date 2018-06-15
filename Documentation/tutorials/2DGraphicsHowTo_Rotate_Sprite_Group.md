@@ -1,4 +1,4 @@
-﻿
+
 
 # Rotating a Group of Sprites
 

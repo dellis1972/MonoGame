@@ -1,4 +1,4 @@
-﻿
+
 
 # Creating a Visual Basic Windows Phone Game or Library Project
 
@@ -180,4 +180,5 @@ This VB source file Class1.vb begins as an empty VB class within a namespace. It
   
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

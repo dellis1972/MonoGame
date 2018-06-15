@@ -1,4 +1,4 @@
-﻿
+
 
 # Making Web Requests
 
@@ -67,4 +67,5 @@ This topic will describe how to add HTTP web requests to your game to retrieve d
     
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

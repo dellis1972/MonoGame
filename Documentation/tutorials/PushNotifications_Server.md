@@ -1,4 +1,4 @@
-﻿
+
 
 # Pushing Notifications from a Server
 
@@ -147,4 +147,5 @@ These elements are enclosed in the body of the HTTP request as shown:
 [Responding to Push Notifications on the Client](PushNotifications_Client.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

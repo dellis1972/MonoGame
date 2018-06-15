@@ -1,4 +1,4 @@
-﻿
+
 
 # Moving the Camera on a Curve
 
@@ -141,4 +141,5 @@ The code in the topic shows you the technique. You can download a complete code 
 [Rotating and Moving the Camera](Math_HowTo_RotateMoveCamera.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

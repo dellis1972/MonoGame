@@ -1,4 +1,4 @@
-﻿
+
 
 # Accessing Pictures from a Picture Album
 
@@ -81,4 +81,5 @@ Provides access to songs, playlists, and pictures in the device's media library.
 A collection of pictures in the media library.
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team

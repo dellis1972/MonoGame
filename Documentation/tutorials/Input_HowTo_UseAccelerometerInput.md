@@ -1,4 +1,4 @@
-﻿
+
 
 # Retrieving Accelerometer Input
 
@@ -117,4 +117,5 @@ Once you have a reference to Microsoft.Devices.Sensors in your project and an as
 [Input Overviews](Input.md)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
-Version: 2.0.61024.0
+
+© The MonoGame Team
