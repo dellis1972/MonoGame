@@ -12,20 +12,20 @@ The code in this topic shows you the technique for looping a sound. You can down
 
 # Simple Sound Looping
 
-Not much extra code is needed to continiously loop a sound file in your game. Since the [SoundEffect](T_MXFA_SoundEffect.md) class does not provide looping support, you'll need to allocate a [SoundEffectInstance](T_MXFA_SoundEffectInstance.md) object. The following procedure builds on the sample code provided in the [Playing a Sound](Audio_HowTo_PlayASound.md) topic.
+Not much extra code is needed to continiously loop a sound file in your game. Since the [SoundEffect](xref:MXFA.SoundEffect) class does not provide looping support, you'll need to allocate a [SoundEffectInstance](xref:MXFA.SoundEffectInstance) object. The following procedure builds on the sample code provided in the [Playing a Sound](Audio_HowTo_PlayASound.md) topic.
 
 ### To loop a sound
 
 1.  Follow the instructions show in [Playing a Sound](Audio_HowTo_PlayASound.md) topic.
     
-2.  To be able to loop a sound you will need to declare a [SoundEffectInstance](T_MXFA_SoundEffectInstance.md) object, and set it to the return value of [SoundEffect.CreateInstance](M_MXFA_SoundEffect_CreateInstance.md).
+2.  To be able to loop a sound you will need to declare a [SoundEffectInstance](xref:MXFA.SoundEffectInstance) object, and set it to the return value of [SoundEffect.CreateInstance](xref:MXFA.SoundEffect.CreateInstance).
     
     ```
     SoundEffectInstance instance = soundEffect.CreateInstance();
     ```
                         
     
-3.  Set [SoundEffectInstance.IsLooped](P_MXFA_SoundEffectInstance_IsLooped.md) to **true** and then play the sound.
+3.  Set [SoundEffectInstance.IsLooped](xref:MXFA.SoundEffectInstance.IsLooped) to **true** and then play the sound.
     
     ```
     instance.IsLooped = true;
@@ -35,17 +35,17 @@ Not much extra code is needed to continiously loop a sound file in your game. Si
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
 
-Demonstrates how to play a simple sound by using [SoundEffect](T_MXFA_SoundEffect.md).
+Demonstrates how to play a simple sound by using [SoundEffect](xref:MXFA.SoundEffect).
 
 # Reference
 
-[SoundEffect Class](T_MXFA_SoundEffect.md)
+[SoundEffect Class](xref:MXFA.SoundEffect)
 
 Provides a loaded sound resource.
 
-[SoundEffectInstance Class](T_MXFA_SoundEffectInstance.md)
+[SoundEffectInstance Class](xref:MXFA.SoundEffectInstance)
 
-Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
+Provides a single playing, paused, or stopped instance of a [SoundEffect](xref:MXFA.SoundEffect) sound.
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

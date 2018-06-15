@@ -6,7 +6,7 @@ Demonstrates how to create a custom vertex declaration and use it to render a 3D
 
 ![](graphics_custom_vertex.png)
 
-Game Studio includes a few predefined classes for common vertex buffer declarations such as [VertexPositionColor](T_Microsoft_Xna_Framework_Graphics_VertexPositionColor.md) and [VertexPositionColorTexture](T_Microsoft_Xna_Framework_Graphics_VertexPositionColorTexture.md). If you need to create a vertex buffer declaration that includes additional user-defined types, create a custom vertex declaration.
+Game Studio includes a few predefined classes for common vertex buffer declarations such as [VertexPositionColor](xref:Microsoft.Xna.Framework.Graphics.VertexPositionColor) and [VertexPositionColorTexture](xref:Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture). If you need to create a vertex buffer declaration that includes additional user-defined types, create a custom vertex declaration.
 
 # The Complete Sample
 
@@ -16,11 +16,11 @@ The code in this topic shows you the technique. You can download a complete code
 
 # Creating a Custom Vertex Declaration
 
-A custom vertex declaration is a class that implements fully customizable per-vertex data. Furthermore, if you derive the class from [IVertexType](T_Microsoft_Xna_Framework_Graphics_IVertexType.md), you will not need to create a vertex declaration when creating your vertex buffer or drawing the geometry.
+A custom vertex declaration is a class that implements fully customizable per-vertex data. Furthermore, if you derive the class from [IVertexType](xref:Microsoft.Xna.Framework.Graphics.IVertexType), you will not need to create a vertex declaration when creating your vertex buffer or drawing the geometry.
 
 ### To create a custom vertex declaration
 
-1.  Declare a structure that derives from [IVertexType](T_Microsoft_Xna_Framework_Graphics_IVertexType.md).
+1.  Declare a structure that derives from [IVertexType](xref:Microsoft.Xna.Framework.Graphics.IVertexType).
     
     ```
     public struct CustomVertex1 : IVertexType
@@ -28,7 +28,7 @@ A custom vertex declaration is a class that implements fully customizable per-ve
     
 2.  Add members to the struct that describe the per-vertex data.
     
-    This example uses position as a [Vector3 Structure](T_Microsoft_Xna_Framework_Vector3.md) type, a texture coordinate using a [Vector2 Structure](T_Microsoft_Xna_Framework_Vector2.md) type, and a vertex declaration using the [VertexDeclaration](T_Microsoft_Xna_Framework_Graphics_VertexDeclaration.md) type.
+    This example uses position as a [Vector3 Structure](xref:Microsoft.Xna.Framework.Vector3) type, a texture coordinate using a [Vector2 Structure](xref:Microsoft.Xna.Framework.Vector2) type, and a vertex declaration using the [VertexDeclaration](xref:Microsoft.Xna.Framework.Graphics.VertexDeclaration) type.
     
     ```
     Vector3 vertexPosition;
@@ -76,7 +76,7 @@ A custom vertex declaration is a class that implements fully customizable per-ve
     }
     ```
     
-5.  Create a built-in effect to render the object with a texture using the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class as demonstrated in [Creating a Basic Effect](Use_BasicEffect.md).
+5.  Create a built-in effect to render the object with a texture using the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class as demonstrated in [Creating a Basic Effect](Use_BasicEffect.md).
     
 6.  Create the vertex buffer passing in the **typeof(CustomVertex1)** instead of a vertex declaration to describe the vertex buffer data.
     
@@ -118,7 +118,7 @@ A custom vertex declaration is a class that implements fully customizable per-ve
     
     For a triangle list, you need three vertices for a triangle and two triangles to make the front face of a cube.
     
-8.  Set the data into the vertex buffer data by calling [SetData](O_M_Microsoft_Xna_Framework_Graphics_VertexBuffer_SetData.md) and set the vertex buffer to the device by calling [SetVertexBuffer](O_M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_SetVertexBuffer.md).
+8.  Set the data into the vertex buffer data by calling [SetData](xref:Microsoft.Xna.Framework.Graphics.VertexBuffer.SetData) and set the vertex buffer to the device by calling [SetVertexBuffer](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.SetVertexBuffer).
     
     ```
     vertexBuffer.SetData<CustomVertex1>(cubeVertices);
@@ -126,7 +126,7 @@ A custom vertex declaration is a class that implements fully customizable per-ve
     graphics.GraphicsDevice.SetVertexBuffer(vertexBuffer);
     ```
     
-9.  Draw the object by calling [DrawPrimitives](M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawPrimitives.md).
+9.  Draw the object by calling [DrawPrimitives](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawPrimitives).
     
     ```
     RasterizerState rasterizerState1 = new RasterizerState();

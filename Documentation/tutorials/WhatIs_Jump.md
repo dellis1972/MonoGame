@@ -12,7 +12,7 @@ Antialiasing is a technique for softening or blurring sharp edges so they appear
 
 [What Is a Back Buffer?](WhatIs_BackBuffer.md)
 
-A back buffer is a render target whose contents will be sent to the device when [GraphicsDevice.Present](O_M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_Present.md) is called.
+A back buffer is a render target whose contents will be sent to the device when [GraphicsDevice.Present](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.Present) is called.
 
 [What Is Blend State?](WhatIs_BlendState.md)
 

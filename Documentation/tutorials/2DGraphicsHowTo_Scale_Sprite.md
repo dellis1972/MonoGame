@@ -58,12 +58,12 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-4.  When all the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) on your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
+4.  When all the sprites have been drawn, call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End) on your [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object.
 
 ### To draw a scaled sprite using a nonuniform scale
 
 1.  Follow the procedures of [Drawing a Sprite](2DGraphicsHowTo_Draw_Sprite.md).
-2.  In your **Update** method, determine how your sprite will be scaled along each axis and store those values in a [Vector2](T_Microsoft_Xna_Framework_Vector2.md) object.
+2.  In your **Update** method, determine how your sprite will be scaled along each axis and store those values in a [Vector2](xref:Microsoft.Xna.Framework.Vector2) object.
     
     ```
     protected Vector2 nonuniformscale = Vector2.One;
@@ -78,9 +78,9 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-3.  When drawing the sprite, specify the scale of the sprite using the [Vector2](T_Microsoft_Xna_Framework_Vector2.md) object that you updated earlier.
+3.  When drawing the sprite, specify the scale of the sprite using the [Vector2](xref:Microsoft.Xna.Framework.Vector2) object that you updated earlier.
     
-    Specifying a [Vector2](T_Microsoft_Xna_Framework_Vector2.md) scales the sprite independently in both the x and y directions.
+    Specifying a [Vector2](xref:Microsoft.Xna.Framework.Vector2) scales the sprite independently in both the x and y directions.
     
     ```
     protected override void DrawForeground(SpriteBatch batch)
@@ -94,7 +94,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-4.  When all of the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) on your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
+4.  When all of the sprites have been drawn, call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End) on your [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object.
     
 
 ### To draw a scaled sprite using a destination rectangle
@@ -119,7 +119,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-3.  When drawing the sprite, specify the destination rectangle as a parameter to [Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md).
+3.  When drawing the sprite, specify the destination rectangle as a parameter to [Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw).
     
     The sprite will be drawn, filling the destination rectangle.
     
@@ -132,7 +132,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-4.  When all of the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) on your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
+4.  When all of the sprites have been drawn, call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End) on your [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object.
     
 
 # See Also
@@ -147,9 +147,9 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

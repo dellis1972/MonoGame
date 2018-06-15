@@ -10,7 +10,7 @@ The code in this topic shows you the technique for detecting and using multitouc
 
 [Download JabberwockyWP7.zip](http://go.microsoft.com/fwlink/?LinkId=258711)
 
-Windows Phone SDK 8.0 Extensions for XNA Game Studio 4.0 supports multitouch gesture-based input on Windows Phone 8.0. The primary class that provides this support is [TouchPanel](T_MXFIT_TouchPanel.md), which provides the ability to:
+Windows Phone SDK 8.0 Extensions for XNA Game Studio 4.0 supports multitouch gesture-based input on Windows Phone 8.0. The primary class that provides this support is [TouchPanel](xref:MXFIxref:TouchPanel), which provides the ability to:
 
 *   Designate which gestures should be detected.
 *   Query to see if any gestures are available for processing.
@@ -23,16 +23,16 @@ Gesture support is provided as a conventient subset of the features possible on 
 
 ### To enable gesture support and detect gestures in a Windows Phone game
 
-1.  Set the gestures to enable with [TouchPanel.EnabledGestures](P_Microsoft_Xna_Framework_Input_Touch_TouchPanel_EnabledGestures.md). This can be one value, or a combination of values, in the [GestureType](T_Microsoft_Xna_Framework_Input_Touch_GestureType.md) enumeration. Performance can be decreased by enabling all gestures, so it is a good practice to enable only the gestures you'll be using in your game.
+1.  Set the gestures to enable with [TouchPanel.EnabledGestures](xref:Microsoft.Xna.Framework.Input.Touch.TouchPanel.EnabledGestures). This can be one value, or a combination of values, in the [GestureType](xref:Microsoft.Xna.Framework.Input.Touch.GestureType) enumeration. Performance can be decreased by enabling all gestures, so it is a good practice to enable only the gestures you'll be using in your game.
     
-2.  During your game loop, check to see if any gestures are available with [TouchPanel.IsGestureAvailable](P_Microsoft_Xna_Framework_Input_Touch_TouchPanel_IsGestureAvailable.md). When [IsGestureAvailable](P_Microsoft_Xna_Framework_Input_Touch_TouchPanel_IsGestureAvailable.md) is **false**, there are no more gestures in the queue.
+2.  During your game loop, check to see if any gestures are available with [TouchPanel.IsGestureAvailable](xref:Microsoft.Xna.Framework.Input.Touch.TouchPanel.IsGestureAvailable). When [IsGestureAvailable](xref:Microsoft.Xna.Framework.Input.Touch.TouchPanel.IsGestureAvailable) is **false**, there are no more gestures in the queue.
     
-3.  If gestures are available, call [TouchPanel.ReadGesture](M_Microsoft_Xna_Framework_Input_Touch_TouchPanel_ReadGesture.md) to get a [GestureSample](T_Microsoft_Xna_Framework_Input_Touch_GestureSample.md) that contains the data for the gesture.
+3.  If gestures are available, call [TouchPanel.ReadGesture](xref:Microsoft.Xna.Framework.Input.Touch.TouchPanel.ReadGesture) to get a [GestureSample](xref:Microsoft.Xna.Framework.Input.Touch.GestureSample) that contains the data for the gesture.
     
 
 ![](note.gif)Note
 
-Some gestures will be preceded by another gesture that begins the gesture. For instance, a **DoubleTap** gesture is always preceded by a **Tap** gesture. For more information about the various gesture types supported, see [GestureType](T_Microsoft_Xna_Framework_Input_Touch_GestureType.md).
+Some gestures will be preceded by another gesture that begins the gesture. For instance, a **DoubleTap** gesture is always preceded by a **Tap** gesture. For more information about the various gesture types supported, see [GestureType](xref:Microsoft.Xna.Framework.Input.Touch.GestureType).
 
 # Example
 
@@ -74,10 +74,10 @@ The following code illustrates the procedure for detecting gestures on a multito
 
 #### Reference
 
-[Microsoft.Xna.Framework.Input.Touch](N_Microsoft_Xna_Framework_Input_Touch.md)  
-[TouchPanel](T_MXFIT_TouchPanel.md)  
-[GestureType](T_Microsoft_Xna_Framework_Input_Touch_GestureType.md)  
-[GestureSample](T_Microsoft_Xna_Framework_Input_Touch_GestureSample.md)  
+[Microsoft.Xna.Framework.Input.Touch](xref:Microsoft.Xna.Framework.Input.Touch)  
+[TouchPanel](xref:MXFIxref:TouchPanel)  
+[GestureType](xref:Microsoft.Xna.Framework.Input.Touch.GestureType)  
+[GestureSample](xref:Microsoft.Xna.Framework.Input.Touch.GestureSample)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

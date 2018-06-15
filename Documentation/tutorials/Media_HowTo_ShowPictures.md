@@ -24,13 +24,13 @@ This example retrieves and displays pictures from a device's media library.
     Texture2D pic;`
                         
     
-2.  Call [MediaSource.GetAvailableMediaSources](M_MXFM_MediaSource_GetAvailableMediaSources.md) to retrieve the available media on the device.
+2.  Call [MediaSource.GetAvailableMediaSources](xref:MXFxref:MediaSource.GetAvailableMediaSources) to retrieve the available media on the device.
     
                           `// Retrieve all available media libraries on the device
     mediaSources = MediaSource.GetAvailableMediaSources();`
                         
     
-3.  Call [MediaLibrary](O_M_MXFM_MediaLibrary_ctor.md) to get the media libraries from the device.
+3.  Call [MediaLibrary](xref:MXFM.MediaLibrary.ctor) to get the media libraries from the device.
     
                           `mediaLib = new MediaLibrary();`
                         
@@ -64,7 +64,7 @@ This example retrieves and displays pictures from a device's media library.
 
 [Playing a Song from a URI](Media_HowTo_PlaySongfromURI.md)
 
-Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song from a Uniform Resource Identifier (URI).
+Demonstrates how to use the [MediaPlayer](xref:MXFM.MediaPlayer) to play a song from a Uniform Resource Identifier (URI).
 
 [Displaying Pictures and Playing Video](Media.md)
 
@@ -72,11 +72,11 @@ Provides overviews about how to use the Media API to retrieve system media, incl
 
 # Reference
 
-[MediaLibrary Class](T_MXF_Media_MediaLibrary.md)
+[MediaLibrary Class](xref:MXF.Media.MediaLibrary)
 
 Provides access to songs, playlists, and pictures in the device's media library.
 
-[PictureCollection Class](T_MXF_Media_PictureCollection.md)
+[PictureCollection Class](xref:MXF.Media.PictureCollection)
 
 A collection of pictures in the media library.
 

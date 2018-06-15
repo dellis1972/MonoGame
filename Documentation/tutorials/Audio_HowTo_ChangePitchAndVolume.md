@@ -2,7 +2,7 @@
 
 # Adjusting Pitch and Volume
 
-The [SoundEffect.Play](O_M_MXFA_SoundEffect_Play.md) method allows you to specify the pitch and volume of a sound to play. However, after you call [Play](O_M_MXFA_SoundEffect_Play.md), you cannot modify the sound. Using [SoundEffectInstance](T_MXFA_SoundEffectInstance.md) for a given [SoundEffect](T_MXFA_SoundEffect.md) allows you to change the pitch and volume of a sound at any time during playback.
+The [SoundEffect.Play](xref:MXFA.SoundEffect.Play) method allows you to specify the pitch and volume of a sound to play. However, after you call [Play](xref:MXFA.SoundEffect.Play), you cannot modify the sound. Using [SoundEffectInstance](xref:MXFA.SoundEffectInstance) for a given [SoundEffect](xref:MXFA.SoundEffect) allows you to change the pitch and volume of a sound at any time during playback.
 
 # Complete Sample
 
@@ -14,14 +14,14 @@ The code in this topic shows you the technique for changing a sound's pitch or v
 
 ### To adjust the pitch and volume of a sound
 
-1.  Declare [SoundEffect](T_MXFA_SoundEffect.md) and [Stream](http://msdn.microsoft.com/en-us/library/system.io.stream.aspx) by using the method shown in [Playing a Sound](Audio_HowTo_PlayASound.md). In addition to the method described in [Playing a Sound](Audio_HowTo_PlayASound.md), declare [SoundEffectInstance](T_MXFA_SoundEffectInstance.md).
+1.  Declare [SoundEffect](xref:MXFA.SoundEffect) and [Stream](http://msdn.microsoft.com/en-us/library/system.io.stream.aspx) by using the method shown in [Playing a Sound](Audio_HowTo_PlayASound.md). In addition to the method described in [Playing a Sound](Audio_HowTo_PlayASound.md), declare [SoundEffectInstance](xref:MXFA.SoundEffectInstance).
     
     ```
     SoundEffectInstance soundInstance;
     ```
                         
     
-2.  In the [Game.LoadContent](M_MXF_Game_LoadContent.md) method, set the SoundEffectInstance object to the return value of [SoundEffect.CreateInstance](M_MXFA_SoundEffect_CreateInstance.md).
+2.  In the [Game.LoadContent](xref:MXF.Game.LoadContent) method, set the SoundEffectInstance object to the return value of [SoundEffect.CreateInstance](xref:MXFA.SoundEffect.CreateInstance).
     
     ```
     soundfile = TitleContainer.OpenStream(@"Content\tx0_fire1.wav");
@@ -30,7 +30,7 @@ The code in this topic shows you the technique for changing a sound's pitch or v
     ```
                         
     
-3.  Adjust the sound to the desired level using the [SoundEffectInstance.Pitch](P_MXFA_SoundEffectInstance_Pitch.md) and [SoundEffectInstance.Volume](P_MXFA_SoundEffectInstance_Volume.md) properties.
+3.  Adjust the sound to the desired level using the [SoundEffectInstance.Pitch](xref:MXFA.SoundEffectInstance.Pitch) and [SoundEffectInstance.Volume](xref:MXFA.SoundEffectInstance.Volume) properties.
     
     ```
     // Play Sound
@@ -38,7 +38,7 @@ The code in this topic shows you the technique for changing a sound's pitch or v
     ```
                         
     
-4.  Play the sound using [SoundEffectInstance.Play](M_MXFA_SoundEffectInstance_Play.md).
+4.  Play the sound using [SoundEffectInstance.Play](xref:MXFA.SoundEffectInstance.Play).
     
     ```
     // Pitch takes values from -1 to 1
@@ -54,7 +54,7 @@ The code in this topic shows you the technique for changing a sound's pitch or v
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
 
-Demonstrates how to play a simple sound by using [SoundEffect](T_MXFA_SoundEffect.md).
+Demonstrates how to play a simple sound by using [SoundEffect](xref:MXFA.SoundEffect).
 
 [Looping a Sound](Audio_HowTo_LoopASound.md)
 
@@ -66,13 +66,13 @@ Provides overviews about audio technology, and presents predefined scenarios to 
 
 # Reference
 
-[SoundEffect Class](T_MXFA_SoundEffect.md)
+[SoundEffect Class](xref:MXFA.SoundEffect)
 
 Provides a loaded sound resource.
 
-[SoundEffectInstance Class](T_MXFA_SoundEffectInstance.md)
+[SoundEffectInstance Class](xref:MXFA.SoundEffectInstance)
 
-Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
+Provides a single playing, paused, or stopped instance of a [SoundEffect](xref:MXFA.SoundEffect) sound.
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

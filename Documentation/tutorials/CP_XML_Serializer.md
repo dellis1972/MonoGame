@@ -4,11 +4,11 @@
 
 For complex game data, using a software tool to create and maintain these assets may be useful. Level tables, for example, might be easier to develop through a custom-level editor tool.
 
-The [IntermediateSerializer](T_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer.md) class of the XNA Framework can be employed by custom tools running under Windows to directly serialize game data to an XML file.
+The [IntermediateSerializer](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer) class of the XNA Framework can be employed by custom tools running under Windows to directly serialize game data to an XML file.
 
-An XML file generated in this way then can be included in the game project and imported by [XmlImporter Class](T_Microsoft_Xna_Framework_Content_Pipeline_XmlImporter.md) as part of the Content Pipeline. Because [XmlImporter](T_Microsoft_Xna_Framework_Content_Pipeline_XmlImporter.md) is actually a wrapper for [IntermediateSerializer](T_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer.md), it is certain that the XML file will be in the [correct format](CP_XML_Elements.md) to be deserialized by the same facility.
+An XML file generated in this way then can be included in the game project and imported by [XmlImporter Class](xref:Microsoft.Xna.Framework.Content.Pipeline.XmlImporter) as part of the Content Pipeline. Because [XmlImporter](xref:Microsoft.Xna.Framework.Content.Pipeline.XmlImporter) is actually a wrapper for [IntermediateSerializer](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer), it is certain that the XML file will be in the [correct format](CP_XML_Elements.md) to be deserialized by the same facility.
 
-The [IntermediateSerializer](T_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer.md) class is controlled through the **XmlWriter** class of the .NET Framework Class Library defined in **System.Xml**. The properties of the **XmlWriterSettings** class can be used to specify its output properties.
+The [IntermediateSerializer](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer) class is controlled through the **XmlWriter** class of the .NET Framework Class Library defined in **System.Xml**. The properties of the **XmlWriterSettings** class can be used to specify its output properties.
 
 The serializer produces its output according to these rules:
 
@@ -22,7 +22,7 @@ The serializer produces its output according to these rules:
 
 # XML Serialization Example
 
-The following steps create a simple program that demonstrates how a program can use the [IntermediateSerializer](T_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer.md) method [IntermediateSerializer.Serialize Generic Method](M_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer_Serialize``1.md) to serialize program data to an XML file.
+The following steps create a simple program that demonstrates how a program can use the [IntermediateSerializer](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer) method [IntermediateSerializer.Serialize Generic Method](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer.Serialize``1) to serialize program data to an XML file.
 
 ## Step 1: Create a New Project
 
@@ -59,7 +59,7 @@ You will create a new project in Visual Studio.
     }`
                       
     
-4.  Within the function `Main`, add the following code. This code employs [IntermediateSerializer.Serialize Generic Method](M_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer_Serialize``1.md) to serialize the **MyData** class as an XML file.
+4.  Within the function `Main`, add the following code. This code employs [IntermediateSerializer.Serialize Generic Method](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer.Serialize``1) to serialize the **MyData** class as an XML file.
     
                         `MyData ExampleData = new MyData();
     
@@ -88,7 +88,7 @@ You will create a new project in Visual Studio.
 
 #### Reference
 
-[IntermediateSerializer Class](T_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate_IntermediateSerializer.md)  
+[IntermediateSerializer Class](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate.IntermediateSerializer)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

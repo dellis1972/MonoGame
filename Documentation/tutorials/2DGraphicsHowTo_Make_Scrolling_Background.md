@@ -2,7 +2,7 @@
 
 # Making a Scrolling Background
 
-Demonstrates how to draw a scrolling background sprite using the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) class.
+Demonstrates how to draw a scrolling background sprite using the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) class.
 
 # The Complete Sample
 
@@ -34,7 +34,7 @@ The code in this topic shows you the technique. You can download a complete code
     
 4.  Determine the size of the background texture and the size of the screen.
     
-    The texture size is determined using the [Height](P_Microsoft_Xna_Framework_Graphics_Texture2D_Height.md) and [Width](P_Microsoft_Xna_Framework_Graphics_Texture2D_Width.md) properties, and the screen size is determined using the [Viewport](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_Viewport.md) property on the graphics device.
+    The texture size is determined using the [Height](xref:Microsoft.Xna.Framework.Graphics.Texture2D.Height) and [Width](xref:Microsoft.Xna.Framework.Graphics.Texture2D.Width) properties, and the screen size is determined using the [Viewport](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.Viewport) property on the graphics device.
     
 5.  Using the texture and screen information, set the origin of the texture to the center of the top edge of the texture, and the initial screen position to the center of the screen.
     
@@ -58,7 +58,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-6.  To scroll the background, change the screen position of the background texture in your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method.
+6.  To scroll the background, change the screen position of the background texture in your [Update](xref:Microsoft.Xna.Framework.Game.Update) method.
     
     This example moves the background down 100 pixels per second by increasing the screen position's Y value.
     
@@ -87,7 +87,7 @@ The code in this topic shows you the technique. You can download a complete code
     // ScrollingBackground.Draw
     ```
     
-7.  Draw the background using the origin and screen position calculated in [LoadContent](M_MXF_Game_LoadContent.md) and [Update](M_Microsoft_Xna_Framework_Game_Update.md).
+7.  Draw the background using the origin and screen position calculated in [LoadContent](xref:MXF.Game.LoadContent) and [Update](xref:Microsoft.Xna.Framework.Game.Update).
     
     ```
     protected override void Draw(GameTime gameTime)
@@ -134,9 +134,9 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

@@ -2,7 +2,7 @@
 
 # Playing a Sound
 
-This topic demonstrates how to play a simple sound by using [SoundEffect](T_MXFA_SoundEffect.md).
+This topic demonstrates how to play a simple sound by using [SoundEffect](xref:MXFA.SoundEffect).
 
 # Complete Sample
 
@@ -27,7 +27,7 @@ The code in this topic shows you the technique for playing sound. You can downlo
 
 ### To play a simple sound
 
-1.  Declare a [SoundEffect](T_MXFA_SoundEffect.md) object to hold the sound file.
+1.  Declare a [SoundEffect](xref:MXFA.SoundEffect) object to hold the sound file.
     
     ```
     // Audio objects
@@ -35,7 +35,7 @@ The code in this topic shows you the technique for playing sound. You can downlo
     ```
                       
     
-2.  Load the sound file using [Content.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md).
+2.  Load the sound file using [Content.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1).
     
     ```
     soundEffect = Content.Load<SoundEffect>("kaboom");
@@ -58,13 +58,13 @@ Demonstrates how to loop a sound.
 
 # Reference
 
-[SoundEffect Class](T_MXFA_SoundEffect.md)
+[SoundEffect Class](xref:MXFA.SoundEffect)
 
 Provides a loaded sound resource.
 
-[SoundEffectInstance Class](T_MXFA_SoundEffectInstance.md)
+[SoundEffectInstance Class](xref:MXFA.SoundEffectInstance)
 
-Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
+Provides a single playing, paused, or stopped instance of a [SoundEffect](xref:MXFA.SoundEffect) sound.
 
 © 2012 Microsoft Corporation. All rights reserved.
 

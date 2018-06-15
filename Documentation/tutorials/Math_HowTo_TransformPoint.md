@@ -2,7 +2,7 @@
 
 # Transforming a Point
 
-This example demonstrates how to use the [Vector3](T_Microsoft_Xna_Framework_Vector3.md) and [Matrix](T_Microsoft_Xna_Framework_Matrix.md) classes to transform a point. A matrix transform can include scaling, rotating, and translating information.
+This example demonstrates how to use the [Vector3](xref:Microsoft.Xna.Framework.Vector3) and [Matrix](xref:Microsoft.Xna.Framework.Matrix) classes to transform a point. A matrix transform can include scaling, rotating, and translating information.
 
 # The Complete Sample
 
@@ -14,8 +14,8 @@ The code in the topic shows you the technique. You can download a complete code 
 
 ### To transform a point
 
-1.  Create a [Matrix](T_Microsoft_Xna_Framework_Matrix.md) by using [CreateRotationY](O_M_Microsoft_Xna_Framework_Matrix_CreateRotationY.md) or one of the other **Create** methods.
-2.  Pass the point and the [Matrix](T_Microsoft_Xna_Framework_Matrix.md) to the [Vector3.Transform](O_M_Microsoft_Xna_Framework_Vector3_Transform.md) method.
+1.  Create a [Matrix](xref:Microsoft.Xna.Framework.Matrix) by using [CreateRotationY](xref:Microsoft.Xna.Framework.Matrix.CreateRotationY) or one of the other **Create** methods.
+2.  Pass the point and the [Matrix](xref:Microsoft.Xna.Framework.Matrix) to the [Vector3.Transform](xref:Microsoft.Xna.Framework.Vector3.Transform) method.
 
 ```
 static Vector3 RotatePointOnYAxis(Vector3 point, float angle)
@@ -34,11 +34,11 @@ static Vector3 RotatePointOnYAxis(Vector3 point, float angle)
 
 #### Matrix Creation Methods
 
-[CreateRotationX](O_M_Microsoft_Xna_Framework_Matrix_CreateRotationX.md)  
-[CreateRotationY](O_M_Microsoft_Xna_Framework_Matrix_CreateRotationY.md)  
-[CreateRotationZ](O_M_Microsoft_Xna_Framework_Matrix_CreateRotationZ.md)  
-[CreateScale](O_M_Microsoft_Xna_Framework_Matrix_CreateScale.md)  
-[CreateTranslation](O_M_Microsoft_Xna_Framework_Matrix_CreateTranslation.md)  
+[CreateRotationX](xref:Microsoft.Xna.Framework.Matrix.CreateRotationX)  
+[CreateRotationY](xref:Microsoft.Xna.Framework.Matrix.CreateRotationY)  
+[CreateRotationZ](xref:Microsoft.Xna.Framework.Matrix.CreateRotationZ)  
+[CreateScale](xref:Microsoft.Xna.Framework.Matrix.CreateScale)  
+[CreateTranslation](xref:Microsoft.Xna.Framework.Matrix.CreateTranslation)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

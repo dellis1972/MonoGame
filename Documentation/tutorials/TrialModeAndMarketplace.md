@@ -14,8 +14,8 @@ It is unnecessary to write special code to ensure that a Marketplace offer is av
 
 ### To detect trial mode
 
-1.  Call [Guide.IsTrialMode](P_Microsoft_Xna_Framework_GamerServices_Guide_IsTrialMode.md) to determine if your game is currently in trial mode.
-2.  If [Guide.IsTrialMode](P_Microsoft_Xna_Framework_GamerServices_Guide_IsTrialMode.md) is **true**, call [Guide.ShowMarketplace](M_Microsoft_Xna_Framework_Graphics_Guide_ShowMarketplace.md) to present an offer to purchase the full version of the game.
+1.  Call [Guide.IsTrialMode](xref:Microsoft.Xna.Framework.GamerServices.Guide.IsTrialMode) to determine if your game is currently in trial mode.
+2.  If [Guide.IsTrialMode](xref:Microsoft.Xna.Framework.GamerServices.Guide.IsTrialMode) is **true**, call [Guide.ShowMarketplace](xref:Microsoft.Xna.Framework.Graphics.Guide.ShowMarketplace) to present an offer to purchase the full version of the game.
 
               `if (Guide.IsTrialMode)
 {
@@ -25,17 +25,17 @@ It is unnecessary to write special code to ensure that a Marketplace offer is av
 
 ![](bp.gif)Best Practice
 
-Getting the value of [IsTrialMode](P_Microsoft_Xna_Framework_GamerServices_Guide_IsTrialMode.md) on Windows Phone is a synchronous (blocking) operation that can take 60ms or more to complete when your game is in trial mode.
+Getting the value of [IsTrialMode](xref:Microsoft.Xna.Framework.GamerServices.Guide.IsTrialMode) on Windows Phone is a synchronous (blocking) operation that can take 60ms or more to complete when your game is in trial mode.
 
-To prevent significant delays in your game's framerate, don't place this call in your game's [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) or [Update](M_Microsoft_Xna_Framework_Game_Update.md) methods. It's best to check this property in the [Game.OnActivated Method](M_Microsoft_Xna_Framework_Game_OnActivated.md) method when your game is initializing or returning from an interruption in gameplay.
+To prevent significant delays in your game's framerate, don't place this call in your game's [Draw](xref:Microsoft.Xna.Framework.Game.Draw) or [Update](xref:Microsoft.Xna.Framework.Game.Update) methods. It's best to check this property in the [Game.OnActivated Method](xref:Microsoft.Xna.Framework.Game.OnActivated) method when your game is initializing or returning from an interruption in gameplay.
 
 Testing trial mode in your game requires that you simulate trial mode before your game is on the Marketplace.
 
 ### To simulate trial mode
 
-*   Set [Guide.SimulateTrialMode](P_Microsoft_Xna_Framework_GamerServices_Guide_SimulateTrialMode.md) to **true** to test presentation of a Marketplace offer if the game is in trial mode.
+*   Set [Guide.SimulateTrialMode](xref:Microsoft.Xna.Framework.GamerServices.Guide.SimulateTrialMode) to **true** to test presentation of a Marketplace offer if the game is in trial mode.
     
-    This property is typically set in the game's [constructor](M_Microsoft_Xna_Framework_Game_ctor.md), and must be set before the first call to [Game.Update](M_Microsoft_Xna_Framework_Game_Update.md).
+    This property is typically set in the game's [constructor](xref:Microsoft.Xna.Framework.Game.ctor), and must be set before the first call to [Game.Update](xref:Microsoft.Xna.Framework.Game.Update).
     
 
               `#if DEBUG
@@ -45,7 +45,7 @@ Testing trial mode in your game requires that you simulate trial mode before you
 
 ![](bp.gif)Best Practice
 
-Enclose any calls to [SimulateTrialMode](P_Microsoft_Xna_Framework_GamerServices_Guide_SimulateTrialMode.md) in your code with an #if DEBUG block, so that this code does not appear in your released game.
+Enclose any calls to [SimulateTrialMode](xref:Microsoft.Xna.Framework.GamerServices.Guide.SimulateTrialMode) in your code with an #if DEBUG block, so that this code does not appear in your released game.
 
 # See Also
 

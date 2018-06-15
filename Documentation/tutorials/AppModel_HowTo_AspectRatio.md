@@ -2,7 +2,7 @@
 
 # Restricting Aspect Ratio on a Graphics Device
 
-Demonstrates how to create a custom [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) that only selects graphics devices with widescreen aspect ratios in full-screen mode.
+Demonstrates how to create a custom [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) that only selects graphics devices with widescreen aspect ratios in full-screen mode.
 
 # The Complete Sample
 
@@ -14,7 +14,7 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To restrict graphics devices to widescreen aspect ratios in full-screen mode
 
-1.  Create a class that derives from [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md).
+1.  Create a class that derives from [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager).
     
     ```
     public class CustomGraphicsDeviceManager : GraphicsDeviceManager
@@ -46,9 +46,9 @@ The code in this topic shows you the technique. You can download a complete code
     static float WideScreenRatio = 1.6f; //1.77777779f;
     ```
     
-4.  Override the [RankDevices](M_Microsoft_Xna_Framework_GraphicsDeviceManager_RankDevices.md) method of [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md).
+4.  Override the [RankDevices](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.RankDevices) method of [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager).
     
-    Note the call to [base.RankDevices](M_Microsoft_Xna_Framework_GraphicsDeviceManager_RankDevices.md). This call ensures that the new version of [RankDevices](M_Microsoft_Xna_Framework_GraphicsDeviceManager_RankDevices.md) has an already ranked list of available devices with which to work.
+    Note the call to [base.RankDevices](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.RankDevices). This call ensures that the new version of [RankDevices](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.RankDevices) has an already ranked list of available devices with which to work.
     
     ```
     protected override void RankDevices( 
@@ -67,9 +67,9 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-6.  In the **if** block, loop through all found devices, and check whether the [PresentationParameters](T_Microsoft_Xna_Framework_Graphics_PresentationParameters.md) indicate the device is full-screen.
+6.  In the **if** block, loop through all found devices, and check whether the [PresentationParameters](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters) indicate the device is full-screen.
     
-7.  If the device is full-screen, determine the aspect ratio of the device by dividing the [BackBufferWidth](P_Microsoft_Xna_Framework_Graphics_PresentationParameters_BackBufferWidth.md) by the [BackBufferHeight](P_Microsoft_Xna_Framework_Graphics_PresentationParameters_BackBufferHeight.md).
+7.  If the device is full-screen, determine the aspect ratio of the device by dividing the [BackBufferWidth](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters.BackBufferWidth) by the [BackBufferHeight](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters.BackBufferHeight).
     
 8.  If the aspect ratio is less than the desired aspect ratio, remove the device from the list of found devices.
     
@@ -95,8 +95,8 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-9.  Replace the default [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) with the derived [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md).
-10.  To test the new component, set the **WideScreenOnly** and [IsFullScreen](P_Microsoft_Xna_Framework_GraphicsDeviceManager_IsFullScreen.md) properties to **true**.
+9.  Replace the default [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) with the derived [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager).
+10.  To test the new component, set the **WideScreenOnly** and [IsFullScreen](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.IsFullScreen) properties to **true**.
     
     ```
             public Game1()

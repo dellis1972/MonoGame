@@ -8,7 +8,7 @@ Describes how to load custom game data at game runtime through the Content Pipel
 
 This example concludes the procedure begun in the tutorial [Adding an XML Content File to a Visual Studio Project](CP_XML_HowTo_Add.md).
 
-Once custom game data is integrated as game content from an XML file through the Content Pipeline, it exists within your game runtime package in binary format. The data can be [loaded at runtime](AppModel_HowTo_LoadResources.md) through the [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
+Once custom game data is integrated as game content from an XML file through the Content Pipeline, it exists within your game runtime package in binary format. The data can be [loaded at runtime](AppModel_HowTo_LoadResources.md) through the [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager).
 
 ### To load the custom data in the game
 
@@ -30,7 +30,7 @@ Add the "MyDataTypes" library as a reference in the game project.
     PetData[] pets;
     ```
     
-5.  In the [LoadContent](M_MXF_Game_LoadContent.md) override function, load the custom content.
+5.  In the [LoadContent](xref:MXF.Game.LoadContent) override function, load the custom content.
     
     ```
     protected override void LoadContent()

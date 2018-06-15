@@ -2,7 +2,7 @@
 
 # Tinting a Sprite
 
-Demonstrates how to tint a sprite using a [Color](T_MXF_Color.md) value.
+Demonstrates how to tint a sprite using a [Color](xref:MXF.Color) value.
 
 # The Complete Sample
 
@@ -15,7 +15,7 @@ The code in this topic shows you the technique. You can download a complete code
 ### To draw a tinted sprite
 
 1.  Follow the procedures of [Drawing a Sprite](2DGraphicsHowTo_Draw_Sprite.md).
-2.  In the [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, determine how to tint the sprite.
+2.  In the [Update](xref:Microsoft.Xna.Framework.Game.Update) method, determine how to tint the sprite.
     
     In this example, the value of the game pad thumbsticks determine the Red, Green, Blue, and Alpha values to apply to the sprite.
     
@@ -34,7 +34,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-3.  In the [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, pass the color value created in [Update](M_Microsoft_Xna_Framework_Game_Update.md) to [SpriteBatch.Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md).
+3.  In the [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, pass the color value created in [Update](xref:Microsoft.Xna.Framework.Game.Update) to [SpriteBatch.Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw).
     
     ```
     protected override void Draw(GameTime gameTime)
@@ -49,7 +49,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-4.  When all of the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) on your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
+4.  When all of the sprites have been drawn, call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End) on your [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object.
     
 
 # See Also
@@ -64,10 +64,10 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
-[Color](T_MXF_Color.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
+[Color](xref:MXF.Color)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

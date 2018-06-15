@@ -22,7 +22,7 @@ Demonstrates how to play a song from a user's media library.
 
 [Playing a Song from a URI](Media_HowTo_PlaySongfromURI.md)
 
-Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song from a Uniform Resource Identifier (URI).
+Demonstrates how to use the [MediaPlayer](xref:MXFM.MediaPlayer) to play a song from a Uniform Resource Identifier (URI).
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

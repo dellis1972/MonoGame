@@ -2,11 +2,11 @@
 
 # Creating a Basic Effect
 
-Demonstrates how to create and initialize an instance of the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class and use it to draw simple geometry.
+Demonstrates how to create and initialize an instance of the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class and use it to draw simple geometry.
 
 ![](note.gif)Note
 
-The steps described here apply to effects created with the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class. Use the [Effect](T_Microsoft_Xna_Framework_Graphics_Effect.md) class to write a custom effect. The example draws aliased geometry. To see an example that draws smoother edges because it also applies antialiasing, see [Enabling Antialiasing (Multisampling)](Enable_Anti_Aliasing.md).
+The steps described here apply to effects created with the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class. Use the [Effect](xref:Microsoft.Xna.Framework.Graphics.Effect) class to write a custom effect. The example draws aliased geometry. To see an example that draws smoother edges because it also applies antialiasing, see [Enabling Antialiasing (Multisampling)](Enable_Anti_Aliasing.md).
 
 ![](graphics_use_basic_effect.jpg)
 
@@ -20,7 +20,7 @@ You can download a complete code sample for this topic, including full source co
 
 ### To use BasicEffect
 
-Using the basic effect class requires a set of world, view, and projection matrices, a vertex buffer, a vertex declaration, and an instance of the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class.
+Using the basic effect class requires a set of world, view, and projection matrices, a vertex buffer, a vertex declaration, and an instance of the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class.
 
 1.  Declare these objects at the beginning of the game.
     
@@ -51,7 +51,7 @@ Using the basic effect class requires a set of world, view, and projection matri
         1.0f, 100.0f);
     ```
     
-3.  Initialize [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) with transformation and light values.
+3.  Initialize [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) with transformation and light values.
     
     ```
     basicEffect = new BasicEffect(graphics.GraphicsDevice);
@@ -100,7 +100,7 @@ Using the basic effect class requires a set of world, view, and projection matri
     }
     ```
     
-4.  Create a vertex declaration for the type [VertexPositionNormalTexture](T_Microsoft_Xna_Framework_Graphics_VertexPositionNormalTexture.md).
+4.  Create a vertex declaration for the type [VertexPositionNormalTexture](xref:Microsoft.Xna.Framework.Graphics.VertexPositionNormalTexture).
     
     *   If lighting is enabled, the vertex must have a normal type.
         
@@ -164,13 +164,13 @@ Using the basic effect class requires a set of world, view, and projection matri
         topRightFront, frontNormal, textureTopRight);
     ```
     
-6.  Call [GraphicsDevice.Clear](O_M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_Clear.md) to clear the render target.
+6.  Call [GraphicsDevice.Clear](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.Clear) to clear the render target.
     
-7.  Set the rasterizer state to turn off culling using the [RasterizerState](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_RasterizerState.md) property.
+7.  Set the rasterizer state to turn off culling using the [RasterizerState](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.RasterizerState) property.
     
-8.  Call [EffectPass.Apply](M_Microsoft_Xna_Framework_Graphics_EffectPass_Apply.md) to set the effect state in preparation for rendering.
+8.  Call [EffectPass.Apply](xref:Microsoft.Xna.Framework.Graphics.EffectPass.Apply) to set the effect state in preparation for rendering.
     
-9.  Draw the geometry by calling [GraphicsDevice.DrawPrimitives](M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawPrimitives.md).
+9.  Draw the geometry by calling [GraphicsDevice.DrawPrimitives](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawPrimitives).
     
     ```
     graphics.GraphicsDevice.Clear(Color.SteelBlue);

@@ -4,7 +4,7 @@
 
 The code in this topic describes how to detect a key press or release on the keyboard.
 
-By using [GetState](O_M_MXFI_Keyboard_GetState.md) a game can determine which keys are being held down. A game often needs to detect when a user has pressed or released a key. For example, there is the case of an action title that requires users to press and release keys in rapid succession. The example uses a cached [KeyboardState](T_Microsoft_Xna_Framework_Input_KeyboardState.md) object to determine if keys were pressed or released in a given frame.
+By using [GetState](xref:MXFI.Keyboard.GetState) a game can determine which keys are being held down. A game often needs to detect when a user has pressed or released a key. For example, there is the case of an action title that requires users to press and release keys in rapid succession. The example uses a cached [KeyboardState](xref:Microsoft.Xna.Framework.Input.KeyboardState) object to determine if keys were pressed or released in a given frame.
 
 On Windows Phone, there are a number of issues that must be considered when designing a game to take keyboard input. For example, many Windows Phone devices do not have a hardware keyboard. See [Working with Hardware Keyboards](Input_HWKeysOnWP.md) for more information.
 
@@ -14,11 +14,11 @@ Depending on game design, there may be times when checking for a key press needs
 
 ### To detect if a key is pressed or released
 
-1.  Declare a [KeyboardState](T_Microsoft_Xna_Framework_Input_KeyboardState.md) object to hold the last known keyboard state (in this example, the **oldState** object).
+1.  Declare a [KeyboardState](xref:Microsoft.Xna.Framework.Input.KeyboardState) object to hold the last known keyboard state (in this example, the **oldState** object).
     
 2.  Assign this object a value in your constructor.
     
-3.  Call [GetState](O_M_MXFI_Keyboard_GetState.md) to retrieve the current keyboard state (in this example, the **newState** object).
+3.  Call [GetState](xref:MXFI.Keyboard.GetState) to retrieve the current keyboard state (in this example, the **newState** object).
     
 4.  Compare the values in your **newState** object to the values in the **oldState** object.
     

@@ -12,7 +12,7 @@ The 3D graphics pipeline uses a graphics device to load resources and render a 3
 
 [Creating a Basic Effect](Use_BasicEffect.md)
 
-Demonstrates how to create and initialize an instance of the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class and use it to draw simple geometry.
+Demonstrates how to create and initialize an instance of the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class and use it to draw simple geometry.
 
 [Using a Basic Effect with Texturing](Draw_Textured_Quad.md)
 
@@ -32,11 +32,11 @@ Demonstrates how to enable antialiasing for your game.
 
 [Creating a Render Target](RenderTarget1.md)
 
-Demonstrates how to create a render target using the [RenderTarget2D](T_Microsoft_Xna_Framework_Graphics_RenderTarget2D.md) class.
+Demonstrates how to create a render target using the [RenderTarget2D](xref:Microsoft.Xna.Framework.Graphics.RenderTarget2D) class.
 
 [Creating a State Object](StateObject1.md)
 
-Demonstrates how to create a state object using any of the state object classes: [BlendState](T_Microsoft_Xna_Framework_Graphics_BlendState.md), [DepthStencilState](T_Microsoft_Xna_Framework_Graphics_DepthStencilState.md), [RasterizerState](T_Microsoft_Xna_Framework_Graphics_RasterizerState.md), or [SamplerState](T_Microsoft_Xna_Framework_Graphics_SamplerState.md).
+Demonstrates how to create a state object using any of the state object classes: [BlendState](xref:Microsoft.Xna.Framework.Graphics.BlendState), [DepthStencilState](xref:Microsoft.Xna.Framework.Graphics.DepthStencilState), [RasterizerState](xref:Microsoft.Xna.Framework.Graphics.RasterizerState), or [SamplerState](xref:Microsoft.Xna.Framework.Graphics.SamplerState).
 
 [Creating a Custom Vertex Declaration](Using_A_Custom_Vertex.md)
 

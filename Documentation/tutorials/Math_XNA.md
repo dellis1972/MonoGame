@@ -2,7 +2,7 @@
 
 # What are Vectors, Matrices, and Quaternions?
 
-The XNA Framework Math Libraries are in the [Microsoft.Xna.Framework](N_Microsoft_Xna_Framework.md) namespace alongside a number of additional types that deal with the XNA Framework Application model.
+The XNA Framework Math Libraries are in the [Microsoft.Xna.Framework](xref:Microsoft.Xna.Framework) namespace alongside a number of additional types that deal with the XNA Framework Application model.
 
 *   [Coordinate system](#ID4EZB)
 *   [Mathematical Constants and Scalar Manipulation](#ID4EAC)
@@ -15,7 +15,7 @@ The XNA Framework uses a right-handed coordinate system, with the positive z-axi
 
 # Mathematical Constants and Scalar Manipulation
 
-The XNA Framework provides the [MathHelper Members](T_Microsoft_Xna_Framework_MathHelper.md) class for [manipulating scalar values](Methods_T_Microsoft_Xna_Framework_MathHelper.md) and retrieving some [common mathematical constants](Fields_T_Microsoft_Xna_Framework_MathHelper.md). This includes methods such as the [ToDegrees](M_Microsoft_Xna_Framework_MathHelper_ToDegrees.md) and [ToRadians](M_Microsoft_Xna_Framework_MathHelper_ToRadians.md) utility methods for converting between degrees and radians.
+The XNA Framework provides the [MathHelper Members](xref:Microsoft.Xna.Framework.MathHelper) class for [manipulating scalar values](Methods_T_Microsoft_Xna_Framework_MathHelper.md) and retrieving some [common mathematical constants](Fields_T_Microsoft_Xna_Framework_MathHelper.md). This includes methods such as the [ToDegrees](xref:Microsoft.Xna.Framework.MathHelper.ToDegrees) and [ToRadians](xref:Microsoft.Xna.Framework.MathHelper.ToRadians) utility methods for converting between degrees and radians.
 
 # Basic Geometric Types
 
@@ -23,31 +23,31 @@ The XNA Framework Math library has multiple basic geometric types for manipulati
 
 ## Vectors
 
-The XNA Framework provides the [Vector2](T_Microsoft_Xna_Framework_Vector2.md), [Vector3](T_Microsoft_Xna_Framework_Vector3.md), and [Vector4](T_Microsoft_Xna_Framework_Vector4.md) classes for representing and manipulating vectors. A vector typically is used to represent a direction and magnitude. In the XNA Framework, however, it also could be used to store a coordinate or other data type with the same storage requirements.
+The XNA Framework provides the [Vector2](xref:Microsoft.Xna.Framework.Vector2), [Vector3](xref:Microsoft.Xna.Framework.Vector3), and [Vector4](xref:Microsoft.Xna.Framework.Vector4) classes for representing and manipulating vectors. A vector typically is used to represent a direction and magnitude. In the XNA Framework, however, it also could be used to store a coordinate or other data type with the same storage requirements.
 
 Each vector class has methods for performing standard vector operations such as:
 
-*   [Dot product](O_M_Microsoft_Xna_Framework_Vector3_Dot.md)
-*   [Cross product](O_M_Microsoft_Xna_Framework_Vector3_Cross.md)
-*   [Normalization](O_M_Microsoft_Xna_Framework_Vector3_Normalize.md)
-*   [Transformation](O_M_Microsoft_Xna_Framework_Vector3_Transform.md)
-*   [Linear](O_M_Microsoft_Xna_Framework_Vector3_Lerp.md), [Cubic](O_M_Microsoft_Xna_Framework_Vector3_SmoothStep.md), [Catmull-Rom](O_M_Microsoft_Xna_Framework_Vector3_CatmullRom.md), or [Hermite spline](O_M_Microsoft_Xna_Framework_Vector3_Hermite.md) interpolation.
+*   [Dot product](xref:Microsoft.Xna.Framework.Vector3.Dot)
+*   [Cross product](xref:Microsoft.Xna.Framework.Vector3.Cross)
+*   [Normalization](xref:Microsoft.Xna.Framework.Vector3.Normalize)
+*   [Transformation](xref:Microsoft.Xna.Framework.Vector3.Transform)
+*   [Linear](xref:Microsoft.Xna.Framework.Vector3.Lerp), [Cubic](xref:Microsoft.Xna.Framework.Vector3.SmoothStep), [Catmull-Rom](xref:Microsoft.Xna.Framework.Vector3.CatmullRom), or [Hermite spline](xref:Microsoft.Xna.Framework.Vector3.Hermite) interpolation.
 
 ## Matrices
 
-The XNA Framework provides the [Matrix](T_Microsoft_Xna_Framework_Matrix.md) class for transformation of geometry. The [Matrix](T_Microsoft_Xna_Framework_Matrix.md) class uses row major order to address matrices, which means that the row is specified before the column when describing an element of a two-dimensional matrix. The [Matrix](T_Microsoft_Xna_Framework_Matrix.md) class provides methods for performing standard matrix operations such as calculating the [determinate](M_Microsoft_Xna_Framework_Matrix_Determinant.md) or [inverse](O_M_Microsoft_Xna_Framework_Matrix_Invert.md) of a matrix. There also are helper methods for creating scale, rotation, and translation matrices.
+The XNA Framework provides the [Matrix](xref:Microsoft.Xna.Framework.Matrix) class for transformation of geometry. The [Matrix](xref:Microsoft.Xna.Framework.Matrix) class uses row major order to address matrices, which means that the row is specified before the column when describing an element of a two-dimensional matrix. The [Matrix](xref:Microsoft.Xna.Framework.Matrix) class provides methods for performing standard matrix operations such as calculating the [determinate](xref:Microsoft.Xna.Framework.Matrix.Determinant) or [inverse](xref:Microsoft.Xna.Framework.Matrix.Invert) of a matrix. There also are helper methods for creating scale, rotation, and translation matrices.
 
 ## Quaternions
 
-The XNA Framework provides the [Quaternion](T_Microsoft_Xna_Framework_Quaternion.md) structure to calculate the efficient rotation of a vector by a specified angle.
+The XNA Framework provides the [Quaternion](xref:Microsoft.Xna.Framework.Quaternion) structure to calculate the efficient rotation of a vector by a specified angle.
 
 ## Curves
 
-The [Curve](T_Microsoft_Xna_Framework_Curve.md) class represents a hermite curve for interpolating varying positions at different times without having to explicitly define each position. The curve is defined by a collection of [CurveKey](T_Microsoft_Xna_Framework_CurveKey.md) points representing each varying position at different times. This class can be used not only for spatial motion, but also to represent any response that changes over time.
+The [Curve](xref:Microsoft.Xna.Framework.Curve) class represents a hermite curve for interpolating varying positions at different times without having to explicitly define each position. The curve is defined by a collection of [CurveKey](xref:Microsoft.Xna.Framework.CurveKey) points representing each varying position at different times. This class can be used not only for spatial motion, but also to represent any response that changes over time.
 
 ## Bounding Volumes
 
-The XNA Framework provides the [BoundingBox](T_Microsoft_Xna_Framework_BoundingBox.md), [BoundingFrustum](T_Microsoft_Xna_Framework_BoundingFrustum.md), [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md), [Plane](T_Microsoft_Xna_Framework_Plane.md), and [Ray](T_Microsoft_Xna_Framework_Ray.md) classes for representing simplified versions of geometry for the purpose of efficient collision and hit testing. These classes have methods for checking for intersection and containment with each other.
+The XNA Framework provides the [BoundingBox](xref:Microsoft.Xna.Framework.BoundingBox), [BoundingFrustum](xref:Microsoft.Xna.Framework.BoundingFrustum), [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere), [Plane](xref:Microsoft.Xna.Framework.Plane), and [Ray](xref:Microsoft.Xna.Framework.Ray) classes for representing simplified versions of geometry for the purpose of efficient collision and hit testing. These classes have methods for checking for intersection and containment with each other.
 
 # Precision and Performance
 

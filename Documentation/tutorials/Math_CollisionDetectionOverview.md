@@ -17,12 +17,12 @@ The XNA Framework has three classes that represent three-dimensional volumes. Us
 
 ## Bounding Sphere
 
-The [BoundingSphere Structure](T_Microsoft_Xna_Framework_BoundingSphere.md) represents the space occupied by a sphere.
+The [BoundingSphere Structure](xref:Microsoft.Xna.Framework.BoundingSphere) represents the space occupied by a sphere.
 
 There are several benefits of using a bounding sphere for collision detection.
 
 *   Sphere to sphere checks are very fast. To check for collision between two spheres, the distance between the centers of the spheres is compared to the sum of the radii of both spheres. If the distance is less than the combined radii of both spheres, the spheres intersect.
-*   The [BoundingSphere Structure](T_Microsoft_Xna_Framework_BoundingSphere.md) class is compact. It stores only a vector representing its center and its radius.
+*   The [BoundingSphere Structure](xref:Microsoft.Xna.Framework.BoundingSphere) class is compact. It stores only a vector representing its center and its radius.
 *   Unlike a bounding box, a bounding sphere doesn’t need to be recreated if the model rotates. If the model being bounded rotates, the bounding sphere will still be large enough to contain it.
 *   Moving a bounding sphere is inexpensive. Just add a value to the center.
 
@@ -32,7 +32,7 @@ There is one major drawback to using the bounding sphere class for collision det
 
 ## Bounding Box
 
-The [BoundingBox Structure](T_Microsoft_Xna_Framework_BoundingBox.md) represents the space occupied by a box. The bounding box class is axis aligned. Each face of the bounding box is perpendicular to the x-axis, the y-axis, or the z-axis.
+The [BoundingBox Structure](xref:Microsoft.Xna.Framework.BoundingBox) represents the space occupied by a box. The bounding box class is axis aligned. Each face of the bounding box is perpendicular to the x-axis, the y-axis, or the z-axis.
 
 There are several benefits of using the bounding box for collision detection.
 
@@ -47,21 +47,21 @@ There are a few drawbacks of using the bounding box for collision detection.
 
 ## Bounding Frustum
 
-Use a [BoundingFrustum Class](T_Microsoft_Xna_Framework_BoundingFrustum.md) to create a bounding volume that corresponds to the space visible to the camera. You create a bounding frustum from the combined view and projection matrix that the camera is using currently. If the camera moves or rotates, you need to recreate the bounding frustum. The bounding frustum isn’t used to determine when two objects collide, but rather when an object intersects with the volume of space viewable by the camera. Objects that do not intersect and are not contained by the bounding frustum are not visible to the camera and don’t need to be drawn. For complex models, this can reduce the number of pixels that need to be rendered.
+Use a [BoundingFrustum Class](xref:Microsoft.Xna.Framework.BoundingFrustum) to create a bounding volume that corresponds to the space visible to the camera. You create a bounding frustum from the combined view and projection matrix that the camera is using currently. If the camera moves or rotates, you need to recreate the bounding frustum. The bounding frustum isn’t used to determine when two objects collide, but rather when an object intersects with the volume of space viewable by the camera. Objects that do not intersect and are not contained by the bounding frustum are not visible to the camera and don’t need to be drawn. For complex models, this can reduce the number of pixels that need to be rendered.
 
 # Non-Bounding Volume Classes
 
 ## Plane
 
-The [Plane Structure](T_Microsoft_Xna_Framework_Plane.md) describes a 2D plane. The plane is defined by a normal vector (perpendicular to the plane) and a point on the plane. The plane class supports intersection tests with the bounding volume classes. The plane class’s intersection test returns the tested object's position relative to the plane. The return value indicates whether the object intersects the plane. If the object does not intersect the plane, the return value indicates whether the object is on the plane’s front side or back side.
+The [Plane Structure](xref:Microsoft.Xna.Framework.Plane) describes a 2D plane. The plane is defined by a normal vector (perpendicular to the plane) and a point on the plane. The plane class supports intersection tests with the bounding volume classes. The plane class’s intersection test returns the tested object's position relative to the plane. The return value indicates whether the object intersects the plane. If the object does not intersect the plane, the return value indicates whether the object is on the plane’s front side or back side.
 
 ## Ray
 
-The [Ray Structure](T_Microsoft_Xna_Framework_Ray.md) describes a ray starting at a point in space. The ray structure supports intersection tests with the bounding volume classes. The return value of the ray intersection tests is the distance the intersection occurred at, or null if no intersection occurred.
+The [Ray Structure](xref:Microsoft.Xna.Framework.Ray) describes a ray starting at a point in space. The ray structure supports intersection tests with the bounding volume classes. The return value of the ray intersection tests is the distance the intersection occurred at, or null if no intersection occurred.
 
 ## Model
 
-In addition to the information needed to draw a model, the [Model Class](T_Microsoft_Xna_Framework_Graphics_Model.md) contains bounding volumes for its parts. When a model is imported, the content pipeline calculates the bounding sphere for each of the model's parts. To check for collision between two models, you can compare the bounding spheres for one model to all of the bounding spheres of the other model.
+In addition to the information needed to draw a model, the [Model Class](xref:Microsoft.Xna.Framework.Graphics.Model) contains bounding volumes for its parts. When a model is imported, the content pipeline calculates the bounding sphere for each of the model's parts. To check for collision between two models, you can compare the bounding spheres for one model to all of the bounding spheres of the other model.
 
 # Contains and Intersects Methods
 

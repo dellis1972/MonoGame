@@ -2,7 +2,7 @@
 
 # Loading Content Within a Game Library
 
-It may be desirable in some designs to load and draw content within the methods of a Game Library. For example, you may wish to distribute code that displays textures, models, or fonts (such as a [DrawableGameComponent](T_Microsoft_Xna_Framework_DrawableGameComponent.md)) in a .DLL.
+It may be desirable in some designs to load and draw content within the methods of a Game Library. For example, you may wish to distribute code that displays textures, models, or fonts (such as a [DrawableGameComponent](xref:Microsoft.Xna.Framework.DrawableGameComponent)) in a .DLL.
 
 There are two techniques that accomodate this, one in which the binary content is separate from the .DLL, and one in which the content is embedded within the .DLL.
 
@@ -26,8 +26,8 @@ When the solution is built, the resources in the content project will be compile
 
 ### To load compiled content within the Game Library
 
-1.  Create a new class that is the child of [DrawableGameComponent](T_Microsoft_Xna_Framework_DrawableGameComponent.md).
-2.  Define a new [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md) and, within the constructor of the new class, set its **RootDirectory** to the path where the compiled content is to be stored.
+1.  Create a new class that is the child of [DrawableGameComponent](xref:Microsoft.Xna.Framework.DrawableGameComponent).
+2.  Define a new [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager) and, within the constructor of the new class, set its **RootDirectory** to the path where the compiled content is to be stored.
     
     For flexibility, the path string may be a parameter passed to the constructor by the game client.
     
@@ -42,7 +42,7 @@ When the solution is built, the resources in the content project will be compile
     ```
                         
     
-3.  In the [LoadContent](M_MXF_Game_LoadContent.md) method, load your content normally using your [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
+3.  In the [LoadContent](xref:MXF.Game.LoadContent) method, load your content normally using your [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager).
     
     ```
     SpriteBatch spriteBatch;
@@ -58,7 +58,7 @@ When the solution is built, the resources in the content project will be compile
 
 # Embedding Content in a Game Library
 
-You may also embed binary content resources directly in the Game Library and load them from within. This technique requires the declaration of those resources in a reference file. It allows you to distribute code that displays textures, models, or fonts (such as a [DrawableGameComponent](T_Microsoft_Xna_Framework_DrawableGameComponent.md)) in a .DLL without distributing the .xnb files separately.
+You may also embed binary content resources directly in the Game Library and load them from within. This technique requires the declaration of those resources in a reference file. It allows you to distribute code that displays textures, models, or fonts (such as a [DrawableGameComponent](xref:Microsoft.Xna.Framework.DrawableGameComponent)) in a .DLL without distributing the .xnb files separately.
 
 ![](note.gif)Important
 
@@ -79,15 +79,15 @@ Be aware that all embedded resources are loaded into memory with the .DLL, and c
     Ensure the dialog box is displaying "All Files".
     
 
-Once content has been added to the **Resource Designer**, any code running from within the Library can load the content with a special [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
+Once content has been added to the **Resource Designer**, any code running from within the Library can load the content with a special [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager).
 
 ### To load embedded content within a Game Library
 
-1.  Create a new class that is the child of [DrawableGameComponent](T_Microsoft_Xna_Framework_DrawableGameComponent.md).
-2.  Define a new [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
-3.  Within the constructor of the new class, create a new instance of the [ResourceContentManager](T_Microsoft_Xna_Framework_Content_ResourceContentManager.md) class and assign it to your [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
+1.  Create a new class that is the child of [DrawableGameComponent](xref:Microsoft.Xna.Framework.DrawableGameComponent).
+2.  Define a new [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager).
+3.  Within the constructor of the new class, create a new instance of the [ResourceContentManager](xref:Microsoft.Xna.Framework.Content.ResourceContentManager) class and assign it to your [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager).
     
-    The second parameter to the [ResourceContentManager](T_Microsoft_Xna_Framework_Content_ResourceContentManager.md) constructor identifies the resource project that contains your embedded resources.
+    The second parameter to the [ResourceContentManager](xref:Microsoft.Xna.Framework.Content.ResourceContentManager) constructor identifies the resource project that contains your embedded resources.
     
     ```
     public static ContentManager LibContent;
@@ -102,7 +102,7 @@ Once content has been added to the **Resource Designer**, any code running from 
     ```
                         
     
-4.  In the [LoadContent](M_MXF_Game_LoadContent.md) method, load your content normally using your [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md).
+4.  In the [LoadContent](xref:MXF.Game.LoadContent) method, load your content normally using your [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager).
     
     ```
     SpriteBatch spriteBatch;
@@ -120,11 +120,11 @@ Once content has been added to the **Resource Designer**, any code running from 
 
 #### Reference
 
-[Game Class](T_Microsoft_Xna_Framework_Game.md)  
-[LoadContent](M_MXF_Game_LoadContent.md)  
-[UnloadContent](M_MXF_Game_UnloadContent.md)  
-[Game Members](T_Microsoft_Xna_Framework_Game.md)  
-[Microsoft.Xna.Framework Namespace](N_Microsoft_Xna_Framework.md)  
+[Game Class](xref:Microsoft.Xna.Framework.Game)  
+[LoadContent](xref:MXF.Game.LoadContent)  
+[UnloadContent](xref:MXF.Game.UnloadContent)  
+[Game Members](xref:Microsoft.Xna.Framework.Game)  
+[Microsoft.Xna.Framework Namespace](xref:Microsoft.Xna.Framework)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

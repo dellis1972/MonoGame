@@ -56,7 +56,7 @@ The code in this topic shows you the animation technique. You can download a com
     }
     ```
     
-3.  In your game's [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, determine which animation frame to display.
+3.  In your game's [Update](xref:Microsoft.Xna.Framework.Game.Update) method, determine which animation frame to display.
     
     ```
     protected override void Update(GameTime gameTime)
@@ -89,7 +89,7 @@ The code in this topic shows you the animation technique. You can download a com
     }
     ```
     
-4.  In your game's [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, call [SpriteBatch.Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md) on the **AnimatedTexture** object.
+4.  In your game's [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, call [SpriteBatch.Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw) on the **AnimatedTexture** object.
     
     ```
     protected override void Draw(GameTime gameTime)
@@ -128,17 +128,17 @@ The code in this topic shows you the animation technique. You can download a com
 
 #### Tasks
 
-[Drawing a Sprite](2DGraphicsHowTo_Draw_Sprite.md)  
+[Drawing a Sprite](2DGraphicsHowTo_Draw_Sprite.md)
 
 #### Concepts
 
-[What Is a Sprite?](Sprite_Overview.md)  
+[What Is a Sprite?](Sprite_Overview.md)
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)
 
 © 2012 Microsoft Corporation. All rights reserved.
 

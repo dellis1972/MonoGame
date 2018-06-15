@@ -40,7 +40,7 @@ Describes how to develop with parameterized processors, both standard and custom
 
 [How to: Extend the Font Description Processor to Support Additional Characters](CP_HowTo_ExtendFontProcessor.md)
 
-Describes the process of developing a custom content processor needed to add additional characters to a [FontDescription](T_Microsoft_Xna_Framework_Content_Pipeline_Graphics_FontDescription.md) object based on the text that is required by the game.
+Describes the process of developing a custom content processor needed to add additional characters to a [FontDescription](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.FontDescription) object based on the text that is required by the game.
 
 # See Also
 

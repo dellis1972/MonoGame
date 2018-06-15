@@ -42,7 +42,7 @@ Provides detail about how to handle interruptions, such as incoming calls, on Wi
 
 [Enable XNA Framework Events in Windows Phone Applications](UsingXNAFrameworkInSilverlight.md)
 
-Describes the the process of manually initializing and updating a [FrameworkDispatcher](T_MXF_FrameworkDispatcher.md) to support XNA Framework functionality from other application models that use the Silverlight application model.
+Describes the the process of manually initializing and updating a [FrameworkDispatcher](xref:MXF.FrameworkDispatcher) to support XNA Framework functionality from other application models that use the Silverlight application model.
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

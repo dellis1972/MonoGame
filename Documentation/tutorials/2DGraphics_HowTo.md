@@ -16,7 +16,7 @@ Demonstrates how to animate a sprite from a texture using a custom class.
 
 [Drawing a Sprite](2DGraphicsHowTo_Draw_Sprite.md)
 
-Demonstrates how to draw a sprite by using the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) class.
+Demonstrates how to draw a sprite by using the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) class.
 
 [Rotating a Sprite](2DGraphicsHowTo_Rotate_Sprite.md)
 
@@ -36,23 +36,23 @@ Demonstrates how to scale sprites using a matrix that is created based on the vi
 
 [Tinting a Sprite](2DGraphicsHowTo_Tint_Sprite.md)
 
-Demonstrates how to tint a sprite using a [Color](T_MXF_Color.md) value.
+Demonstrates how to tint a sprite using a [Color](xref:MXF.Color) value.
 
 [Tiling a Sprite](2DGraphicsHowTo_Tile_Sprites.md)
 
-Demonstrates how to draw a sprite repeatedly in the x and y directions in one [Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md) call.
+Demonstrates how to draw a sprite repeatedly in the x and y directions in one [Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw) call.
 
 [Drawing a Masked Sprite over a Background](2DGraphicsHowTo_Draw_Sprite_Background.md)
 
-Demonstrates how to draw a foreground and background sprite using the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) class, where only part of the foreground sprite masks the background.
+Demonstrates how to draw a foreground and background sprite using the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) class, where only part of the foreground sprite masks the background.
 
 [Making a Scrolling Background](2DGraphicsHowTo_Make_Scrolling_Background.md)
 
-Demonstrates how to draw a scrolling background sprite using the [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) class.
+Demonstrates how to draw a scrolling background sprite using the [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) class.
 
 [Drawing Text with a Sprite](2DGraphicsHowTo_Draw_Text.md)
 
-Demonstrates how to import a [SpriteFont](T_Microsoft_Xna_Framework_Graphics_SpriteFont.md) into a project and to draw text using [DrawString](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_DrawString.md).
+Demonstrates how to import a [SpriteFont](xref:Microsoft.Xna.Framework.Graphics.SpriteFont) into a project and to draw text using [DrawString](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.DrawString).
 
 # Related Overview Topics
 

@@ -16,7 +16,7 @@ For this sample, the camera is a standard arc ball camera, implemented by camera
 
 ### To draw a sprite over a model
 
-1.  In your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, handle the input to move your camera, then call **UpdateFrame** on the **AnimatedTexture**.
+1.  In your [Update](xref:Microsoft.Xna.Framework.Game.Update) method, handle the input to move your camera, then call **UpdateFrame** on the **AnimatedTexture**.
     
      ```
      GamePadState PlayerOne = GamePad.GetState(PlayerIndex.One);
@@ -34,9 +34,9 @@ For this sample, the camera is a standard arc ball camera, implemented by camera
     explosion.UpdateFrame((float)gameTime.ElapsedGameTime.TotalSeconds);
     ```
     
-2.  Use [CreateMerged](O_M_Microsoft_Xna_Framework_BoundingSphere_CreateMerged.md) to create a [BoundingSphere](T_Microsoft_Xna_Framework_BoundingSphere.md) that contains all the **BoundingSphere** values for each [ModelMesh](T_Microsoft_Xna_Framework_Graphics_ModelMesh.md) in the [Model](T_Microsoft_Xna_Framework_Graphics_Model.md).
+2.  Use [CreateMerged](xref:Microsoft.Xna.Framework.BoundingSphere.CreateMerged) to create a [BoundingSphere](xref:Microsoft.Xna.Framework.BoundingSphere) that contains all the **BoundingSphere** values for each [ModelMesh](xref:Microsoft.Xna.Framework.Graphics.ModelMesh) in the [Model](xref:Microsoft.Xna.Framework.Graphics.Model).
     
-3.  Use [Viewport.Project](M_Microsoft_Xna_Framework_Graphics_Viewport_Project.md) to find the center point of that sphere, which is the center of the model in screen coordinates.
+3.  Use [Viewport.Project](xref:Microsoft.Xna.Framework.Graphics.Viewport.Project) to find the center point of that sphere, which is the center of the model in screen coordinates.
     
     ```
     // Create a total bounding sphere for the mesh
@@ -56,9 +56,9 @@ For this sample, the camera is a standard arc ball camera, implemented by camera
     ```
                         
     
-4.  Take the **BoundingSphere** for the model and use it to create a [BoundingBox](T_Microsoft_Xna_Framework_BoundingBox.md) with [CreateFromSphere](O_M_Microsoft_Xna_Framework_BoundingBox_CreateFromSphere.md).
+4.  Take the **BoundingSphere** for the model and use it to create a [BoundingBox](xref:Microsoft.Xna.Framework.BoundingBox) with [CreateFromSphere](xref:Microsoft.Xna.Framework.BoundingBox.CreateFromSphere).
     
-5.  Use [Project](M_Microsoft_Xna_Framework_Graphics_Viewport_Project.md) to find the corner of the box farthest from the center and use the return value to scale the sprite appropriately.
+5.  Use [Project](xref:Microsoft.Xna.Framework.Graphics.Viewport.Project) to find the corner of the box farthest from the center and use the return value to scale the sprite appropriately.
     
     ```
     // Create a bounding box from the bounding sphere, 
@@ -83,7 +83,7 @@ For this sample, the camera is a standard arc ball camera, implemented by camera
     ```
                         
     
-6.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, draw the [Model](T_Microsoft_Xna_Framework_Graphics_Model.md) normally, and then draw the animated sprite using the position calculated in [Update](M_Microsoft_Xna_Framework_Game_Update.md).
+6.  In your [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, draw the [Model](xref:Microsoft.Xna.Framework.Graphics.Model) normally, and then draw the animated sprite using the position calculated in [Update](xref:Microsoft.Xna.Framework.Game.Update).
     
     ```
     protected override void Draw(GameTime gameTime)

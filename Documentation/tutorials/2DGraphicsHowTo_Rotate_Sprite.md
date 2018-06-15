@@ -37,7 +37,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-3.  In your [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, determine the rotation angle to use for the sprite.
+3.  In your [Update](xref:Microsoft.Xna.Framework.Game.Update) method, determine the rotation angle to use for the sprite.
     
     The angle is specified in radians, and it can be greater than two times π, but does not need to be.
     
@@ -64,7 +64,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-4.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, call [SpriteBatch.Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md) with the texture, angle, screen position, and origin of the texture.
+4.  In your [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, call [SpriteBatch.Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw) with the texture, angle, screen position, and origin of the texture.
     
     ```
     protected override void Draw(GameTime gameTime)
@@ -81,7 +81,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-5.  When all the sprites have been drawn, call [End](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_End.md) on your [SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md) object.
+5.  When all the sprites have been drawn, call [End](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.End) on your [SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch) object.
     
 
 # See Also
@@ -96,9 +96,9 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[SpriteBatch](T_Microsoft_Xna_Framework_Graphics_SpriteBatch.md)  
-[Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md)  
-[Texture2D](T_Microsoft_Xna_Framework_Graphics_Texture2D.md)  
+[SpriteBatch](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch)  
+[Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw)  
+[Texture2D](xref:Microsoft.Xna.Framework.Graphics.Texture2D)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

@@ -6,7 +6,7 @@ Follow these steps to create a simple sprite-based game for Windows Phone using 
 
 ![](note.gif)Note
 
-A sprite is a simple 2D graphic (such as a bitmap) that is displayed on the screen using a call to [SpriteBatch.Draw](O_M_Microsoft_Xna_Framework_Graphics_SpriteBatch_Draw.md).
+A sprite is a simple 2D graphic (such as a bitmap) that is displayed on the screen using a call to [SpriteBatch.Draw](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.Draw).
 
 *   [Step 1: Install Your Software](#ID4EVC)
 *   [Step 2: Create a New Project](#ID4EUD)
@@ -46,15 +46,15 @@ Before you begin, make sure that you have installed the Microsoft Windows Phone 
 
 # Step 3: View the Code
 
-Some of the hard work has already been done for you. If you build and run your game now, the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) will set up your screen size and render a blank screen. Your game will run and update all by itself. It's up to you to insert your own code to make the game more interesting.
+Some of the hard work has already been done for you. If you build and run your game now, the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) will set up your screen size and render a blank screen. Your game will run and update all by itself. It's up to you to insert your own code to make the game more interesting.
 
 Much of the code to start and run your game has already been written for you. You can insert your own code now.
 
-*   The [Initialize](M_Microsoft_Xna_Framework_Game_Initialize.md) method is where you can initialize any assets that do not require a [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md) to be initialized.
-*   The [LoadContent](M_MXF_Game_LoadContent.md) method is where you load any necessary game assets such as models and textures.
-*   The [UnloadContent](M_MXF_Game_UnloadContent.md) method is where any game assets can be released. Generally, no extra code is required here, as assets will be released automatically when they are no longer needed.
-*   The overridden [Update](M_Microsoft_Xna_Framework_Game_Update.md) method is the best place to update your game logic: move objects around, take player input, decide the outcome of collisions between objects, and so on.
-*   The overridden [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method is the best place to render all of your objects and backgrounds on the screen.
+*   The [Initialize](xref:Microsoft.Xna.Framework.Game.Initialize) method is where you can initialize any assets that do not require a [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice) to be initialized.
+*   The [LoadContent](xref:MXF.Game.LoadContent) method is where you load any necessary game assets such as models and textures.
+*   The [UnloadContent](xref:MXF.Game.UnloadContent) method is where any game assets can be released. Generally, no extra code is required here, as assets will be released automatically when they are no longer needed.
+*   The overridden [Update](xref:Microsoft.Xna.Framework.Game.Update) method is the best place to update your game logic: move objects around, take player input, decide the outcome of collisions between objects, and so on.
+*   The overridden [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method is the best place to render all of your objects and backgrounds on the screen.
 
 # Step 4: Add a Sprite
 
@@ -84,7 +84,7 @@ Once you have a graphic picked out on your computer, follow these steps.
     
     Now, you must write code that loads and displays the sprite on the screen.
     
-6.  Back in the code view of your game, find the [LoadContent](M_MXF_Game_LoadContent.md) method, and add the following lines in and above the method so it looks similar to this:
+6.  Back in the code view of your game, find the [LoadContent](xref:MXF.Game.LoadContent) method, and add the following lines in and above the method so it looks similar to this:
     
                       `// This is a texture we can render.
     Texture2D myTexture;
@@ -103,11 +103,11 @@ Once you have a graphic picked out on your computer, follow these steps.
     }`
                     
     
-    The [Content](P_MXF_Game_Content.md) property of the parent [Game](T_Microsoft_Xna_Framework_Game.md) class offers the [ContentManager](T_Microsoft_Xna_Framework_Content_ContentManager.md) class through which your game assets can be loaded.
+    The [Content](xref:MXF.Game.Content) property of the parent [Game](xref:Microsoft.Xna.Framework.Game) class offers the [ContentManager](xref:Microsoft.Xna.Framework.Content.ContentManager) class through which your game assets can be loaded.
     
-    Make sure the call to [Content.Load](M_Microsoft_Xna_Framework_Content_ContentManager_Load``1.md) is using the "Asset Name" you saw in the Properties window in the previous step. This code will load and prepare your graphic to be drawn, and will reload your graphic if the graphics device is reset (such as in the case of the game window being reoriented).
+    Make sure the call to [Content.Load](xref:Microsoft.Xna.Framework.Content.ContentManager.Load``1) is using the "Asset Name" you saw in the Properties window in the previous step. This code will load and prepare your graphic to be drawn, and will reload your graphic if the graphics device is reset (such as in the case of the game window being reoriented).
     
-7.  Now, add code to the [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method so it looks like this:
+7.  Now, add code to the [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method so it looks like this:
     
                       `protected override void Draw(GameTime gameTime)
     {
@@ -124,7 +124,7 @@ Once you have a graphic picked out on your computer, follow these steps.
     
     This code draws the sprite on the screen each frame.
     
-    Notice the parameter passed by the [Begin](M_Microsoft_Xna_Framework_Graphics_SpriteBatch_1850401A_Begin.md) method, [BlendState.AlphaBlend](T_Microsoft_Xna_Framework_Graphics_BlendState.md). This parameter tells the [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method to use the alpha channel of the source color to create a transparency effect so that the destination color appears through the source color.
+    Notice the parameter passed by the [Begin](xref:Microsoft.Xna.Framework.Graphics.SpriteBatch.1850401A.Begin) method, [BlendState.AlphaBlend](xref:Microsoft.Xna.Framework.Graphics.BlendState). This parameter tells the [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method to use the alpha channel of the source color to create a transparency effect so that the destination color appears through the source color.
     
 8.  Build and run your game.
     
@@ -135,7 +135,7 @@ Now, it's time to give it some motion.
 
 # Step 5: Make the Sprite Move and Bounce
 
-*   Change the lines of code in the [Update](M_Microsoft_Xna_Framework_Game_Update.md) method, and add the entirely new method `UpdateSprite`, to the following (the conditional compilation directives for WINDOWS, and the enclosed code, is not required). This code provides logic that will move the sprite around each frame and cause the sprite to change direction if it hits the edges of the game window.
+*   Change the lines of code in the [Update](xref:Microsoft.Xna.Framework.Game.Update) method, and add the entirely new method `UpdateSprite`, to the following (the conditional compilation directives for WINDOWS, and the enclosed code, is not required). This code provides logic that will move the sprite around each frame and cause the sprite to change direction if it hits the edges of the game window.
     
                       `        protected override void Update(GameTime gameTime)
             {
@@ -205,11 +205,11 @@ From here, you can do just about anything.
 
 Here are some more ideas to extend this sample:
 
-*   Add a second sprite, and use [BoundingBox](T_Microsoft_Xna_Framework_BoundingBox.md) objects to detect collisions.
+*   Add a second sprite, and use [BoundingBox](xref:Microsoft.Xna.Framework.BoundingBox) objects to detect collisions.
 *   Use one or more of the following classes to make the sprite respond to movements of an input device:
     
-    *   [TouchPanel](T_MXFIT_TouchPanel.md) (Windows Phone)
-    *   [Keyboard](T_Microsoft_Xna_Framework_Input_Keyboard.md) (Windows, Xbox 360, Windows Phone)
+    *   [TouchPanel](xref:MXFIxref:TouchPanel) (Windows Phone)
+    *   [Keyboard](xref:Microsoft.Xna.Framework.Input.Keyboard) (Windows, Xbox 360, Windows Phone)
     
     For more information, see [Overview of User Input and Input Devices](Input_XNA.md).
     

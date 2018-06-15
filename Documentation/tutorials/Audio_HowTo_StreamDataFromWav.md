@@ -2,7 +2,7 @@
 
 # Streaming Data from a WAV File
 
-This topic describes how to stream an audio file using [DynamicSoundEffectInstance](T_MXFA_DynamicSoundEffectInstance.md).
+This topic describes how to stream an audio file using [DynamicSoundEffectInstance](xref:MXFA.DynamicSoundEffectInstance).
 
 # Complete Sample
 
@@ -14,7 +14,7 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To open a wave file for streaming
 
-1.  Create global variables to hold the [DynamicSoundEffectInstance](T_MXFA_DynamicSoundEffectInstance.md), position, count, and data.
+1.  Create global variables to hold the [DynamicSoundEffectInstance](xref:MXFA.DynamicSoundEffectInstance), position, count, and data.
     
     ```
     DynamicSoundEffectInstance dynamicSound;
@@ -24,7 +24,7 @@ The code in this topic shows you the technique. You can download a complete code
     ```
                         
     
-2.  In the [Game.LoadContent](M_MXF_Game_LoadContent.md) method of your game, open the audio data using [TitleContainer.OpenStream](M_MXF_TitleContainer_OpenStream.md).
+2.  In the [Game.LoadContent](xref:MXF.Game.LoadContent) method of your game, open the audio data using [TitleContainer.OpenStream](xref:MXF.TitleContainer.OpenStream).
     
     ```
     System.IO.Stream waveFileStream = TitleContainer.OpenStream(@"Content\48K16BSLoop.wav");
@@ -139,11 +139,11 @@ The code in this topic shows you the technique. You can download a complete code
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
 
-Demonstrates how to play a simple sound by using [SoundEffect](T_MXFA_SoundEffect.md).
+Demonstrates how to play a simple sound by using [SoundEffect](xref:MXFA.SoundEffect).
 
 # Reference
 
-[DynamicSoundEffectInstance](T_MXFA_DynamicSoundEffectInstance.md)
+[DynamicSoundEffectInstance](xref:MXFA.DynamicSoundEffectInstance)
 
 Provides properties, methods, and events for play back of the audio buffer.
 
@@ -151,7 +151,7 @@ Provides properties, methods, and events for play back of the audio buffer.
 
 Event that occurs when the number of audio capture buffers awaiting playback is less than or equal to two.
 
-[OpenStream](M_MXF_TitleContainer_OpenStream.md)
+[OpenStream](xref:MXF.TitleContainer.OpenStream)
 
 Returns a stream to an existing file in the default title storage location.
 

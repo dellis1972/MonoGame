@@ -6,7 +6,7 @@ This topic provides developers with information about the audio buffer format us
 
 # Audio Buffer Format
 
-The byte\[\] buffer format used as a parameter for the [SoundEffect](O_M_Microsoft_Xna_Framework_Audio_SoundEffect_ctor.md) constructor, [Microphone.GetData](O_M_MXFA_Microphone_GetData.md) method, and [DynamicSoundEffectInstance.SubmitBuffer](O_M_MXFA_DynamicSoundEffectInstance_SubmitBuffer.md) method is PCM wave data. Additionally, the PCM format is interleaved and in little-endian.
+The byte\[\] buffer format used as a parameter for the [SoundEffect](xref:Microsoft.Xna.Framework.Audio.SoundEffect.ctor) constructor, [Microphone.GetData](xref:MXFA.Microphone.GetData) method, and [DynamicSoundEffectInstance.SubmitBuffer](xref:MXFA.DynamicSoundEffectInstance.SubmitBuffer) method is PCM wave data. Additionally, the PCM format is interleaved and in little-endian.
 
 The audio format has the following constraints:
 
@@ -23,7 +23,7 @@ Provides a high-level overview about the capabilities of the Audio API in MonoGa
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
 
-Demonstrates how to play a simple sound by using [SoundEffect](T_MXFA_SoundEffect.md).
+Demonstrates how to play a simple sound by using [SoundEffect](xref:MXFA.SoundEffect).
 
 [Streaming Data from a WAV File](Audio_HowTo_StreamDataFromWav.md)
 
@@ -31,15 +31,15 @@ Demonstrates how to stream audio from a wave (.wav) file.
 
 # Reference
 
-[SoundEffect Class](T_MXFA_SoundEffect.md)
+[SoundEffect Class](xref:MXFA.SoundEffect)
 
 Provides a loaded sound resource.
 
-[SoundEffectInstance Class](T_MXFA_SoundEffectInstance.md)
+[SoundEffectInstance Class](xref:MXFA.SoundEffectInstance)
 
-Provides a single playing, paused, or stopped instance of a [SoundEffect](T_MXFA_SoundEffect.md) sound.
+Provides a single playing, paused, or stopped instance of a [SoundEffect](xref:MXFA.SoundEffect) sound.
 
-[DynamicSoundEffectInstance Class](T_MXFA_DynamicSoundEffectInstance.md)
+[DynamicSoundEffectInstance Class](xref:MXFA.DynamicSoundEffectInstance)
 
 Provides properties, methods, and events for play back of the audio buffer.
 

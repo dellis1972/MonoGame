@@ -20,9 +20,9 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To enable antialiasing in your game
 
-*   Render 3D geometry. One way to do this is by creating a BasicEffect using the [BasicEffect](T_Microsoft_Xna_Framework_Graphics_BasicEffect.md) class. For more detail, see [Creating a Basic Effect](Use_BasicEffect.md).
+*   Render 3D geometry. One way to do this is by creating a BasicEffect using the [BasicEffect](xref:Microsoft.Xna.Framework.Graphics.BasicEffect) class. For more detail, see [Creating a Basic Effect](Use_BasicEffect.md).
     
-*   Set [PreferMultiSampling](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferMultiSampling.md) to **true** in your [Game](T_Microsoft_Xna_Framework_Game.md) class constructor.
+*   Set [PreferMultiSampling](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferMultiSampling) to **true** in your [Game](xref:Microsoft.Xna.Framework.Game) class constructor.
     
     ```
     graphics.PreferMultiSampling = true;
@@ -42,7 +42,7 @@ The code in this topic shows you the technique. You can download a complete code
         1.0f, 100.0f);
     ```
     
-*   Draw the geometry by calling [GraphicsDevice.DrawPrimitives](M_Microsoft_Xna_Framework_Graphics_GraphicsDevice_DrawPrimitives.md).
+*   Draw the geometry by calling [GraphicsDevice.DrawPrimitives](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.DrawPrimitives).
     
     ```
     RasterizerState rasterizerState1 = new RasterizerState();
@@ -70,9 +70,9 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md)  
+[GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager)  
 [PreparingDeviceSettings](E_Microsoft_Xna_Framework_GraphicsDeviceManager_PreparingDeviceSettings.md)  
-[PresentationParameters](T_Microsoft_Xna_Framework_Graphics_PresentationParameters.md)  
+[PresentationParameters](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

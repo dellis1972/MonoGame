@@ -6,7 +6,7 @@ This topic discusses a method for programmatically modifying existing parameter 
 
 # Programmatically Setting Parameter Values
 
-When you need to pass parameter values from one processor to another (also referred to as chaining), use the [BuildAsset](M_Microsoft_Xna_Framework_Content_Pipeline_ContentProcessorContext_0B7E922C_BuildAsset``2.md) and [BuildAndLoadAsset](M_Microsoft_Xna_Framework_Content_Pipeline_ContentProcessorContext_BD8AC82D_BuildAndLoadAsset``2.md) methods. Pass the parameter and its value using the _processorParameters_ argument of the respective method. For example, a custom model processor would invoke a second processor for model textures with a call to [BuildAsset](M_Microsoft_Xna_Framework_Content_Pipeline_ContentProcessorContext_0B7E922C_BuildAsset``2.md) and pass any parameter values in the _processorParameters_ argument.
+When you need to pass parameter values from one processor to another (also referred to as chaining), use the [BuildAsset](xref:Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext.0B7E922C.BuildAsset``2) and [BuildAndLoadAsset](xref:Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext.BD8AC82D.BuildAndLoadAsset``2) methods. Pass the parameter and its value using the _processorParameters_ argument of the respective method. For example, a custom model processor would invoke a second processor for model textures with a call to [BuildAsset](xref:Microsoft.Xna.Framework.Content.Pipeline.ContentProcessorContext.0B7E922C.BuildAsset``2) and pass any parameter values in the _processorParameters_ argument.
 
 The following code example demonstrates this technique. First, add several parameters to a data dictionary:
 
@@ -51,8 +51,8 @@ Adding one or more parameters to your custom processor requires additonal code i
 *   ushort
 *   string
 *   enum
-*   [Vector2](T_Microsoft_Xna_Framework_Vector2.md), [Vector3](T_Microsoft_Xna_Framework_Vector3.md), and [Vector4](T_Microsoft_Xna_Framework_Vector4.md)
-*   [Color](T_MXF_Color.md)
+*   [Vector2](xref:Microsoft.Xna.Framework.Vector2), [Vector3](xref:Microsoft.Xna.Framework.Vector3), and [Vector4](xref:Microsoft.Xna.Framework.Vector4)
+*   [Color](xref:MXF.Color)
 
 Parameters of other types are ignored by the processor.
 
@@ -78,7 +78,7 @@ The following code example defines a simple custom processor that switches the c
       //additional class code follows...
     
 
-In this code, the `SwitchCoordSystemProcessor` class is derived from [ModelProcessor](T_Microsoft_Xna_Framework_Content_Pipeline_Processors_ModelProcessor.md). This indicates that the processor accepts a model as input. The next few lines declare a single property called `SwitchCoordinateSystem` of type **bool**. Note that every parameter must have a **set** method. The property also has several attributes applied to it:
+In this code, the `SwitchCoordSystemProcessor` class is derived from [ModelProcessor](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors.ModelProcessor). This indicates that the processor accepts a model as input. The next few lines declare a single property called `SwitchCoordinateSystem` of type **bool**. Note that every parameter must have a **set** method. The property also has several attributes applied to it:
 
 Attribute name
 
@@ -98,7 +98,7 @@ Descriptive text displayed when you select the property in the Properties window
 
 This completes the definition of the `SwitchCoordinateSystem` property.
 
-In the next code example, the class definition is continued with an override of the [Process](M_Microsoft_Xna_Framework_Content_Pipeline_Processors_ModelProcessor_07B0E38B_Process.md) method:
+In the next code example, the class definition is continued with an override of the [Process](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors.ModelProcessor.07B0E38B.Process) method:
 
       //additional class code precedes...
 
@@ -115,7 +115,7 @@ In the next code example, the class definition is continued with an override of 
       }
     
 
-This code passes the `SwitchCoordinateSystem` property (declared earlier) value to [TransformScene](M_Microsoft_Xna_Framework_Content_Pipeline_Graphics_MeshHelper_TransformScene.md), which is a helper method that applies a transform to a scene hierarchy.
+This code passes the `SwitchCoordinateSystem` property (declared earlier) value to [TransformScene](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics.MeshHelper.TransformScene), which is a helper method that applies a transform to a scene hierarchy.
 
 # See Also
 

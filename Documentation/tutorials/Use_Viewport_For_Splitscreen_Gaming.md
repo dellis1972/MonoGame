@@ -16,7 +16,7 @@ The code in this topic shows you the technique. You can download a complete code
 
 ### To create multiple screens
 
-1.  In your [LoadContent](M_MXF_Game_LoadContent.md) method, create two new [Viewport](T_Microsoft_Xna_Framework_Graphics_Viewport.md) objects to define the two new "split" regions of the screen.
+1.  In your [LoadContent](xref:MXF.Game.LoadContent) method, create two new [Viewport](xref:Microsoft.Xna.Framework.Graphics.Viewport) objects to define the two new "split" regions of the screen.
     
     In this example, the screen is split in half vertically.
     
@@ -52,7 +52,7 @@ The code in this topic shows you the technique. You can download a complete code
     }
     ```
     
-3.  In your [Draw](M_Microsoft_Xna_Framework_Game_Draw.md) method, assign one of the viewports to draw as the [GraphicsDevice](T_Microsoft_Xna_Framework_Graphics_GraphicsDevice.md)[Viewport](T_Microsoft_Xna_Framework_Graphics_Viewport.md).
+3.  In your [Draw](xref:Microsoft.Xna.Framework.Game.Draw) method, assign one of the viewports to draw as the [GraphicsDevice](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice)[Viewport](xref:Microsoft.Xna.Framework.Graphics.Viewport).
     
 4.  Draw your scene as normal, using the camera (or view matrix) associated with this perspective along with the proper projection matrix.
     
@@ -66,7 +66,7 @@ The code in this topic shows you the technique. You can download a complete code
         DrawScene(gameTime, Camera1.ViewMatrix, halfprojectionMatrix);
     ```
     
-5.  After drawing the first scene, assign the other viewport to the [Viewport](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_Viewport.md) property.
+5.  After drawing the first scene, assign the other viewport to the [Viewport](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.Viewport) property.
     
 6.  Draw your scene again with the associated camera or view matrix, and the proper projection matrix.
     
@@ -88,8 +88,8 @@ The code in this topic shows you the technique. You can download a complete code
 
 #### Reference
 
-[GraphicsDevice.Viewport](P_Microsoft_Xna_Framework_Graphics_GraphicsDevice_Viewport.md)  
-[Viewport Structure](T_Microsoft_Xna_Framework_Graphics_Viewport.md)  
+[GraphicsDevice.Viewport](xref:Microsoft.Xna.Framework.Graphics.GraphicsDevice.Viewport)  
+[Viewport Structure](xref:Microsoft.Xna.Framework.Graphics.Viewport)  
 
 © 2012 Microsoft Corporation. All rights reserved.  
 

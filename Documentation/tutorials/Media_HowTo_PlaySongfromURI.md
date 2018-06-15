@@ -2,7 +2,7 @@
 
 # Playing a Song from a URI
 
-Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song from a Uniform Resource Identifier (URI).
+Demonstrates how to use the [MediaPlayer](xref:MXFM.MediaPlayer) to play a song from a Uniform Resource Identifier (URI).
 
 # Playing a Song from a URI
 
@@ -10,7 +10,7 @@ Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song 
 
 The following steps show you how to play an .mp3 song located on the Internet.
 
-1.  Set [MediaPlayer](T_MXFM_MediaPlayer.md) play state to stopped.
+1.  Set [MediaPlayer](xref:MXFM.MediaPlayer) play state to stopped.
     
     ```
     MediaPlayer.Stop();
@@ -22,7 +22,7 @@ The following steps show you how to play an .mp3 song located on the Internet.
     Uri uriStreaming = new Uri("http://www.archive.org/download/gd1977-05-08.shure57.stevenson.29303.flac16/gd1977-05-08d02t06_vbr.mp3");
     ```
     
-3.  Use the [FromUri](M_MXFM_Song_FromUri.md) method to supply an arbitrary string name for the URI, and then pass the [Uri](http://msdn.microsoft.com/en-us/library/system.uri.aspx) object you created in the previous step.
+3.  Use the [FromUri](xref:MXFxref:Song.FromUri) method to supply an arbitrary string name for the URI, and then pass the [Uri](http://msdn.microsoft.com/en-us/library/system.uri.aspx) object you created in the previous step.
     
     ```
     Song song = Song.FromUri("StreamingUri", uriStreaming);
@@ -47,11 +47,11 @@ Provides a high-level overview about the capabilities—such as playing music an
 
 # Reference
 
-[MediaPlayer Class](T_MXFM_MediaPlayer.md)
+[MediaPlayer Class](xref:MXFM.MediaPlayer)
 
 Provides methods and properties to play, pause, resume, and stop songs. **MediaPlayer** also exposes shuffle, repeat, volume, play position, and visualization capabilities.
 
-[Song Class](T_MXF_Media_Song.md)
+[Song Class](xref:MXF.Media.Song)
 
 Provides access to a song in the song library.
 

@@ -6,31 +6,31 @@ The Content Pipeline class library is a library of classes, interfaces, and valu
 
 # Namespaces
 
-[Microsoft.Xna.Framework.Content.Pipeline](N_Microsoft_Xna_Framework_Content_Pipeline.md)
+[Microsoft.Xna.Framework.Content.Pipeline](xref:Microsoft.Xna.Framework.Content.Pipeline)
 
 Provides classes representing base types and building block functionality for use by more specialized object models, such as the Graphics DOM.
 
-[Microsoft.Xna.Framework.Content.Pipeline.Audio](N_Microsoft_Xna_Framework_Content_Pipeline_Audio.md)
+[Microsoft.Xna.Framework.Content.Pipeline.Audio](xref:Microsoft.Xna.Framework.Content.Pipeline.Audio)
 
 Provides intermediate classes and types for representing and manipulating graphics audio data.
 
-[Microsoft.Xna.Framework.Content.Pipeline.Graphics](N_Microsoft_Xna_Framework_Content_Pipeline_Graphics.md)
+[Microsoft.Xna.Framework.Content.Pipeline.Graphics](xref:Microsoft.Xna.Framework.Content.Pipeline.Graphics)
 
 Provides intermediate classes and types for representing and manipulating graphics data.
 
-[Microsoft.Xna.Framework.Content.Pipeline.Processors](N_Microsoft_Xna_Framework_Content_Pipeline_Processors.md)
+[Microsoft.Xna.Framework.Content.Pipeline.Processors](xref:Microsoft.Xna.Framework.Content.Pipeline.Processors)
 
 Provides base classes that represent processors used by the MonoGame Framework Content Pipeline when processing specific game asset types.
 
-[Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler](N_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Compiler.md)
+[Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler)
 
 Provides base classes that represent compilers and writers used by the MonoGame Framework Content Pipeline when processing specific game asset types.
 
-[Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate](N_Microsoft_Xna_Framework_Content_Pipeline_Serialization_Intermediate.md)
+[Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate](xref:Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate)
 
 Provides base classes that represent the creation and writing of intermediate content for game asset types processed by the XNA Framework Content Pipeline.
 
-[Microsoft.Xna.Framework.Content.Pipeline.Tasks](N_Microsoft_Xna_Framework_Content_Pipeline_Tasks.md)
+[Microsoft.Xna.Framework.Content.Pipeline.Tasks](xref:Microsoft.Xna.Framework.Content.Pipeline.Tasks)
 
 Provides support for importing and processing game assets into the binary format that is used by the Content Loader of a game project.
 

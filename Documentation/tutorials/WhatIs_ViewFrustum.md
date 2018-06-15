@@ -10,7 +10,7 @@ The most common type of projection is called a perspective projection, which mak
 
 ![](frustum.jpg)
 
-A view frustum is defined by a field of view (fov), and by the distances of the front and back clipping planes, which are specified in z-coordinates. Set up a perspective fov using the [CreatePerspectiveFieldOfView](O_M_Microsoft_Xna_Framework_Matrix_CreatePerspectiveFieldOfView.md) method.
+A view frustum is defined by a field of view (fov), and by the distances of the front and back clipping planes, which are specified in z-coordinates. Set up a perspective fov using the [CreatePerspectiveFieldOfView](xref:Microsoft.Xna.Framework.Matrix.CreatePerspectiveFieldOfView) method.
 
 # See Also
 

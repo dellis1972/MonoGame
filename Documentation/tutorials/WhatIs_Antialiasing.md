@@ -4,9 +4,9 @@
 
 Antialiasing is a technique for softening or blurring sharp edges so they appear less jagged when rendered.
 
-Antialiasing is accomplished by multisampling each pixel at multiple pixel locations and combining the samples to generate a final pixel color. Increasing the number of samples per pixel increases the amount of antialiasing which generates a smoother edge. 4x multisampling requires four samples per pixel and 2x multisampling requires two sampler per pixel. Use the [MultiSampleCount](P_Microsoft_Xna_Framework_Graphics_PresentationParameters_MultiSampleCount.md) property of the [PresentationParameters](T_Microsoft_Xna_Framework_Graphics_PresentationParameters.md) class to set the number of samples for the back buffer.
+Antialiasing is accomplished by multisampling each pixel at multiple pixel locations and combining the samples to generate a final pixel color. Increasing the number of samples per pixel increases the amount of antialiasing which generates a smoother edge. 4x multisampling requires four samples per pixel and 2x multisampling requires two sampler per pixel. Use the [MultiSampleCount](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters.MultiSampleCount) property of the [PresentationParameters](xref:Microsoft.Xna.Framework.Graphics.PresentationParameters) class to set the number of samples for the back buffer.
 
-Set the [PreferMultiSampling](P_Microsoft_Xna_Framework_GraphicsDeviceManager_PreferMultiSampling.md) property on the [GraphicsDeviceManager](T_Microsoft_Xna_Framework_GraphicsDeviceManager.md) class to **true** to enable multisampling for the back buffer. This will be ignored if the hardware does not support multisampling.
+Set the [PreferMultiSampling](xref:Microsoft.Xna.Framework.GraphicsDeviceManager.PreferMultiSampling) property on the [GraphicsDeviceManager](xref:Microsoft.Xna.Framework.GraphicsDeviceManager) class to **true** to enable multisampling for the back buffer. This will be ignored if the hardware does not support multisampling.
 
 # See Also
 

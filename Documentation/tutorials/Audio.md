@@ -16,7 +16,7 @@ Provides developers with information about the audio buffer format used by the M
 
 [Playing a Sound](Audio_HowTo_PlayASound.md)
 
-Demonstrates how to play a simple sound by using [SoundEffect](T_MXFA_SoundEffect.md).
+Demonstrates how to play a simple sound by using [SoundEffect](xref:MXFA.SoundEffect).
 
 [Looping a Sound](Audio_HowTo_LoopASound.md)
 
@@ -32,7 +32,7 @@ Demonstrates how to play a song from a user's media library.
 
 [Playing a Song from a URI](Media_HowTo_PlaySongfromURI.md)
 
-Demonstrates how to use the [MediaPlayer](T_MXFM_MediaPlayer.md) to play a song from a Uniform Resource Identifier (URI).
+Demonstrates how to use the [MediaPlayer](xref:MXFM.MediaPlayer) to play a song from a Uniform Resource Identifier (URI).
 
 [Streaming Data from a WAV File](Audio_HowTo_StreamDataFromWav.md)
 
