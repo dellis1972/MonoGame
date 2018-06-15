@@ -2,7 +2,7 @@
 
 # Retrieving Gyroscope Input
 
-This topic demonstrates how to detect and use gyroscope input in an XNA Game Studio game.
+This topic demonstrates how to detect and use gyroscope input in a MonoGame game.
 
 Each sensor may not be available on every device, specifically the gyroscope sensor is an optional component. Applications need a way to determine whether a particular sensor’s hardware is present on a device before using it. The **IsSupported** property on each sensor class is used to determine whether the sensor is available on the current hardware platform. This is a static property that can be queried without creating an instance of the respective sensor class.
 

@@ -25,7 +25,7 @@ The code in this topic shows you the technique. You can download a complete code
     
     ![](note.gif)Note
     
-    When [IsolatedStorageFile.GetUserStoreForApplication](http://msdn.microsoft.com/en-us/library/system.io.isolatedstorage.isolatedstoragefile.getuserstoreforapplication.aspx) is called within an XNA Game Studio game for Windows (but not for Xbox 360 or Windows Phone), an InvalidOperationException will result. To avoid this exception, use the [GetUserStoreForDomain](http://msdn.microsoft.com/en-us/library/system.io.isolatedstorage.isolatedstoragefile.getuserstorefordomain.aspx) method instead.
+    When [IsolatedStorageFile.GetUserStoreForApplication](http://msdn.microsoft.com/en-us/library/system.io.isolatedstorage.isolatedstoragefile.getuserstoreforapplication.aspx) is called within a MonoGame game for Windows (but not for Xbox 360 or Windows Phone), an InvalidOperationException will result. To avoid this exception, use the [GetUserStoreForDomain](http://msdn.microsoft.com/en-us/library/system.io.isolatedstorage.isolatedstoragefile.getuserstorefordomain.aspx) method instead.
     
                                 `#if WINDOWS
                 IsolatedStorageFile savegameStorage = IsolatedStorageFile.GetUserStoreForDomain();
