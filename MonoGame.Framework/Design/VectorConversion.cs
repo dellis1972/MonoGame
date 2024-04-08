@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
 
@@ -23,7 +24,11 @@ namespace Microsoft.Xna.Framework.Design
             return false;
         }
 
-        public static object ConvertToFromVector4(ITypeDescriptorContext context, CultureInfo culture, Vector4 value, Type destinationType)
+        public static object ConvertToFromVector4(ITypeDescriptorContext context, CultureInfo culture, Vector4 value,
+#if NET5_0_OR_GREATER
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+            Type destinationType)
         {
             if (destinationType == typeof(float))
                 return value.X;

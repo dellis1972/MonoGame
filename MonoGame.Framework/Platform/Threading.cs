@@ -167,8 +167,6 @@ namespace Microsoft.Xna.Framework
                 _resetEventPool.Push(resetEvent);
                 return; // return here to skip dispose
             }
-
-            resetEvent.Dispose();
         }
 
         /// <summary>

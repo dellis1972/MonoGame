@@ -112,6 +112,7 @@ namespace Microsoft.Xna.Framework.Content
             }
         }
 
+#if __ANDROID__
         internal static void ReloadGraphicsContent()
         {
             lock (ContentManagerLock)
@@ -134,6 +135,7 @@ namespace Microsoft.Xna.Framework.Content
                 }
             }
         }
+#endif
 
 		// Use C# destructor syntax for finalization code.
 		// This destructor will run only if the Dispose method
@@ -406,6 +408,7 @@ namespace Microsoft.Xna.Framework.Content
             get { return loadedAssets; }
         }
 
+#if __ANDROID__
 		protected virtual void ReloadGraphicsAssets()
         {
             foreach (var asset in LoadedAssets)
@@ -420,6 +423,7 @@ namespace Microsoft.Xna.Framework.Content
                 genericMethod.Invoke(this, new object[] { asset.Key, Convert.ChangeType(asset.Value, asset.Value.GetType()) }); 
             }
         }
+#endif
 
         protected virtual void ReloadAsset<T>(string originalAssetName, T currentAsset)
         {

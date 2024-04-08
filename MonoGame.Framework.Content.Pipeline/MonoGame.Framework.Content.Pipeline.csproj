@@ -82,7 +82,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="AssimpNet" Version="4.1.0" />
+    <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
     <PackageReference Include="Microsoft.NETCore.App" Version="2.1.30" />
     <PackageReference Include="SharpDX" Version="4.0.1" />
     <PackageReference Include="SharpDX.D3DCompiler" Version="4.0.1" />
@@ -168,6 +168,11 @@
     <Content Include="..\ThirdParty\Dependencies\SharpFont\x64\libfreetype.6.dylib" Visible="false">
       <Link>libfreetype6.dylib</Link>
       <PackagePath>runtimes\osx\native\libfreetype6.dylib</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThirdParty\Dependencies\assimp\libassimp.dylib" Visible="false">
+      <Link>libassimp.dylib</Link>
+      <PackagePath>runtimes\osx\native\libassimp.dylib</PackagePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\ThirdParty\Dependencies\SharpFont\x64\libpng16.16.dylib" Visible="false">

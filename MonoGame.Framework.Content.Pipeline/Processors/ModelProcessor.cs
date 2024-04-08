@@ -105,13 +105,18 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
                 var scale = Matrix.CreateScale(Scale);
                 MeshHelper.TransformScene(input, rotZ * rotX * rotY * scale);
             }
-
             // Gather all the nodes in tree traversal order.
             var nodes = input.AsEnumerable().SelectDeep(n => n.Children).ToList();
 
             var meshes = nodes.FindAll(n => n is MeshContent).Cast<MeshContent>().ToList();
             var geometries = meshes.SelectMany(m => m.Geometry).ToList();
             var distinctMaterials = geometries.Select(g => g.Material).Distinct().ToList();
+
+            // var hasBones = MeshHelper.FindSkeleton (input) != null;
+            // var hasRootAnimations = input.Animations.Any ();
+            // var hasMeshAnimations = meshes.Any (x => x.Animations.Count > 0);
+            // if (!hasBones && (hasRootAnimations || hasMeshAnimations))
+            //     MeshHelper.BuildSkeleton (input);
 
             // Loop through all distinct materials, passing them through the conversion method
             // only once, and then processing all geometries using that material.
@@ -238,6 +243,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
             else if (material is SkinnedMaterialContent)
             {
                 textureChannels = 1;
+                // if we don't have bones but have animations we need to add "fake" weights.
                 vertexWeights = true;
             }
             else if (material is EnvironmentMapMaterialContent)

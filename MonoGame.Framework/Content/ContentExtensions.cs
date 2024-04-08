@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Reflection;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Xna.Framework.Content
 {
     internal static class ContentExtensions
     {
-        public static ConstructorInfo GetDefaultConstructor(this Type type)
+        public static ConstructorInfo GetDefaultConstructor(
+#if NET5_0_OR_GREATER
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+                this Type type)
         {
 #if NET45
             var typeInfo = type.GetTypeInfo();
@@ -18,7 +23,11 @@ namespace Microsoft.Xna.Framework.Content
 #endif
         }
 
-        public static PropertyInfo[] GetAllProperties(this Type type)
+        public static PropertyInfo[] GetAllProperties(
+#if NET5_0_OR_GREATER
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+                this Type type)
         {
 
             // Sometimes, overridden properties of abstract classes can show up even with 

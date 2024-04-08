@@ -9,6 +9,8 @@
     <PackageId>MonoGame.Framework.DesktopGL</PackageId>
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <CopyContentFiles>True</CopyContentFiles>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <NoWarn>CS1591;CS0419</NoWarn>
   </PropertyGroup>
 
   <!-- NETFX reference assemblies let us target .NET Framework on Mac/Linux without Mono -->

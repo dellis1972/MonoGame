@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using Microsoft.Xna.Framework.Content.Pipeline.Processors;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
@@ -361,8 +366,62 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
                     return root;
             }
 
-            // We didn't find any bones!
+            // We didn't find any bones! 
             return null;
+        }
+
+        /// <summary>
+        /// Builds a set of BoneContent nodes and injects them into a Model which
+        /// contains Mesh based Animations but has Zero BoneContent nodes.
+        /// </summary>
+        /// <param name="node">The base note on which to build the new BoneContent</param>
+        /// <returns>The root Skeleton Node.</returns>
+        internal static BoneContent BuildSkeleton (NodeContent node)
+        {
+            var nodes = node.AsEnumerable().SelectDeep(n => n.Children).ToList ();
+            var meshes = nodes.FindAll(n => n is MeshContent).Cast<MeshContent>().ToList();
+            BoneContent root = null;
+            foreach (var mesh in meshes) {
+                var parent = mesh.Parent;
+                parent.Children.Remove (mesh);
+                var bone = new BoneContent () {
+                    Name = "bone_" + mesh.Name,
+                    Transform = mesh.Transform,
+                };
+                if (root == null)
+                    root = bone;
+                bone.Parent = null;
+                mesh.Parent = null;
+                mesh.Transform = Matrix.Identity;
+                parent.Children.Add (bone);
+                bone.Children.Add (mesh);
+                // foreach (var animation in mesh.Animations) {
+                //     if (!node.Animations.TryGetValue (animation.Key, out AnimationContent ac)) {
+                //         ac = new AnimationContent ();
+                //         node.Animations.Add (animation.Key, ac);
+                //         ac.Duration = animation.Value.Duration;
+                //         ac.Identity = animation.Value.Identity;
+                //     }
+                    
+                //     // foreach (var c in animation.Value.Channels) {
+                //     //     var key = "bone_" + c.Key;
+                //     //     if (!ac.Channels.TryGetValue (key, out AnimationChannel chan)) {
+                //     //         ac.Channels.Add(key, c.Value);
+                //     //     }
+                //     //     chan.Add (c.Value.)
+                //     // }
+                // }
+                foreach (var geometry in mesh.Geometry) {
+                    var weightsName = VertexChannelNames.Weights ();
+                    var xnaWeights = new List<BoneWeightCollection>();
+                    var weights = new BoneWeightCollection();
+                    weights.Add(new BoneWeight("bone_" + mesh.Name, 1.0f));
+                    for (int i=0; i <= geometry.Vertices.VertexCount-1; i++)
+                        xnaWeights.Add (weights);
+                    geometry.Vertices.Channels.Add (weightsName, xnaWeights );
+                }
+            }
+            return root;
         }
 
         /// <summary>

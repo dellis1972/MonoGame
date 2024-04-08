@@ -25,9 +25,19 @@ namespace MonoGame.Tests.ContentPipeline
         }
 
         [Test]
-#if DESKTOPGL
-        [Ignore("This crashes inside Assimp on Mac!")]
-#endif
+        [TestCase ("Assets/Models/NonSkeletonAnimated.fbx")]
+        [TestCase ("Assets/Models/Soldier/character-soldier.fbx")]
+        [TestCase ("Assets/Models/Dude/dude_2011.fbx")]
+        public void AnimationImport (string fbx)
+        {
+            var context = new TestImporterContext("TestObj", "TestBin");
+            var importer = new OpenAssetImporter();
+
+            var nodeContent = importer.Import(fbx, context);
+            Assert.NotNull(nodeContent);
+        }
+
+        [Test]
         public void BlenderTests()
         {
             var context = new TestImporterContext("TestObj", "TestBin");

@@ -5,13 +5,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using MonoGame.Framework.Utilities;
 
 namespace Microsoft.Xna.Framework.Content
 {
-    internal class ReflectiveReader<T> : ContentTypeReader
+    internal class ReflectiveReader<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.NonPublicProperties)] T> : ContentTypeReader
     {
         delegate void ReadElement(ContentReader input, object parent);
 

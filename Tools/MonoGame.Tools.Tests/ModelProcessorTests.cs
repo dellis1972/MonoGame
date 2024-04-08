@@ -214,6 +214,84 @@ namespace MonoGame.Tests.ContentPipeline
         }
 
         [Test]
+        [TestCase ("Assets/Models/NonSkeletonAnimated.fbx")]
+        [TestCase ("Assets/Models/Soldier/character-soldier.fbx")]
+        [TestCase ("Assets/Models/Dude/dude_2011.fbx")]
+        public void SkinnedModelWithNodeAnimationTest (string fbx)
+        {
+            var context = new TestImporterContext("TestObj", "TestBin");
+            var processorContext = new TestProcessorContext(TargetPlatform.DesktopGL, "TestBin");
+            var importer = new OpenAssetImporter();
+            var processor = new ModelProcessor ();
+
+            var nodeContent = importer.Import(fbx, context);
+            Assert.NotNull(nodeContent);
+            var model = processor.Process (nodeContent, processorContext);
+            Assert.NotNull (model);
+        }
+
+        [Test]
+        public void DefaultEffectWithNodeAnimationTest ()
+        {
+            NodeContent input;
+            {
+                input = new NodeContent();
+
+                var mesh = new MeshContent()
+                {
+                    Name = "Mesh1"
+                };
+                mesh.Positions.Add(new Vector3(0, 0, 0));
+                mesh.Positions.Add(new Vector3(1, 0, 0));
+                mesh.Positions.Add(new Vector3(1, 1, 1));
+
+                var geom = new GeometryContent();
+                geom.Vertices.Add(0);
+                geom.Vertices.Add(1);
+                geom.Vertices.Add(2);
+                geom.Indices.Add(0);
+                geom.Indices.Add(1);
+                geom.Indices.Add(2);
+
+                geom.Vertices.Channels.Add(VertexChannelNames.TextureCoordinate(0), new[]
+                {
+                    new Vector2(0,0),
+                    new Vector2(1,0),
+                    new Vector2(1,1),
+                });
+
+                mesh.Geometry.Add(geom);
+                input.Children.Add(mesh);
+
+                var anim = new AnimationContent()
+                {
+                    Name = "anim1",
+                    Duration = TimeSpan.Zero
+                };
+                var animChannel = new AnimationChannel ();
+                animChannel.Add (new AnimationKeyframe (TimeSpan.Zero, Matrix.Identity));
+                animChannel.Add (new AnimationKeyframe (TimeSpan.FromSeconds (1), Matrix.CreateRotationX (180f)));
+                anim.Channels.Add ("mesh1",animChannel);
+
+                mesh.Animations.Add(anim.Name, anim);
+            }
+
+            var processorContext = new TestProcessorContext(TargetPlatform.Windows, "dummy.xnb");
+            var processor = new ModelProcessor
+            {
+                DefaultEffect = MaterialProcessorDefaultEffect.SkinnedEffect,                
+            };
+
+            var output = processor.Process(input, processorContext);
+
+            // TODO: Not sure why, but XNA always returns a BasicMaterialContent 
+            // even when we specify SkinnedEffect as the default.  We need to fix
+            // the test first before we can enable the assert here.
+
+            //Assert.IsInstanceOf(typeof(SkinnedMaterialContent), output.Meshes[0].MeshParts[0].Material);
+        }
+
+        [Test]
         public void DefaultEffectTest()
         {
             NodeContent input;

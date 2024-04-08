@@ -3,13 +3,18 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace MonoGame.Framework.Utilities
 {
     internal static partial class ReflectionHelpers
     {
-        public static bool IsValueType(Type targetType)
+        public static bool IsValueType(
+#if NET5_0_OR_GREATER
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+            Type targetType)
         {
             if (targetType == null)
             {
@@ -22,7 +27,11 @@ namespace MonoGame.Framework.Utilities
 #endif
         }
 
-        public static Type GetBaseType(Type targetType)
+        public static Type GetBaseType(
+#if NET5_0_OR_GREATER
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+            Type targetType)
         {
             if (targetType == null)
             {
@@ -38,7 +47,11 @@ namespace MonoGame.Framework.Utilities
         /// <summary>
         /// Returns the Assembly of a Type
         /// </summary>
-        public static Assembly GetAssembly(Type targetType)
+        public static Assembly GetAssembly(
+#if NET5_0_OR_GREATER
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+            Type targetType)
         {
             if (targetType == null)
             {

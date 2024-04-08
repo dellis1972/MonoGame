@@ -566,6 +566,12 @@
     <Content Update="..\..\Tests\Assets\Projects\BuildSimpleProject.csproj">
       <Link>Assets\Projects\BuildSimpleProject.csproj</Link>
     </Content>
+    <Content Update="..\..\Tests\Assets\Projects\NuGet.config">
+      <Link>Assets\Projects\NuGet.config</Link>
+    </Content>
+    <Content Update="..\..\Tests\Assets\Projects\.config\dotnet-tools.json">
+      <Link>Assets\Projects\.config\dotnet-tools.json</Link>
+    </Content>
     <Content Update="..\..\Tests\Assets\Projects\Content\Content.mgcb">
       <Link>Assets\Projects\Content\Content.mgcb</Link>
     </Content>
@@ -583,6 +589,15 @@
     </Content>
     <Content Update="..\..\Tests\Assets\Models\NonSkeletonAnimated.fbx">
       <Link>Assets\Models\NonSkeletonAnimated.fbx</Link>
+    </Content>
+    <Content Update="..\..\Tests\Assets\Models\NonSkeletonAnimated2.fbx">
+      <Link>Assets\Models\NonSkeletonAnimated2.fbx</Link>
+    </Content>
+    <Content Update="..\..\Tests\Assets\Models\Soldier\character-soldier.fbx">
+      <Link>Assets\Models\Soldier\character-soldier.fbx</Link>
+    </Content>
+    <Content Update="..\..\Tests\Assets\Models\Soldier\Textures\colormap.png">
+      <Link>Assets\Models\Soldier\Textures\colormap.png</Link>
     </Content>
     <Content Update="..\..\Tests\Assets\Models\BlenderDefaultCube.xnb">
       <Link>Assets\Models\BlenderDefaultCube.xnb</Link>

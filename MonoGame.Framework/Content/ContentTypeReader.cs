@@ -3,12 +3,14 @@
 // file 'LICENSE.txt', which is part of this source code package.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Microsoft.Xna.Framework.Content
 {
     public abstract class ContentTypeReader
     {
+        [DynamicallyAccessedMembers (DynamicallyAccessedMemberTypes.PublicConstructors)]
         private Type _targetType;
 
         public virtual bool CanDeserializeIntoExistingObject
@@ -16,6 +18,7 @@ namespace Microsoft.Xna.Framework.Content
             get { return false; }
         }
 
+        [DynamicallyAccessedMembers (DynamicallyAccessedMemberTypes.PublicConstructors)]
         public Type TargetType
         {
             get { return _targetType; }
@@ -26,7 +29,11 @@ namespace Microsoft.Xna.Framework.Content
             get { return 0; }   // The default version (unless overridden) is zero
         }
 
-        protected ContentTypeReader(Type targetType)
+        protected ContentTypeReader(
+#if NET5_0_OR_GREATER
+                [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+            Type targetType)
         {
             _targetType = targetType;
         }

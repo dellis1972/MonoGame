@@ -128,9 +128,11 @@ namespace Microsoft.Xna.Framework.Content
                     if (existingInstance != null)
                         part = existingInstance.Meshes[i].MeshParts[(int)j];
                     else
+#pragma warning disable CS0618 // Type or member is obsolete
                         part = new ModelMeshPart();
+#pragma warning restore CS0618 // Type or member is obsolete
 
-					part.VertexOffset = reader.ReadInt32();
+                    part.VertexOffset = reader.ReadInt32();
                     part.NumVertices = reader.ReadInt32();
                     part.StartIndex = reader.ReadInt32();
                     part.PrimitiveCount = reader.ReadInt32();
@@ -191,6 +193,11 @@ namespace Microsoft.Xna.Framework.Content
 			
 			// Tag?
             model.Tag = reader.ReadObject<object>();
+
+            if (reader.PeekChar () == -1)
+                return model;
+
+            // We have additional data to read :D Ooooo animations
 			
 			return model;
 		}

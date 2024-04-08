@@ -38,6 +38,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler
 
             WriteBoneReference(output, value.Root, value.Bones);
             output.WriteObject(value.Tag);
+            // Add serialization of Animation data here.
         }
 
         private void WriteBones(ContentWriter output, ModelBoneContentCollection bones)
