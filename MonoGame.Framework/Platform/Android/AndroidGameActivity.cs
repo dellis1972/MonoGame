@@ -7,10 +7,12 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views;
+using AndroidX.AppCompat.App;
+using AndroidX.Core.View;
 
 namespace Microsoft.Xna.Framework
 {
-    public class AndroidGameActivity : Activity
+    public class AndroidGameActivity : AppCompatActivity
     {
         internal Game Game { private get; set; }
 
@@ -32,17 +34,20 @@ namespace Microsoft.Xna.Framework
             RequestWindowFeature(WindowFeatures.NoTitle);
             base.OnCreate(savedInstanceState);
 
-            if (OperatingSystem.IsAndroidVersionAtLeast (19)) {
+            if (OperatingSystem.IsAndroidVersionAtLeast (30)) {
+                WindowCompat.GetInsetsController (this.Window, ((AndroidGameWindow)Game.Window).GameView).Hide (WindowInsetsCompat.Type.SystemBars());
+            }
+            else if (OperatingSystem.IsAndroidVersionAtLeast (19)) {
                 View decorView = Window.DecorView;
                 var uiVisibility = SystemUiFlags.LayoutStable |
                     SystemUiFlags.LayoutHideNavigation |
                     SystemUiFlags.LayoutFullscreen |
                     SystemUiFlags.HideNavigation |
-                    SystemUiFlags.FullScreen |
+                    SystemUiFlags.Fullscreen |
                     SystemUiFlags.ImmersiveSticky;
-                decorView.SystemUiVisibility = uiVisibility;
+                decorView.SystemUiFlags = uiVisibility;
             } else {
-                Window.AddFlags (WindowManagerFlags.FullScreen);
+                Window.AddFlags (WindowManagerFlags.Fullscreen);
             }
 
 			IntentFilter filter = new IntentFilter();
@@ -71,17 +76,20 @@ namespace Microsoft.Xna.Framework
             base.OnWindowFocusChanged (hasFocus);
             if (hasFocus)
             {
-                if (OperatingSystem.IsAndroidVersionAtLeast (19)) {
+                if (OperatingSystem.IsAndroidVersionAtLeast (30)) {
+                    WindowCompat.GetInsetsController (this.Window, ((AndroidGameWindow)Game.Window).GameView).Hide (WindowInsetsCompat.Type.SystemBars());
+                }
+                else if (OperatingSystem.IsAndroidVersionAtLeast (19)) {
                     View decorView = Window.DecorView;
                     var uiVisibility = SystemUiFlags.LayoutStable |
                         SystemUiFlags.LayoutHideNavigation |
                         SystemUiFlags.LayoutFullscreen |
                         SystemUiFlags.HideNavigation |
-                        SystemUiFlags.FullScreen |
+                        SystemUiFlags.Fullscreen |
                         SystemUiFlags.ImmersiveSticky;
-                    decorView.SystemUiVisibility = uiVisibility;
+                    decorView.SystemUiFlags = uiVisibility;
                 } else {
-                    Window.AddFlags (WindowManagerFlags.FullScreen);
+                    Window.AddFlags (WindowManagerFlags.Fullscreen);
                 }
             }
         }
