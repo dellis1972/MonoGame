@@ -32,6 +32,19 @@ namespace Microsoft.Xna.Framework
             RequestWindowFeature(WindowFeatures.NoTitle);
             base.OnCreate(savedInstanceState);
 
+            if (OperatingSystem.IsAndroidVersionAtLeast (19)) {
+                View decorView = Window.DecorView;
+                var uiVisibility = SystemUiFlags.LayoutStable |
+                    SystemUiFlags.LayoutHideNavigation |
+                    SystemUiFlags.LayoutFullscreen |
+                    SystemUiFlags.HideNavigation |
+                    SystemUiFlags.FullScreen |
+                    SystemUiFlags.ImmersiveSticky;
+                decorView.SystemUiVisibility = uiVisibility;
+            } else {
+                Window.AddFlags (WindowManagerFlags.FullScreen);
+            }
+
 			IntentFilter filter = new IntentFilter();
 		    filter.AddAction(Intent.ActionScreenOff);
 		    filter.AddAction(Intent.ActionScreenOn);
@@ -52,6 +65,26 @@ namespace Microsoft.Xna.Framework
 			// we need to refresh the viewport here.
 			base.OnConfigurationChanged (newConfig);
 		}
+
+        public override void OnWindowFocusChanged (bool hasFocus)
+        {
+            base.OnWindowFocusChanged (hasFocus);
+            if (hasFocus)
+            {
+                if (OperatingSystem.IsAndroidVersionAtLeast (19)) {
+                    View decorView = Window.DecorView;
+                    var uiVisibility = SystemUiFlags.LayoutStable |
+                        SystemUiFlags.LayoutHideNavigation |
+                        SystemUiFlags.LayoutFullscreen |
+                        SystemUiFlags.HideNavigation |
+                        SystemUiFlags.FullScreen |
+                        SystemUiFlags.ImmersiveSticky;
+                    decorView.SystemUiVisibility = uiVisibility;
+                } else {
+                    Window.AddFlags (WindowManagerFlags.FullScreen);
+                }
+            }
+        }
 
         protected override void OnPause()
         {
