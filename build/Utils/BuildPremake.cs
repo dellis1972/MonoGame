@@ -5,7 +5,7 @@ namespace BuildScripts;
 
 public sealed class BuildPremake
 {
-    public void Run(BuildContext context, string name, string workingDirectory, string solutionFile)
+    public void Run(BuildContext context, string name, string workingDirectory, string solutionFile, string os = "")
     {
         switch (context.Environment.Platform.Family)
         {
@@ -45,6 +45,9 @@ public sealed class BuildPremake
         {
             throw new Exception($"{name} Premake clean failed! {exit}");
         }
+
+        if (!string.IsNullOrEmpty(os))
+            premakeArguments += $" --os={os}";
 
         exit = context.StartProcess("premake5", new ProcessSettings { WorkingDirectory = workingDirectory, Arguments = premakeArguments });
         if (exit != 0)
