@@ -1,0 +1,30 @@
+<Project>
+  <Sdk Name="Microsoft.NET.Sdk.WebAssembly" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <MonoGamePlatform>Web</MonoGamePlatform>
+    <DefineConstants>$(DefineConstants);MONOGAME;MG_$(MonoGamePlatform)</DefineConstants>
+    <!-- This is to basically disable globalization to exclude icudt.dat (1.5MB) and reduce size of dotnet.wasm -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <WasmBuildNative>true</WasmBuildNative>
+    <WasmAllowUndefinedSymbols>true</WasmAllowUndefinedSymbols>
+    <EmccExtraLDFlags>-sFULL_ES3</EmccExtraLDFlags>
+    <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
+    <EmccFlags>-sVERBOSE=1 -Wbad-function-cast -Wcast-function-type -O2 -g3 -sINITIAL_MEMORY=128MB -sMAXIMUM_MEMORY=2048MB -sALLOW_MEMORY_GROWTH=1</EmccFlags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MonoGame.Framework\MonoGame.Framework.Native.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(MonoGamePlatform)' == 'Web'">
+    <LinkerArg Include="-s USE_WEBGL2=1 -s FULL_ES3=1 -s TOTAL_STACK=5242880" />
+    <WasmShellExtraEmccFlags Include="--preload-file $(MSBuildThisFileDirectory)..\Content@/Content" />
+    <NativeFileReference Include="..\Artifacts\monogame.native\emscripten\wasm\Release\monogame.native.a" CopyToOutputDirectory="PreserveNewest" />
+    <NativeFileReference Include="..\Artifacts\monogame.native\emscripten\wasm\Release\libSDL2.a" CopyToOutputDirectory="PreserveNewest" />
+    <NativeFileReference Include="..\Artifacts\monogame.native\emscripten\wasm\Release\libFAudio.a" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
