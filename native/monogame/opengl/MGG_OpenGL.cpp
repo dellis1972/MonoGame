@@ -1495,40 +1495,299 @@ void MGG_Buffer_GetData(MGG_GraphicsDevice* device, MGG_Buffer* buffer, mgint of
     GL_CHECK_ERROR();
 }
 
+// Helper: compute mip level dimension (halved per level, minimum 1)
+static mgint GetMipDimension(mgint baseSize, mgint level) {
+    mgint size = baseSize >> level;
+    return size > 0 ? size : 1;
+}
+
 MGG_Texture* MGG_Texture_Create(MGG_GraphicsDevice* device, MGTextureType type, MGSurfaceFormat format, mgint width, mgint height, mgint depth, mgint mipmaps, mgint slices) {
+    assert(device != nullptr);
+    assert(width > 0);
+    assert(height > 0);
+    assert(depth > 0);
+    assert(mipmaps > 0);
+    assert(slices > 0);
     if (!device || width <= 0 || height <= 0) return nullptr;
-    printf("Creating texture: %d x %d x %d\n", width, height, depth);
 
     MGG_Texture* texture = new MGG_Texture();
-    printf("Created texture for OpenGL graphics device: %zu\n", (size_t)device->context);
+    texture->type = type;
+    texture->format = format;
+    texture->target = ToGLTextureTarget(type);
+    texture->width = width;
+    texture->height = height;
+    texture->depth = depth;
+    texture->mipmaps = mipmaps;
+    texture->slices = slices;
+    texture->isRenderTarget = false;
+
+    GLenum internalFormat = ToGLInternalFormat(format);
+
+    glGenTextures(1, &texture->texture);
+    GL_CHECK_ERROR();
+    glBindTexture(texture->target, texture->texture);
+    GL_CHECK_ERROR();
+
+    switch (type) {
+    case MGTextureType::_2D:
+        glTexStorage2D(GL_TEXTURE_2D, mipmaps, internalFormat, width, height);
+        GL_CHECK_ERROR();
+        break;
+    case MGTextureType::_3D:
+        glTexStorage3D(GL_TEXTURE_3D, mipmaps, internalFormat, width, height, depth);
+        GL_CHECK_ERROR();
+        break;
+    case MGTextureType::Cube:
+        // Cube map storage: glTexStorage2D with GL_TEXTURE_CUBE_MAP allocates all 6 faces
+        glTexStorage2D(GL_TEXTURE_CUBE_MAP, mipmaps, internalFormat, width, height);
+        GL_CHECK_ERROR();
+        break;
+    default:
+        assert(!"Unsupported texture type in MGG_Texture_Create!");
+        break;
+    }
+
+    // Set default sampling parameters
+    glTexParameteri(texture->target, GL_TEXTURE_MIN_FILTER, mipmaps > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+    glTexParameteri(texture->target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(texture->target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(texture->target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    if (type == MGTextureType::_3D || type == MGTextureType::Cube)
+        glTexParameteri(texture->target, GL_TEXTURE_WRAP_R, GL_REPEAT);
+
+    glBindTexture(texture->target, 0);
+    GL_CHECK_ERROR();
+
+    device->all_textures.push_back(texture);
+
     return texture;
 }
 
 MGG_Texture* MGG_RenderTarget_Create(MGG_GraphicsDevice* device, MGTextureType type, MGSurfaceFormat format, mgint width, mgint height, mgint depth, mgint mipmaps, mgint slices, MGDepthFormat depthFormat, mgint multiSampleCount, MGRenderTargetUsage usage) {
+    assert(device != nullptr);
+    assert(width > 0);
+    assert(height > 0);
     if (!device || width <= 0 || height <= 0) return nullptr;
-    printf("Creating render target: %d x %d x %d\n", width, height, depth);
-    MGG_Texture* texture = new MGG_Texture();
-    printf("Created render target for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    // Create the color texture via normal texture creation path
+    MGG_Texture* texture = MGG_Texture_Create(device, type, format, width, height, depth, mipmaps, slices);
+    if (!texture) return nullptr;
+
+    texture->isRenderTarget = true;
+    texture->depthFormat = depthFormat;
+    texture->multiSampleCount = multiSampleCount;
+    texture->usage = usage;
+
+    // Create depth renderbuffer if requested
+    if (depthFormat != MGDepthFormat::None) {
+        GLenum glDepthFormat = ToGLDepthFormat(depthFormat);
+        glGenRenderbuffers(1, &texture->depthRenderbuffer);
+        GL_CHECK_ERROR();
+        glBindRenderbuffer(GL_RENDERBUFFER, texture->depthRenderbuffer);
+        GL_CHECK_ERROR();
+        glRenderbufferStorage(GL_RENDERBUFFER, glDepthFormat, width, height);
+        GL_CHECK_ERROR();
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        GL_CHECK_ERROR();
+    }
+
     return texture;
 }
 
 void MGG_Texture_Destroy(MGG_GraphicsDevice* device, MGG_Texture* texture) {
-    printf("Destroying texture for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
     if (!device || !texture) return;
+
+    // Delete depth renderbuffer if present
+    if (texture->depthRenderbuffer) {
+        glDeleteRenderbuffers(1, &texture->depthRenderbuffer);
+        texture->depthRenderbuffer = 0;
+    }
+
+    // Delete the texture object
+    if (texture->texture) {
+        glDeleteTextures(1, &texture->texture);
+        texture->texture = 0;
+    }
+    GL_CHECK_ERROR();
+
+    // Remove from tracking list
+    auto it = std::find(device->all_textures.begin(), device->all_textures.end(), texture);
+    if (it != device->all_textures.end())
+        device->all_textures.erase(it);
+
     delete texture;
 }
 
 void MGG_Texture_SetData(MGG_GraphicsDevice* device, MGG_Texture* texture, mgint level, mgint slice, mgint x, mgint y, mgint z, mgint width, mgint height, mgint depth, mgbyte* data, mgint dataBytes) {
-    printf("Setting texture data: %zu, %u, %d, %d, %d, %d, %d, %d\n", (size_t)device->context, texture->texture, x, y, z, width, height, depth);
+    assert(device != nullptr);
+    assert(texture != nullptr);
+    assert(data != nullptr);
+    assert(dataBytes > 0);
     if (!device || !texture || !data) return;
-    printf("Setting texture data: %d x %d x %d\n", width, height, depth);
-    printf("Ended Set texture data for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    // Clamp width/height to mip level dimensions if zero
+    mgint mipWidth = GetMipDimension(texture->width, level);
+    mgint mipHeight = GetMipDimension(texture->height, level);
+    mgint mipDepth = GetMipDimension(texture->depth, level);
+    if (width == 0 && height == 0) {
+        width = mipWidth;
+        height = mipHeight;
+    }
+    if (texture->type == MGTextureType::_2D || texture->type == MGTextureType::Cube) {
+        depth = 1;
+        z = 0;
+    } else if (depth == 0) {
+        depth = mipDepth;
+    }
+
+    bool compressed = IsCompressedFormat(texture->format);
+
+    switch (texture->type) {
+    case MGTextureType::_2D:
+        glBindTexture(GL_TEXTURE_2D, texture->texture);
+        if (compressed) {
+            glCompressedTexSubImage2D(GL_TEXTURE_2D, level, x, y, width, height,
+                ToGLInternalFormat(texture->format), dataBytes, data);
+        } else {
+            glTexSubImage2D(GL_TEXTURE_2D, level, x, y, width, height,
+                ToGLFormat(texture->format), ToGLType(texture->format), data);
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
+        break;
+
+    case MGTextureType::Cube: {
+        // For cube maps, slice selects the face: 0-5 => GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice
+        GLenum faceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice;
+        glBindTexture(GL_TEXTURE_CUBE_MAP, texture->texture);
+        if (compressed) {
+            glCompressedTexSubImage2D(faceTarget, level, x, y, width, height,
+                ToGLInternalFormat(texture->format), dataBytes, data);
+        } else {
+            glTexSubImage2D(faceTarget, level, x, y, width, height,
+                ToGLFormat(texture->format), ToGLType(texture->format), data);
+        }
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+        break;
+    }
+
+    case MGTextureType::_3D:
+        glBindTexture(GL_TEXTURE_3D, texture->texture);
+        if (compressed) {
+            glCompressedTexSubImage3D(GL_TEXTURE_3D, level, x, y, z, width, height, depth,
+                ToGLInternalFormat(texture->format), dataBytes, data);
+        } else {
+            glTexSubImage3D(GL_TEXTURE_3D, level, x, y, z, width, height, depth,
+                ToGLFormat(texture->format), ToGLType(texture->format), data);
+        }
+        glBindTexture(GL_TEXTURE_3D, 0);
+        break;
+
+    default:
+        assert(!"Unsupported texture type in MGG_Texture_SetData!");
+        break;
+    }
+    GL_CHECK_ERROR();
 }
 
 void MGG_Texture_GetData(MGG_GraphicsDevice* device, MGG_Texture* texture, mgint level, mgint slice, mgint x, mgint y, mgint z, mgint width, mgint height, mgint depth, mgbyte* data, mgint dataBytes) {
+    assert(device != nullptr);
+    assert(texture != nullptr);
+    assert(data != nullptr);
+    assert(dataBytes > 0);
     if (!device || !texture || !data) return;
-    printf("Getting texture data: %zu, %u, %d, %d, %d, %d, %d, %d\n", (size_t)device->context, texture->texture, x, y, z, width, height, depth);
-    printf("Ended Get texture data for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    // Clamp width/height to mip level dimensions if zero
+    mgint mipWidth = GetMipDimension(texture->width, level);
+    mgint mipHeight = GetMipDimension(texture->height, level);
+    mgint mipDepth = GetMipDimension(texture->depth, level);
+    if (width == 0 && height == 0) {
+        width = mipWidth;
+        height = mipHeight;
+    }
+    if (texture->type == MGTextureType::_2D || texture->type == MGTextureType::Cube) {
+        depth = 1;
+        z = 0;
+    } else if (depth == 0) {
+        depth = mipDepth;
+    }
+
+#if !defined(MG_EMSCRIPTEN)
+    // Desktop GL — use glGetTexImage for full mip level reads,
+    // or FBO + glReadPixels for sub-region reads.
+    if (x == 0 && y == 0 && width == mipWidth && height == mipHeight && !IsCompressedFormat(texture->format)) {
+        // Full mip level read — use glGetTexImage
+        GLenum bindTarget = texture->target;
+        if (texture->type == MGTextureType::Cube)
+            bindTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice;
+
+        glBindTexture(texture->target, texture->texture);
+        if (texture->type == MGTextureType::Cube) {
+            glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, level,
+                ToGLFormat(texture->format), ToGLType(texture->format), data);
+        } else {
+            glGetTexImage(texture->target, level,
+                ToGLFormat(texture->format), ToGLType(texture->format), data);
+        }
+        glBindTexture(texture->target, 0);
+    } else if (IsCompressedFormat(texture->format)) {
+        // Compressed format — use glGetCompressedTexImage
+        glBindTexture(texture->target, texture->texture);
+        if (texture->type == MGTextureType::Cube) {
+            glGetCompressedTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, level, data);
+        } else {
+            glGetCompressedTexImage(texture->target, level, data);
+        }
+        glBindTexture(texture->target, 0);
+    } else {
+        // Sub-region read — attach to a temporary FBO and use glReadPixels
+        GLuint tempFBO;
+        glGenFramebuffers(1, &tempFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+
+        if (texture->type == MGTextureType::Cube) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, texture->texture, level);
+        } else if (texture->type == MGTextureType::_3D) {
+            glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                texture->texture, level, z);
+        } else {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_2D, texture->texture, level);
+        }
+
+        assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+        glReadPixels(x, y, width, height,
+            ToGLFormat(texture->format), ToGLType(texture->format), data);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDeleteFramebuffers(1, &tempFBO);
+    }
+#else
+    // WebGL2 / ES 3.0 — no glGetTexImage; always use FBO + glReadPixels
+    GLuint tempFBO;
+    glGenFramebuffers(1, &tempFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, tempFBO);
+
+    if (texture->type == MGTextureType::Cube) {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, texture->texture, level);
+    } else if (texture->type == MGTextureType::_3D) {
+        glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            texture->texture, level, z);
+    } else {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+            GL_TEXTURE_2D, texture->texture, level);
+    }
+
+    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+    glReadPixels(x, y, width, height,
+        ToGLFormat(texture->format), ToGLType(texture->format), data);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteFramebuffers(1, &tempFBO);
+#endif
+    GL_CHECK_ERROR();
 }
 
 MGG_InputLayout* MGG_InputLayout_Create(MGG_GraphicsDevice* device, MGG_Shader* vertexShader, mgint* strides, mgint streamCount, MGG_InputElement* elements, mgint elementCount) {
