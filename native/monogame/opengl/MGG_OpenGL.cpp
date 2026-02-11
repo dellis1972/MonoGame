@@ -1354,14 +1354,76 @@ void MGG_RasterizerState_Destroy(MGG_GraphicsDevice* device, MGG_RasterizerState
 }
 
 MGG_SamplerState* MGG_SamplerState_Create(MGG_GraphicsDevice* device, MGG_SamplerState_Info* info) {
-    MGG_SamplerState* state = new MGG_SamplerState();
+    assert(device != nullptr);
+    assert(info != nullptr);
+
+    auto state = new MGG_SamplerState();
     state->info = *info;
-    state->sampler = 0; // Not used in WebGL
+
+    glGenSamplers(1, &state->sampler);
+    GL_CHECK_ERROR();
+
+    // Address modes
+    glSamplerParameteri(state->sampler, GL_TEXTURE_WRAP_S, ToGLWrapMode(info->AddressU));
+    glSamplerParameteri(state->sampler, GL_TEXTURE_WRAP_T, ToGLWrapMode(info->AddressV));
+    glSamplerParameteri(state->sampler, GL_TEXTURE_WRAP_R, ToGLWrapMode(info->AddressW));
+
+    // Min/Mag filters
+    glSamplerParameteri(state->sampler, GL_TEXTURE_MIN_FILTER, ToGLMinFilter(info->Filter));
+    glSamplerParameteri(state->sampler, GL_TEXTURE_MAG_FILTER, ToGLMagFilter(info->Filter));
+
+    // Anisotropy (if supported and requested)
+    if (info->Filter == MGTextureFilter::Anisotropic && info->MaximumAnisotropy > 1)
+    {
+        glSamplerParameterf(state->sampler, GL_TEXTURE_MAX_ANISOTROPY_EXT, static_cast<GLfloat>(info->MaximumAnisotropy));
+    }
+
+    // Mip LOD bias and clamp
+    glSamplerParameterf(state->sampler, GL_TEXTURE_LOD_BIAS, info->MipMapLevelOfDetailBias);
+    glSamplerParameterf(state->sampler, GL_TEXTURE_MIN_LOD, 0.0f);
+    glSamplerParameterf(state->sampler, GL_TEXTURE_MAX_LOD, 1000.0f);
+
+    // Comparison mode (for shadow maps / depth sampling)
+    bool isComparison = info->FilterMode == MGTextureFilterMode::Comparison;
+    if (isComparison)
+    {
+        glSamplerParameteri(state->sampler, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glSamplerParameteri(state->sampler, GL_TEXTURE_COMPARE_FUNC, ToGLCompareFunc(info->ComparisonFunction));
+    }
+    else
+    {
+        glSamplerParameteri(state->sampler, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+    }
+
+    // Border color
+#if !defined(MG_EMSCRIPTEN)
+    if (info->AddressU == MGTextureAddressMode::Border ||
+        info->AddressV == MGTextureAddressMode::Border ||
+        info->AddressW == MGTextureAddressMode::Border)
+    {
+        GLfloat borderColor[4];
+        borderColor[0] = ((info->BorderColor >> 0) & 0xFF) / 255.0f;
+        borderColor[1] = ((info->BorderColor >> 8) & 0xFF) / 255.0f;
+        borderColor[2] = ((info->BorderColor >> 16) & 0xFF) / 255.0f;
+        borderColor[3] = ((info->BorderColor >> 24) & 0xFF) / 255.0f;
+        glSamplerParameterfv(state->sampler, GL_TEXTURE_BORDER_COLOR, borderColor);
+    }
+#endif
+
+    GL_CHECK_ERROR();
     return state;
 }
 
 void MGG_SamplerState_Destroy(MGG_GraphicsDevice* device, MGG_SamplerState* state) {
-    // No OpenGL resources to clean up
+    assert(device != nullptr);
+    if (!state)
+        return;
+
+    if (state->sampler != 0)
+    {
+        glDeleteSamplers(1, &state->sampler);
+        state->sampler = 0;
+    }
     delete state;
 }
 
