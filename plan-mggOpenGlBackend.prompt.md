@@ -21,6 +21,10 @@ VULKAN_SDK=~/VulkanSDK/1.4.304.0/macOS make desktopgl config=debug 2>&1
 You can also build the Emscripten target with:
 
 ```bash
+source ../emsdk/emsdk_env.sh
+```
+
+```bash
 VULKAN_SDK=~/VulkanSDK/1.4.304.0/macOS premake5 gmake --os=emscripten 2>&1
 ```
 

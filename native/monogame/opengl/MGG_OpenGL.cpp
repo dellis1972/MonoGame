@@ -638,17 +638,37 @@ struct MGG_RasterizerState {
     MGG_RasterizerState_Info info;
 };
 
+// Shader binding descriptor (24 bytes), matching the binary layout
+// written by the content pipeline (ShaderProfile.OpenGL4.cs).
+struct MGShaderBinding {
+    uint32_t binding;          // Binding index
+    uint32_t descriptorType;   // See MG_BINDING_TYPE_* constants below
+    uint32_t descriptorCount;  // Always 1
+    uint32_t stageFlags;       // 0x01 = vertex, 0x10 = fragment
+    uint64_t reserved;         // Always 0
+};
+
+// Binding descriptor type constants (match values written by the content pipeline)
+static const uint32_t MG_BINDING_TYPE_SAMPLER = 0;
+static const uint32_t MG_BINDING_TYPE_COMBINED_IMAGE_SAMPLER = 1;
+static const uint32_t MG_BINDING_TYPE_SAMPLED_IMAGE = 2;
+static const uint32_t MG_BINDING_TYPE_UNIFORM_BUFFER = 8;
+static const int MG_TEXTURE_SLOT_OFFSET = 32;
+
 struct MGG_Shader {
     uint32_t id = 0;
     MGShaderStage stage = MGShaderStage::Vertex;
     GLuint shader = 0;
 
-    // Parsed from the bytecode container header (same format as Vulkan)
+    // Parsed from the bytecode container header
     mguint uniformSlots = 0;
     mguint textureSlots = 0;
     mguint samplerSlots = 0;
     mgint uniformCount = 0;
     mgint bindingCount = 0;
+
+    // Parsed binding info from the header
+    std::vector<MGShaderBinding> bindings;
 
     // Original bytecode kept for reference
     std::vector<uint8_t> bytecode;
@@ -1273,17 +1293,151 @@ void MGG_GraphicsDevice_SetVertexBuffer(MGG_GraphicsDevice* device, mgint slot, 
 
 void MGG_GraphicsDevice_SetShader(MGG_GraphicsDevice* device, MGShaderStage stage, MGG_Shader* shader) {
     assert(device != nullptr);
-	assert(shader != nullptr);
-	assert(shader->stage == stage);
+    assert(shader != nullptr);
+    assert(shader->stage == stage);
 
-    printf("Start Set shader for OpenGL graphics device: %zu (stage=%d)\n", (size_t)device->context, stage);
-    printf("End Set shader for OpenGL graphics device: %zu\n", (size_t)device->context);
+    device->shaders[(mgint)stage] = shader;
+    device->shaderDirty = true;
 }
 
 void MGG_GraphicsDevice_SetInputLayout(MGG_GraphicsDevice* device, MGG_InputLayout* layout) {
     if (!device) return;
     printf("Setting input layout for OpenGL graphics device: %zu\n", (size_t)device->context);
     printf("Ending SetInputLayout for OpenGL graphics device: %zu\n", (size_t)device->context);
+}
+
+// ============================================================
+// Program Cache — link vertex + fragment shaders into a program
+// ============================================================
+
+static GLuint MGL_ProgramGetOrCreate(MGG_GraphicsDevice* device, MGG_Shader* vertexShader, MGG_Shader* pixelShader) {
+    assert(device != nullptr);
+    assert(vertexShader != nullptr);
+    assert(pixelShader != nullptr);
+    assert(vertexShader->stage == MGShaderStage::Vertex);
+    assert(pixelShader->stage == MGShaderStage::Pixel);
+
+    uint64_t programId = ((uint64_t)vertexShader->id) | (((uint64_t)pixelShader->id) << 32);
+
+    // Check the cache first
+    auto it = device->programCache.find(programId);
+    if (it != device->programCache.end())
+        return it->second;
+
+    // --- Create and link the program ---
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader->shader);
+    glAttachShader(program, pixelShader->shader);
+    glLinkProgram(program);
+
+    // Check link status
+    GLint linkStatus = 0;
+    glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+    if (linkStatus != GL_TRUE) {
+        GLint logLength = 0;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
+        if (logLength > 0) {
+            std::vector<char> log(logLength);
+            glGetProgramInfoLog(program, logLength, nullptr, log.data());
+            fprintf(stderr, "MGL_ProgramGetOrCreate: program link failed (vs=%u, ps=%u):\n%s\n",
+                    vertexShader->id, pixelShader->id, log.data());
+        }
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    // Must call glUseProgram before setting uniform values
+    glUseProgram(program);
+
+    // --- Set up uniform block bindings ---
+    // For each shader (vertex + pixel), iterate the parsed bindings and
+    // connect OpenGL uniform blocks to the correct UBO binding points.
+    MGG_Shader* shaders[2] = { vertexShader, pixelShader };
+    for (int s = 0; s < 2; s++) {
+        MGG_Shader* sh = shaders[s];
+        for (int i = 0; i < sh->bindingCount; i++) {
+            auto& b = sh->bindings[i];
+            if (b.descriptorType == MG_BINDING_TYPE_UNIFORM_BUFFER) {
+                // Find the uniform block in the linked program by iterating active blocks.
+                // The binding index from the header tells us which UBO binding point to use.
+                GLint numBlocks = 0;
+                glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
+                for (GLint bi = 0; bi < numBlocks; bi++) {
+                    // Query which binding this block is currently assigned to.
+                    // If SPIRV-Cross emitted layout(binding=N), the driver may already
+                    // have it set. Otherwise, we need to match by name or index.
+                    GLint currentBinding = -1;
+                    glGetActiveUniformBlockiv(program, bi, GL_UNIFORM_BLOCK_BINDING, &currentBinding);
+
+                    // Compute the actual UBO binding point: stage * uniformCountPerStage + binding
+                    // In MonoGame's model, each stage has its own constant buffer at the binding index.
+                    // We offset pixel shader bindings to avoid conflicts with vertex shader bindings.
+                    int uboBindingPoint = (int)sh->stage + (int)b.binding;
+
+                    // If the block's current binding matches the bytecode binding index,
+                    // it was set by layout(binding=N) in the GLSL. Remap it to our scheme.
+                    if (currentBinding == (GLint)b.binding) {
+                        glUniformBlockBinding(program, bi, uboBindingPoint);
+                    }
+                }
+            }
+        }
+    }
+
+    // --- Set up sampler uniform → texture unit mappings ---
+    // For each shader, iterate bindings that are texture/sampler types and
+    // assign the corresponding sampler uniforms to texture unit = (binding - TEXTURE_SLOT_OFFSET).
+    GLint numActiveUniforms = 0;
+    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
+
+    for (int s = 0; s < 2; s++) {
+        MGG_Shader* sh = shaders[s];
+        for (int i = 0; i < sh->bindingCount; i++) {
+            auto& b = sh->bindings[i];
+            if (b.descriptorType == MG_BINDING_TYPE_COMBINED_IMAGE_SAMPLER ||
+                b.descriptorType == MG_BINDING_TYPE_SAMPLED_IMAGE ||
+                b.descriptorType == MG_BINDING_TYPE_SAMPLER) {
+                int textureUnit = (int)b.binding - MG_TEXTURE_SLOT_OFFSET;
+
+                // Search active uniforms for sampler types and match by binding
+                for (GLint ui = 0; ui < numActiveUniforms; ui++) {
+                    char uniformName[256];
+                    GLsizei nameLength = 0;
+                    GLint uniformSize = 0;
+                    GLenum uniformType = 0;
+                    glGetActiveUniform(program, ui, sizeof(uniformName), &nameLength, &uniformSize, &uniformType, uniformName);
+
+                    // Check if this is a sampler type
+                    if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_3D ||
+                        uniformType == GL_SAMPLER_CUBE || uniformType == GL_SAMPLER_2D_SHADOW ||
+                        uniformType == GL_SAMPLER_2D_ARRAY ||
+#if !defined(MG_EMSCRIPTEN)
+                        uniformType == GL_SAMPLER_1D ||
+#endif
+                        uniformType == GL_INT_SAMPLER_2D || uniformType == GL_UNSIGNED_INT_SAMPLER_2D) {
+                        GLint location = glGetUniformLocation(program, uniformName);
+                        if (location >= 0) {
+                            // Check if this sampler's binding matches by querying its current value
+                            GLint currentUnit = -1;
+                            glGetUniformiv(program, location, &currentUnit);
+
+                            // If the sampler is currently bound to the bytecode binding index
+                            // (set by layout(binding=N) in GLSL), remap to texture unit
+                            if (currentUnit == (GLint)b.binding) {
+                                glUniform1i(location, textureUnit);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Cache the linked program
+    device->programCache[programId] = program;
+
+    GL_CHECK_ERROR();
+    return program;
 }
 
 void MGG_GraphicsDevice_Draw(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint vertexStart, mgint vertexCount) {
@@ -1868,17 +2022,97 @@ void MGG_InputLayout_Destroy(MGG_GraphicsDevice* device, MGG_InputLayout* layout
 }
 
 MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, mgbyte* bytecode, mgint sizeInBytes) {
-    printf("Creating shader for OpenGL graphics device: %zu (stage=%d, size=%d)\n", (size_t)device->context, stage, sizeInBytes);
-    if (!device || !bytecode || sizeInBytes <= 0) return nullptr;
-    
+    assert(device != nullptr);
+    assert(bytecode != nullptr);
+    assert(sizeInBytes > 0);
+
     MGG_Shader* shader = new MGG_Shader();
-    printf("Created shader for OpenGL graphics device: %zu\n", (size_t)device->context);
+    shader->stage = stage;
+
+    // --- Parse the bytecode container header ---
+    shader->uniformCount = *(mgint*)bytecode;  bytecode += sizeof(mgint);  sizeInBytes -= sizeof(mgint);
+    shader->uniformSlots = *(mguint*)bytecode; bytecode += sizeof(mguint); sizeInBytes -= sizeof(mguint);
+    shader->textureSlots = *(mguint*)bytecode; bytecode += sizeof(mguint); sizeInBytes -= sizeof(mguint);
+    shader->samplerSlots = *(mguint*)bytecode; bytecode += sizeof(mguint); sizeInBytes -= sizeof(mguint);
+
+    shader->bindingCount = *(mgint*)bytecode;  bytecode += sizeof(mgint);  sizeInBytes -= sizeof(mgint);
+
+    // Read the binding entries (each is 24 bytes, matching the content pipeline's binary layout)
+    shader->bindings.resize(shader->bindingCount);
+    if (shader->bindingCount > 0) {
+        size_t bindingsSize = sizeof(MGShaderBinding) * shader->bindingCount;
+        memcpy(shader->bindings.data(), bytecode, bindingsSize);
+        bytecode += bindingsSize;
+        sizeInBytes -= bindingsSize;
+    }
+
+    // --- The remaining bytes are GLSL source text ---
+    const char* glslSource = (const char*)bytecode;
+    GLint glslLength = (GLint)sizeInBytes;
+
+    // Store original bytecode for reference (the GLSL part)
+    shader->bytecode.assign(bytecode, bytecode + sizeInBytes);
+
+    // --- Create and compile the GL shader ---
+    GLenum glStage = (stage == MGShaderStage::Vertex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
+    shader->shader = glCreateShader(glStage);
+    glShaderSource(shader->shader, 1, &glslSource, &glslLength);
+    glCompileShader(shader->shader);
+
+    // Check compilation status
+    GLint compileStatus = 0;
+    glGetShaderiv(shader->shader, GL_COMPILE_STATUS, &compileStatus);
+    if (compileStatus != GL_TRUE) {
+        GLint logLength = 0;
+        glGetShaderiv(shader->shader, GL_INFO_LOG_LENGTH, &logLength);
+        if (logLength > 0) {
+            std::vector<char> log(logLength);
+            glGetShaderInfoLog(shader->shader, logLength, nullptr, log.data());
+            fprintf(stderr, "MGG_Shader_Create: %s shader compilation failed:\n%s\n",
+                    (stage == MGShaderStage::Vertex) ? "Vertex" : "Fragment", log.data());
+        }
+        glDeleteShader(shader->shader);
+        delete shader;
+        return nullptr;
+    }
+
+    shader->id = ++device->currentShaderId;
+    device->all_shaders.push_back(shader);
+
+    GL_CHECK_ERROR();
     return shader;
 }
 
 void MGG_Shader_Destroy(MGG_GraphicsDevice* device, MGG_Shader* shader) {
-    if (!device || !shader) return;
-    printf("Destroying shader for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(shader != nullptr);
+
+    if (!shader)
+        return;
+
+    // Remove any cached programs that reference this shader
+    auto it = device->programCache.begin();
+    while (it != device->programCache.end()) {
+        uint64_t key = it->first;
+        uint32_t vsId = (uint32_t)(key & 0xFFFFFFFF);
+        uint32_t psId = (uint32_t)(key >> 32);
+        if (vsId == shader->id || psId == shader->id) {
+            glDeleteProgram(it->second);
+            if (device->currentProgram == it->second)
+                device->currentProgram = 0;
+            it = device->programCache.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Delete the GL shader object
+    if (shader->shader) {
+        glDeleteShader(shader->shader);
+        shader->shader = 0;
+    }
+
+    mg_remove(device->all_shaders, shader);
     delete shader;
 }
 
