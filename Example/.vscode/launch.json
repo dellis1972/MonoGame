@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+        "name": "(lldb) Launch Example with Native Debugging",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/bin/Debug/net9.0/Example.Desktop",
+        "args": [],
+        "stopAtEntry": false,
+        "preLaunchTask": "build",
+        "cwd": "${workspaceFolder}",
+        "environment": [
+          {
+            "name": "DYLD_LIBRARY_PATH",
+            "value": "${workspaceFolder}/bin/Debug/net9.0"
+          }
+        ],
+        "externalConsole": false,
+        "MIMode": "lldb",
+        "setupCommands": [
+          {
+            "description": "Load MonoGame native symbols",
+            "text": "settings set target.inline-breakpoint-strategy always",
+            "ignoreFailures": true
+          },
+          {
+            "description": "Set library search path",
+            "text": "settings set target.env-vars DYLD_LIBRARY_PATH=${workspaceFolder}/bin/Debug/net9.0",
+            "ignoreFailures": true
+          }
+        ]
+      },
+    ]
+}
