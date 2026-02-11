@@ -40,6 +40,11 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <cstdint>
+#include <map>
+#include <unordered_map>
+#include <queue>
+#include <optional>
 
 // Debug macros
 #ifdef DEBUG
@@ -52,7 +57,534 @@ void GL_CHECK_ERROR() { \
 #else
 #define GL_CHECK_ERROR() ((void)0)
 #endif
+
+// ============================================================
+// Enum Conversion Helpers — MonoGame enums → GL enums
+// ============================================================
+
+static GLenum ToGLPrimitiveType(MGPrimitiveType type)
+{
+	switch (type)
+	{
+	case MGPrimitiveType::TriangleList:
+		return GL_TRIANGLES;
+	case MGPrimitiveType::TriangleStrip:
+		return GL_TRIANGLE_STRIP;
+	case MGPrimitiveType::LineList:
+		return GL_LINES;
+	case MGPrimitiveType::LineStrip:
+		return GL_LINE_STRIP;
+	case MGPrimitiveType::PointList:
+		return GL_POINTS;
+	default:
+		assert(!"Unsupported primitive type!");
+		return GL_TRIANGLES;
+	}
+}
+
+static GLenum ToGLTextureTarget(MGTextureType type)
+{
+	switch (type)
+	{
+	case MGTextureType::_2D:
+		return GL_TEXTURE_2D;
+	case MGTextureType::_3D:
+		return GL_TEXTURE_3D;
+	case MGTextureType::Cube:
+		return GL_TEXTURE_CUBE_MAP;
+	default:
+		assert(!"Unsupported texture type!");
+		return GL_TEXTURE_2D;
+	}
+}
+
+static GLenum ToGLBufferTarget(MGBufferType type)
+{
+	switch (type)
+	{
+	case MGBufferType::Vertex:
+		return GL_ARRAY_BUFFER;
+	case MGBufferType::Index:
+		return GL_ELEMENT_ARRAY_BUFFER;
+	case MGBufferType::Constant:
+		return GL_UNIFORM_BUFFER;
+	default:
+		assert(!"Unsupported buffer type!");
+		return GL_ARRAY_BUFFER;
+	}
+}
+
+static GLenum ToGLInternalFormat(MGSurfaceFormat format)
+{
+	switch (format)
+	{
+	case MGSurfaceFormat::Color:
+		return GL_RGBA8;
+	case MGSurfaceFormat::Bgr565:
+		return GL_RGB565;
+	case MGSurfaceFormat::Bgra5551:
+		return GL_RGB5_A1;
+	case MGSurfaceFormat::Bgra4444:
+		return GL_RGBA4;
+	case MGSurfaceFormat::Dxt1:
+		return GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+	case MGSurfaceFormat::Dxt3:
+		return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+	case MGSurfaceFormat::Dxt5:
+		return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	case MGSurfaceFormat::NormalizedByte2:
+		return GL_RG8;
+	case MGSurfaceFormat::NormalizedByte4:
+		return GL_RGBA8;
+	case MGSurfaceFormat::Rgba1010102:
+		return GL_RGB10_A2;
+	case MGSurfaceFormat::Rg32:
+		return GL_RG16;
+	case MGSurfaceFormat::Rgba64:
+		return GL_RGBA16;
+	case MGSurfaceFormat::Alpha8:
+		return GL_R8;
+	case MGSurfaceFormat::Single:
+		return GL_R32F;
+	case MGSurfaceFormat::Vector2:
+		return GL_RG32F;
+	case MGSurfaceFormat::Vector4:
+		return GL_RGBA32F;
+	case MGSurfaceFormat::HalfSingle:
+		return GL_R16F;
+	case MGSurfaceFormat::HalfVector2:
+		return GL_RG16F;
+	case MGSurfaceFormat::HalfVector4:
+		return GL_RGBA16F;
+	case MGSurfaceFormat::HdrBlendable:
+		return GL_RGBA16F;
+	case MGSurfaceFormat::Bgr32:
+		return GL_RGBA8; // No native BGR internal format; swizzle if needed
+	case MGSurfaceFormat::Bgra32:
+		return GL_RGBA8;
+	case MGSurfaceFormat::ColorSRgb:
+		return GL_SRGB8_ALPHA8;
+	case MGSurfaceFormat::Bgr32SRgb:
+		return GL_SRGB8_ALPHA8;
+	case MGSurfaceFormat::Bgra32SRgb:
+		return GL_SRGB8_ALPHA8;
+	case MGSurfaceFormat::Dxt1SRgb:
+		return GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;
+	case MGSurfaceFormat::Dxt3SRgb:
+		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
+	case MGSurfaceFormat::Dxt5SRgb:
+		return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
+	case MGSurfaceFormat::Dxt1a:
+		return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+#if defined(MG_EMSCRIPTEN)
+	case MGSurfaceFormat::Rgb8Etc2:
+		return GL_COMPRESSED_RGB8_ETC2;
+	case MGSurfaceFormat::Srgb8Etc2:
+		return GL_COMPRESSED_SRGB8_ETC2;
+	case MGSurfaceFormat::Rgb8A1Etc2:
+		return GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2;
+	case MGSurfaceFormat::Srgb8A1Etc2:
+		return GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2;
+	case MGSurfaceFormat::Rgba8Etc2:
+		return GL_COMPRESSED_RGBA8_ETC2_EAC;
+	case MGSurfaceFormat::SRgb8A8Etc2:
+		return GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC;
+#endif
+	default:
+		assert(!"Unsupported surface format!");
+		return GL_RGBA8;
+	}
+}
+
+static GLenum ToGLFormat(MGSurfaceFormat format)
+{
+	switch (format)
+	{
+	case MGSurfaceFormat::Color:
+	case MGSurfaceFormat::NormalizedByte4:
+	case MGSurfaceFormat::Rgba1010102:
+	case MGSurfaceFormat::ColorSRgb:
+		return GL_RGBA;
+	case MGSurfaceFormat::Bgr565:
+		return GL_RGB;
+	case MGSurfaceFormat::Bgra5551:
+	case MGSurfaceFormat::Bgra4444:
+		return GL_RGBA;
+	case MGSurfaceFormat::NormalizedByte2:
+	case MGSurfaceFormat::Rg32:
+		return GL_RG;
+	case MGSurfaceFormat::Rgba64:
+	case MGSurfaceFormat::HalfVector4:
+	case MGSurfaceFormat::Vector4:
+	case MGSurfaceFormat::HdrBlendable:
+		return GL_RGBA;
+	case MGSurfaceFormat::Alpha8:
+	case MGSurfaceFormat::Single:
+	case MGSurfaceFormat::HalfSingle:
+		return GL_RED;
+	case MGSurfaceFormat::Vector2:
+	case MGSurfaceFormat::HalfVector2:
+		return GL_RG;
+	case MGSurfaceFormat::Bgr32:
+	case MGSurfaceFormat::Bgr32SRgb:
+		return GL_BGRA;
+	case MGSurfaceFormat::Bgra32:
+	case MGSurfaceFormat::Bgra32SRgb:
+		return GL_BGRA;
+	default:
+		assert(!"Unsupported surface format for ToGLFormat!");
+		return GL_RGBA;
+	}
+}
+
+static GLenum ToGLType(MGSurfaceFormat format)
+{
+	switch (format)
+	{
+	case MGSurfaceFormat::Color:
+	case MGSurfaceFormat::ColorSRgb:
+	case MGSurfaceFormat::NormalizedByte2:
+	case MGSurfaceFormat::NormalizedByte4:
+	case MGSurfaceFormat::Alpha8:
+	case MGSurfaceFormat::Bgr32:
+	case MGSurfaceFormat::Bgra32:
+	case MGSurfaceFormat::Bgr32SRgb:
+	case MGSurfaceFormat::Bgra32SRgb:
+		return GL_UNSIGNED_BYTE;
+	case MGSurfaceFormat::Bgr565:
+		return GL_UNSIGNED_SHORT_5_6_5;
+	case MGSurfaceFormat::Bgra5551:
+		return GL_UNSIGNED_SHORT_5_5_5_1;
+	case MGSurfaceFormat::Bgra4444:
+		return GL_UNSIGNED_SHORT_4_4_4_4;
+	case MGSurfaceFormat::Rgba1010102:
+		return GL_UNSIGNED_INT_2_10_10_10_REV;
+	case MGSurfaceFormat::Rg32:
+	case MGSurfaceFormat::Rgba64:
+		return GL_UNSIGNED_SHORT;
+	case MGSurfaceFormat::Single:
+	case MGSurfaceFormat::Vector2:
+	case MGSurfaceFormat::Vector4:
+		return GL_FLOAT;
+	case MGSurfaceFormat::HalfSingle:
+	case MGSurfaceFormat::HalfVector2:
+	case MGSurfaceFormat::HalfVector4:
+	case MGSurfaceFormat::HdrBlendable:
+		return GL_HALF_FLOAT;
+	default:
+		assert(!"Unsupported surface format for ToGLType!");
+		return GL_UNSIGNED_BYTE;
+	}
+}
+
+static bool IsCompressedFormat(MGSurfaceFormat format)
+{
+	switch (format)
+	{
+	case MGSurfaceFormat::Dxt1:
+	case MGSurfaceFormat::Dxt3:
+	case MGSurfaceFormat::Dxt5:
+	case MGSurfaceFormat::Dxt1SRgb:
+	case MGSurfaceFormat::Dxt3SRgb:
+	case MGSurfaceFormat::Dxt5SRgb:
+	case MGSurfaceFormat::Dxt1a:
+#if defined(MG_EMSCRIPTEN)
+	case MGSurfaceFormat::Rgb8Etc2:
+	case MGSurfaceFormat::Srgb8Etc2:
+	case MGSurfaceFormat::Rgb8A1Etc2:
+	case MGSurfaceFormat::Srgb8A1Etc2:
+	case MGSurfaceFormat::Rgba8Etc2:
+	case MGSurfaceFormat::SRgb8A8Etc2:
+#endif
+		return true;
+	default:
+		return false;
+	}
+}
+
+static GLenum ToGLDepthFormat(MGDepthFormat format)
+{
+	switch (format)
+	{
+	case MGDepthFormat::Depth16:
+		return GL_DEPTH_COMPONENT16;
+	case MGDepthFormat::Depth24:
+		return GL_DEPTH_COMPONENT24;
+	case MGDepthFormat::Depth24Stencil8:
+		return GL_DEPTH24_STENCIL8;
+	default:
+		return 0;
+	}
+}
+
+static GLenum ToGLBlendFactor(MGBlend mode)
+{
+	switch (mode)
+	{
+	case MGBlend::One:
+		return GL_ONE;
+	case MGBlend::Zero:
+		return GL_ZERO;
+	case MGBlend::SourceColor:
+		return GL_SRC_COLOR;
+	case MGBlend::InverseSourceColor:
+		return GL_ONE_MINUS_SRC_COLOR;
+	case MGBlend::SourceAlpha:
+		return GL_SRC_ALPHA;
+	case MGBlend::InverseSourceAlpha:
+		return GL_ONE_MINUS_SRC_ALPHA;
+	case MGBlend::DestinationColor:
+		return GL_DST_COLOR;
+	case MGBlend::InverseDestinationColor:
+		return GL_ONE_MINUS_DST_COLOR;
+	case MGBlend::DestinationAlpha:
+		return GL_DST_ALPHA;
+	case MGBlend::InverseDestinationAlpha:
+		return GL_ONE_MINUS_DST_ALPHA;
+	case MGBlend::BlendFactor:
+		return GL_CONSTANT_COLOR;
+	case MGBlend::InverseBlendFactor:
+		return GL_ONE_MINUS_CONSTANT_COLOR;
+	case MGBlend::SourceAlphaSaturation:
+		return GL_SRC_ALPHA_SATURATE;
+	default:
+		assert(!"Unsupported blend mode!");
+		return GL_ONE;
+	}
+}
+
+static GLenum ToGLBlendOp(MGBlendFunction func)
+{
+	switch (func)
+	{
+	case MGBlendFunction::Add:
+		return GL_FUNC_ADD;
+	case MGBlendFunction::Subtract:
+		return GL_FUNC_SUBTRACT;
+	case MGBlendFunction::ReverseSubtract:
+		return GL_FUNC_REVERSE_SUBTRACT;
+	case MGBlendFunction::Min:
+		return GL_MIN;
+	case MGBlendFunction::Max:
+		return GL_MAX;
+	default:
+		assert(!"Unsupported blend function!");
+		return GL_FUNC_ADD;
+	}
+}
+
+static GLenum ToGLCompareFunc(MGCompareFunction func)
+{
+	switch (func)
+	{
+	case MGCompareFunction::Always:
+		return GL_ALWAYS;
+	case MGCompareFunction::Never:
+		return GL_NEVER;
+	case MGCompareFunction::Less:
+		return GL_LESS;
+	case MGCompareFunction::LessEqual:
+		return GL_LEQUAL;
+	case MGCompareFunction::Equal:
+		return GL_EQUAL;
+	case MGCompareFunction::GreaterEqual:
+		return GL_GEQUAL;
+	case MGCompareFunction::Greater:
+		return GL_GREATER;
+	case MGCompareFunction::NotEqual:
+		return GL_NOTEQUAL;
+	default:
+		assert(!"Unsupported compare function!");
+		return GL_ALWAYS;
+	}
+}
+
+static GLenum ToGLStencilOp(MGStencilOperation op)
+{
+	switch (op)
+	{
+	case MGStencilOperation::Keep:
+		return GL_KEEP;
+	case MGStencilOperation::Zero:
+		return GL_ZERO;
+	case MGStencilOperation::Replace:
+		return GL_REPLACE;
+	case MGStencilOperation::Increment:
+		return GL_INCR_WRAP;
+	case MGStencilOperation::Decrement:
+		return GL_DECR_WRAP;
+	case MGStencilOperation::IncrementSaturation:
+		return GL_INCR;
+	case MGStencilOperation::DecrementSaturation:
+		return GL_DECR;
+	case MGStencilOperation::Invert:
+		return GL_INVERT;
+	default:
+		assert(!"Unsupported stencil operation!");
+		return GL_KEEP;
+	}
+}
+
+static GLenum ToGLFillMode(MGFillMode mode)
+{
+	switch (mode)
+	{
+#if !defined(MG_EMSCRIPTEN)
+	case MGFillMode::Solid:
+		return GL_FILL;
+	case MGFillMode::WireFrame:
+		return GL_LINE;
+#else
+	// WebGL/ES does not support glPolygonMode
+	case MGFillMode::Solid:
+	case MGFillMode::WireFrame:
+		return GL_FILL;
+#endif
+	default:
+		assert(!"Unsupported fill mode!");
+		return GL_FILL;
+	}
+}
+
+static GLenum ToGLCullMode(MGCullMode mode)
+{
+	switch (mode)
+	{
+	case MGCullMode::CullClockwiseFace:
+		return GL_FRONT;
+	case MGCullMode::CullCounterClockwiseFace:
+		return GL_BACK;
+	default:
+		// MGCullMode::None is handled by disabling GL_CULL_FACE
+		return GL_BACK;
+	}
+}
+
+static GLenum ToGLWrapMode(MGTextureAddressMode mode)
+{
+	switch (mode)
+	{
+	case MGTextureAddressMode::Wrap:
+		return GL_REPEAT;
+	case MGTextureAddressMode::Clamp:
+		return GL_CLAMP_TO_EDGE;
+	case MGTextureAddressMode::Mirror:
+		return GL_MIRRORED_REPEAT;
+	case MGTextureAddressMode::Border:
+#if !defined(MG_EMSCRIPTEN)
+		return GL_CLAMP_TO_BORDER;
+#else
+		return GL_CLAMP_TO_EDGE; // WebGL2 does not support GL_CLAMP_TO_BORDER
+#endif
+	default:
+		assert(!"Unsupported texture address mode!");
+		return GL_REPEAT;
+	}
+}
+
+static GLenum ToGLMinFilter(MGTextureFilter filter)
+{
+	switch (filter)
+	{
+	case MGTextureFilter::Linear:
+		return GL_LINEAR_MIPMAP_LINEAR;
+	case MGTextureFilter::Point:
+		return GL_NEAREST_MIPMAP_NEAREST;
+	case MGTextureFilter::Anisotropic:
+		return GL_LINEAR_MIPMAP_LINEAR;
+	case MGTextureFilter::LinearMipPoint:
+		return GL_LINEAR_MIPMAP_NEAREST;
+	case MGTextureFilter::PointMipLinear:
+		return GL_NEAREST_MIPMAP_LINEAR;
+	case MGTextureFilter::MinLinearMagPointMipLinear:
+		return GL_LINEAR_MIPMAP_LINEAR;
+	case MGTextureFilter::MinLinearMagPointMipPoint:
+		return GL_LINEAR_MIPMAP_NEAREST;
+	case MGTextureFilter::MinPointMagLinearMipLinear:
+		return GL_NEAREST_MIPMAP_LINEAR;
+	case MGTextureFilter::MinPointMagLinearMipPoint:
+		return GL_NEAREST_MIPMAP_NEAREST;
+	default:
+		assert(!"Unsupported texture filter!");
+		return GL_LINEAR_MIPMAP_LINEAR;
+	}
+}
+
+static GLenum ToGLMagFilter(MGTextureFilter filter)
+{
+	switch (filter)
+	{
+	case MGTextureFilter::Linear:
+	case MGTextureFilter::Anisotropic:
+	case MGTextureFilter::LinearMipPoint:
+		return GL_LINEAR;
+	case MGTextureFilter::Point:
+	case MGTextureFilter::PointMipLinear:
+		return GL_NEAREST;
+	case MGTextureFilter::MinLinearMagPointMipLinear:
+	case MGTextureFilter::MinLinearMagPointMipPoint:
+		return GL_NEAREST;
+	case MGTextureFilter::MinPointMagLinearMipLinear:
+	case MGTextureFilter::MinPointMagLinearMipPoint:
+		return GL_LINEAR;
+	default:
+		assert(!"Unsupported texture filter!");
+		return GL_LINEAR;
+	}
+}
+
+struct GLVertexAttribInfo {
+	GLint size;
+	GLenum type;
+	GLboolean normalized;
+};
+
+static GLVertexAttribInfo ToGLVertexAttribType(MGVertexElementFormat format)
+{
+	switch (format)
+	{
+	case MGVertexElementFormat::Single:
+		return { 1, GL_FLOAT, GL_FALSE };
+	case MGVertexElementFormat::Vector2:
+		return { 2, GL_FLOAT, GL_FALSE };
+	case MGVertexElementFormat::Vector3:
+		return { 3, GL_FLOAT, GL_FALSE };
+	case MGVertexElementFormat::Vector4:
+		return { 4, GL_FLOAT, GL_FALSE };
+	case MGVertexElementFormat::Color:
+		return { 4, GL_UNSIGNED_BYTE, GL_TRUE };
+	case MGVertexElementFormat::Byte4:
+		return { 4, GL_UNSIGNED_BYTE, GL_FALSE };
+	case MGVertexElementFormat::Short2:
+		return { 2, GL_SHORT, GL_FALSE };
+	case MGVertexElementFormat::Short4:
+		return { 4, GL_SHORT, GL_FALSE };
+	case MGVertexElementFormat::NormalizedShort2:
+		return { 2, GL_SHORT, GL_TRUE };
+	case MGVertexElementFormat::NormalizedShort4:
+		return { 4, GL_SHORT, GL_TRUE };
+	case MGVertexElementFormat::HalfVector2:
+		return { 2, GL_HALF_FLOAT, GL_FALSE };
+	case MGVertexElementFormat::HalfVector4:
+		return { 4, GL_HALF_FLOAT, GL_FALSE };
+	default:
+		assert(!"Unsupported vertex element format!");
+		return { 4, GL_FLOAT, GL_FALSE };
+	}
+}
+
+// ============================================================
+// Constants
+// ============================================================
+
+static const int MAX_TEXTURE_SLOTS = 16;
+static const int MAX_VERTEX_BUFFERS = 8;
+static const int MAX_RENDER_TARGETS = 4;
+static const int MAX_UNIFORM_BUFFER_SLOTS = 16;
+
+// ============================================================
 // Structures for OpenGL graphics system
+// ============================================================
 
 struct MGG_GraphicsAdapter {
     // OpenGL specific adapter info
@@ -65,76 +597,61 @@ struct MGG_GraphicsSystem {
     std::vector<MGG_GraphicsAdapter*> adapters;
 };
 
-struct MGG_GraphicsDevice
-{
-    MGG_GraphicsSystem* system = nullptr;
-    MGG_GraphicsAdapter* adapter = nullptr;
-    
-#if defined(MG_EMSCRIPTEN)
-    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context = 0;
-#else
-    SDL_GLContext context = nullptr;
-    SDL_Window* window = nullptr;
-#endif
-
-    // Viewport
-    int viewportX = 0;
-    int viewportY = 0;
-    int viewportWidth = 0;
-    int viewportHeight = 0;
-    float viewportMinDepth = 0.0f;
-    float viewportMaxDepth = 1.0f;
-    
-    // Scissor rect
-    int scissorX = 0;
-    int scissorY = 0;
-    int scissorWidth = 0;
-    int scissorHeight = 0;
-};
-
 struct MGG_Buffer {
-    MGBufferType type;
-    int sizeInBytes;
-    std::string name;  // Optional name
+    MGBufferType type = MGBufferType::Vertex;
+    GLenum target = GL_ARRAY_BUFFER;
+    GLuint handle = 0;
+    int sizeInBytes = 0;
 };
 
 struct MGG_Texture {
-    MGTextureType type;
-    MGSurfaceFormat format;
-    int width;
-    int height;
-    int depth;
-    int mipmaps;
-    int slices;
-    bool isRenderTarget;
-    MGDepthFormat depthFormat;
-    GLuint texture;
+    MGTextureType type = MGTextureType::_2D;
+    MGSurfaceFormat format = MGSurfaceFormat::Color;
+    GLenum target = GL_TEXTURE_2D;
+    int width = 0;
+    int height = 0;
+    int depth = 0;
+    int mipmaps = 1;
+    int slices = 0;
+    bool isRenderTarget = false;
+    MGDepthFormat depthFormat = MGDepthFormat::None;
+    MGRenderTargetUsage usage = MGRenderTargetUsage::PlatformContents;
+    mgint multiSampleCount = 0;
+    GLuint texture = 0;
+    GLuint depthRenderbuffer = 0;
 };
 
 struct MGG_SamplerState {
     MGG_SamplerState_Info info;
-    GLuint sampler;
+    GLuint sampler = 0;
 };
 
 struct MGG_BlendState {
     MGG_BlendState_Info info;
-    GLuint state;
 };
 
 struct MGG_DepthStencilState {
     MGG_DepthStencilState_Info info;
-    GLuint state;
 };
 
 struct MGG_RasterizerState {
     MGG_RasterizerState_Info info;
-    GLuint state;
 };
 
 struct MGG_Shader {
-    MGShaderStage stage;
+    uint32_t id = 0;
+    MGShaderStage stage = MGShaderStage::Vertex;
+    GLuint shader = 0;
+
+    // Parsed from the bytecode container header (same format as Vulkan)
+    mguint uniformSlots = 0;
+    mguint textureSlots = 0;
+    mguint samplerSlots = 0;
+    mgint uniformCount = 0;
+    mgint bindingCount = 0;
+
+    // Original bytecode kept for reference
     std::vector<uint8_t> bytecode;
-    GLuint shader;
 };
 
 struct MGG_InputLayout {
@@ -143,7 +660,104 @@ struct MGG_InputLayout {
 };
 
 struct MGG_OcclusionQuery {
-    bool isActive;
+    GLuint query = 0;
+    bool isActive = false;
+    mgbool isComplete = false;
+    mgint pixelCount = 0;
+};
+
+struct MGG_GraphicsDevice
+{
+    MGG_GraphicsSystem* system = nullptr;
+    MGG_GraphicsAdapter* adapter = nullptr;
+
+#if defined(MG_EMSCRIPTEN)
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context = 0;
+#else
+    SDL_GLContext context = nullptr;
+    SDL_Window* window = nullptr;
+#endif
+
+    // Default VAO (one global VAO for the device)
+    GLuint defaultVAO = 0;
+
+    // Viewport
+    int viewportX = 0;
+    int viewportY = 0;
+    int viewportWidth = 0;
+    int viewportHeight = 0;
+    float viewportMinDepth = 0.0f;
+    float viewportMaxDepth = 1.0f;
+
+    // Scissor rect
+    int scissorX = 0;
+    int scissorY = 0;
+    int scissorWidth = 0;
+    int scissorHeight = 0;
+
+    // Swapchain / backbuffer info
+    mgint backbufferWidth = 0;
+    mgint backbufferHeight = 0;
+
+    // --- Current bound state pointers ---
+    MGG_BlendState* blendState = nullptr;
+    MGG_DepthStencilState* depthStencilState = nullptr;
+    MGG_RasterizerState* rasterizerState = nullptr;
+
+    // Blend factor
+    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    bool blendFactorDirty = false;
+
+    // --- Shaders ---
+    uint32_t currentShaderId = 0;
+    MGG_Shader* shaders[(mgint)MGShaderStage::Count] = { nullptr };
+    bool shaderDirty = false;
+    std::vector<MGG_Shader*> all_shaders;
+
+    // Program cache: keyed by (vertexShaderID | pixelShaderID << 32)
+    std::unordered_map<uint64_t, GLuint> programCache;
+    GLuint currentProgram = 0;
+
+    // --- Resource bindings ---
+    // Constant buffers (per stage)
+    MGG_Buffer* constantBuffers[MAX_UNIFORM_BUFFER_SLOTS] = { nullptr };
+    uint32_t uniformDirty = 0;
+
+    // Textures and samplers
+    MGG_Texture* textures[MAX_TEXTURE_SLOTS] = { nullptr };
+    MGG_SamplerState* samplers[MAX_TEXTURE_SLOTS] = { nullptr };
+    uint32_t textureDirty = 0;
+    uint32_t samplerDirty = 0;
+
+    // Vertex buffers
+    MGG_Buffer* vertexBuffers[MAX_VERTEX_BUFFERS] = { nullptr };
+    uint32_t vertexOffsets[MAX_VERTEX_BUFFERS] = { 0 };
+    uint64_t vertexBuffersDirty = 0xFFFFFFFF;
+
+    // Index buffer
+    MGG_Buffer* indexBuffer = nullptr;
+    MGIndexElementSize indexBufferSize = MGIndexElementSize::SixteenBits;
+
+    // Input layout
+    MGG_InputLayout* inputLayout = nullptr;
+    bool inputLayoutDirty = false;
+
+    // --- Dirty flags for state application ---
+    bool blendDirty = false;
+    bool depthStencilDirty = false;
+    bool rasterizerDirty = false;
+
+    // --- Render targets (FBO) ---
+    GLuint fbo = 0;
+    MGG_Texture* renderTargets[MAX_RENDER_TARGETS] = { nullptr };
+    std::optional<int> renderTargetSlices[MAX_RENDER_TARGETS];
+    mgint renderTargetCount = 0;
+    bool renderTargetDirty = false;
+
+    // --- Tracking for cleanup ---
+    std::vector<MGG_Buffer*> all_buffers;
+    std::vector<MGG_Texture*> all_textures;
+    std::vector<MGG_OcclusionQuery*> deferredOcclusionQueries;
 };
 
 // Implementation of API functions
@@ -309,7 +923,7 @@ printf("Creating OpenGL graphics device\n");
     device->scissorY = 0;
     device->scissorWidth = 800;  // Default size
     device->scissorHeight = 600; // Default size
-    printf("Created OpenGL graphics device: %lu\n", device->context);
+    printf("Created OpenGL graphics device: %p\n", (void*)device->context);
     return device;
 }
 
@@ -709,7 +1323,6 @@ MGG_BlendState* MGG_BlendState_Create(MGG_GraphicsDevice* device, MGG_BlendState
     
     // OpenGL doesn't have explicit state objects like Direct3D
     // Instead, we just store the state information and apply it when needed
-    state->state = 0; // Not used in WebGL
     
     return state;
 }
@@ -721,7 +1334,6 @@ void MGG_BlendState_Destroy(MGG_GraphicsDevice* device, MGG_BlendState* state) {
 MGG_DepthStencilState* MGG_DepthStencilState_Create(MGG_GraphicsDevice* device, MGG_DepthStencilState_Info* info) {
     MGG_DepthStencilState* state = new MGG_DepthStencilState();
     state->info = *info;
-    state->state = 0; // Not used in WebGL
     return state;
 }
 
@@ -733,7 +1345,6 @@ void MGG_DepthStencilState_Destroy(MGG_GraphicsDevice* device, MGG_DepthStencilS
 MGG_RasterizerState* MGG_RasterizerState_Create(MGG_GraphicsDevice* device, MGG_RasterizerState_Info* info) {
     MGG_RasterizerState* state = new MGG_RasterizerState();
     state->info = *info;
-    state->state = 0; // Not used in WebGL
     return state;
 }
 
