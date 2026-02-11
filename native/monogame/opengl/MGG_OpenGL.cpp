@@ -1366,30 +1366,133 @@ void MGG_SamplerState_Destroy(MGG_GraphicsDevice* device, MGG_SamplerState* stat
 }
 
 MGG_Buffer* MGG_Buffer_Create(MGG_GraphicsDevice* device, MGBufferType type, mgint sizeInBytes) {
-    printf("Creating buffer for OpenGL graphics device: %zu (type=%d, size=%d)\n", (size_t)device->context, type, sizeInBytes);
+    assert(device != nullptr);
+    assert(sizeInBytes > 0);
     if (!device || sizeInBytes <= 0) return nullptr;
-    
+
     MGG_Buffer* buffer = new MGG_Buffer();
-    printf("Created buffer for OpenGL graphics device: %zu (type=%d, size=%d)\n", (size_t)device->context, type, sizeInBytes);
+    buffer->type = type;
+    buffer->target = ToGLBufferTarget(type);
+    buffer->sizeInBytes = sizeInBytes;
+
+    glGenBuffers(1, &buffer->handle);
+    GL_CHECK_ERROR();
+
+    glBindBuffer(buffer->target, buffer->handle);
+    glBufferData(buffer->target, sizeInBytes, nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(buffer->target, 0);
+    GL_CHECK_ERROR();
+
+    device->all_buffers.push_back(buffer);
+
     return buffer;
 }
 
 void MGG_Buffer_Destroy(MGG_GraphicsDevice* device, MGG_Buffer* buffer) {
-    printf("Destroying buffer for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(buffer != nullptr);
     if (!device || !buffer) return;
+
+    if (buffer->handle) {
+        glDeleteBuffers(1, &buffer->handle);
+        buffer->handle = 0;
+    }
+
+    // Remove from tracking list
+    auto it = std::find(device->all_buffers.begin(), device->all_buffers.end(), buffer);
+    if (it != device->all_buffers.end())
+        device->all_buffers.erase(it);
+
     delete buffer;
 }
 
 void MGG_Buffer_SetData(MGG_GraphicsDevice* device, MGG_Buffer*& buffer, mgint offset, mgbyte* data, mgint elementCount, mgint vertexStride, mgint elementSizeInBytes, mgbool discard) {
-    printf("Setting buffer data for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(buffer != nullptr);
+    assert(data != nullptr);
+    assert(offset >= 0);
+    assert(elementCount > 0);
+    assert(vertexStride > 0);
+    assert(elementSizeInBytes > 0);
     if (!device || !buffer || !data) return;
-    printf("Ended Set buffer data for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    auto dataSize = elementCount * vertexStride;
+    if (elementSizeInBytes < vertexStride)
+        dataSize -= vertexStride - elementSizeInBytes;
+
+    // If the buffer is too small, reallocate it.
+    if (offset + dataSize > buffer->sizeInBytes) {
+        auto newSize = offset + dataSize;
+        glBindBuffer(buffer->target, buffer->handle);
+        glBufferData(buffer->target, newSize, nullptr, GL_DYNAMIC_DRAW);
+        glBindBuffer(buffer->target, 0);
+        buffer->sizeInBytes = newSize;
+    }
+
+    glBindBuffer(buffer->target, buffer->handle);
+
+    if (discard) {
+        // Orphan the buffer to avoid GPU stalls, then upload the data.
+        glBufferData(buffer->target, buffer->sizeInBytes, nullptr, GL_DYNAMIC_DRAW);
+    }
+
+    if (elementSizeInBytes == vertexStride) {
+        // Contiguous data — single upload.
+        glBufferSubData(buffer->target, offset, dataSize, data);
+    } else {
+        // Non-contiguous data — upload element by element.
+        for (mgint i = 0; i < elementCount; ++i) {
+            glBufferSubData(buffer->target, offset + i * vertexStride, elementSizeInBytes, data + i * elementSizeInBytes);
+        }
+    }
+
+    glBindBuffer(buffer->target, 0);
+    GL_CHECK_ERROR();
 }
 
 void MGG_Buffer_GetData(MGG_GraphicsDevice* device, MGG_Buffer* buffer, mgint offset, mgbyte* data, mgint dataCount, mgint dataBytes, mgint dataStride) {
+    assert(device != nullptr);
+    assert(buffer != nullptr);
+    assert(data != nullptr);
+    assert(dataCount > 0);
+    assert(dataBytes > 0);
+    assert(dataStride > 0);
     if (!device || !buffer || !data) return;
-    printf("Getting buffer data for OpenGL graphics device: %zu\n", (size_t)device->context);
-    printf("Ended Get buffer data for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    glBindBuffer(buffer->target, buffer->handle);
+
+#if !defined(MG_EMSCRIPTEN)
+    // Desktop GL — use glGetBufferSubData
+    auto totalSize = dataCount * dataStride;
+    if (dataStride == dataBytes) {
+        glGetBufferSubData(buffer->target, offset, totalSize, data);
+    } else {
+        // Read into a temp buffer then scatter-copy
+        std::vector<mgbyte> temp(totalSize);
+        glGetBufferSubData(buffer->target, offset, totalSize, temp.data());
+        for (mgint i = 0; i < dataCount; ++i) {
+            memcpy(data + i * dataBytes, temp.data() + i * dataStride, dataBytes);
+        }
+    }
+#else
+    // WebGL2 / ES 3.0 — glGetBufferSubData doesn't exist, use glMapBufferRange
+    auto totalSize = dataCount * dataStride;
+    void* mapped = glMapBufferRange(buffer->target, offset, totalSize, GL_MAP_READ_BIT);
+    if (mapped) {
+        if (dataStride == dataBytes) {
+            memcpy(data, mapped, totalSize);
+        } else {
+            auto src = static_cast<mgbyte*>(mapped);
+            for (mgint i = 0; i < dataCount; ++i) {
+                memcpy(data + i * dataBytes, src + i * dataStride, dataBytes);
+            }
+        }
+        glUnmapBuffer(buffer->target);
+    }
+#endif
+
+    glBindBuffer(buffer->target, 0);
+    GL_CHECK_ERROR();
 }
 
 MGG_Texture* MGG_Texture_Create(MGG_GraphicsDevice* device, MGTextureType type, MGSurfaceFormat format, mgint width, mgint height, mgint depth, mgint mipmaps, mgint slices) {
