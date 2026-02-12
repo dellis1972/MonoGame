@@ -234,6 +234,7 @@ namespace MonoGame.Effect
                 // that aren't supported on macOS (GL 4.1 doesn't support GL_ARB_shading_language_420pack).
                 var glslText = File.ReadAllText(glslFile);
                 glslText = StripBindingQualifiers(glslText);
+                glslText = FixVaryingNames(glslText, isVertexShader);
                 var bytecode = System.Text.Encoding.UTF8.GetBytes(glslText);
 
                 // First look to see if we already created this same shader.
@@ -545,6 +546,26 @@ namespace MonoGame.Effect
             glsl = Regex.Replace(glsl, @"#ifdef GL_ARB_shading_language_420pack\s*\n.*?\n#endif\s*\n", "", RegexOptions.Singleline);
 
             return glsl;
+        }
+
+        /// <summary>
+        /// Fix SPIRV-Cross varying name mismatch between vertex and fragment shaders.
+        /// SPIRV-Cross prefixes vertex shader outputs with "out_var_" and fragment shader
+        /// inputs with "in_var_", but GLSL 330 matches inter-stage variables by name.
+        /// This renames both to a common "mg_" prefix so they match at link time.
+        /// </summary>
+        /// <remarks>
+        /// This is safe because:
+        /// - Vertex shader inputs (in_var_*) use layout(location) and are matched by location, not name.
+        /// - Fragment shader outputs (out_var_SV_Target*) use layout(location) and are matched by location, not name.
+        /// So only the inter-stage varyings (vertex out_var_ / fragment in_var_) are affected.
+        /// </remarks>
+        private static string FixVaryingNames(string glsl, bool isVertexShader)
+        {
+            if (isVertexShader)
+                return glsl.Replace("out_var_", "mg_");
+            else
+                return glsl.Replace("in_var_", "mg_");
         }
     }
 }

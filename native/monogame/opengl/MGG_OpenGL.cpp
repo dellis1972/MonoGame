@@ -1591,24 +1591,12 @@ static GLuint MGL_ProgramGetOrCreate(MGG_GraphicsDevice* device, MGG_Shader* ver
         for (int i = 0; i < sh->bindingCount; i++) {
             auto& b = sh->bindings[i];
             if (b.descriptorType == MG_BINDING_TYPE_UNIFORM_BUFFER) {
-                // Find the uniform block in the linked program by iterating active blocks.
-                // The binding index from the header tells us which UBO binding point to use.
                 GLint numBlocks = 0;
                 glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
                 for (GLint bi = 0; bi < numBlocks; bi++) {
-                    // Query which binding this block is currently assigned to.
-                    // If SPIRV-Cross emitted layout(binding=N), the driver may already
-                    // have it set. Otherwise, we need to match by name or index.
                     GLint currentBinding = -1;
                     glGetActiveUniformBlockiv(program, bi, GL_UNIFORM_BLOCK_BINDING, &currentBinding);
-
-                    // Compute the actual UBO binding point: stage * uniformCountPerStage + binding
-                    // In MonoGame's model, each stage has its own constant buffer at the binding index.
-                    // We offset pixel shader bindings to avoid conflicts with vertex shader bindings.
                     int uboBindingPoint = (int)sh->stage + (int)b.binding;
-
-                    // If the block's current binding matches the bytecode binding index,
-                    // it was set by layout(binding=N) in the GLSL. Remap it to our scheme.
                     if (currentBinding == (GLint)b.binding) {
                         glUniformBlockBinding(program, bi, uboBindingPoint);
                     }
@@ -1650,12 +1638,8 @@ static GLuint MGL_ProgramGetOrCreate(MGG_GraphicsDevice* device, MGG_Shader* ver
                         uniformType == GL_INT_SAMPLER_2D || uniformType == GL_UNSIGNED_INT_SAMPLER_2D) {
                         GLint location = glGetUniformLocation(program, uniformName);
                         if (location >= 0) {
-                            // Check if this sampler's binding matches by querying its current value
                             GLint currentUnit = -1;
                             glGetUniformiv(program, location, &currentUnit);
-
-                            // If the sampler is currently bound to the bytecode binding index
-                            // (set by layout(binding=N) in GLSL), remap to texture unit
                             if (currentUnit == (GLint)b.binding) {
                                 glUniform1i(location, textureUnit);
                             }
@@ -1869,7 +1853,11 @@ static void ApplyRasterizerState(MGG_GraphicsDevice* device)
     {
         glEnable(GL_CULL_FACE);
         glCullFace(ToGLCullMode(info.cullMode));
-        glFrontFace(GL_CW);
+        // SPIRV-Cross emits a Y-flip (_pos.y = -_pos.y) in all vertex shaders
+        // when targeting OpenGL from HLSL→SPIR-V→GLSL. This reverses the
+        // triangle winding order, so we use GL_CCW instead of GL_CW to
+        // compensate and match MonoGame/DirectX CW-front-face convention.
+        glFrontFace(GL_CCW);
     }
 
     // Fill mode (desktop only)
