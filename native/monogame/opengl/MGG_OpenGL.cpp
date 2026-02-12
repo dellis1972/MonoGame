@@ -1086,6 +1086,10 @@ void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* native
     }
 #endif
     
+    // Store backbuffer dimensions for render target / backbuffer data queries.
+    device->backbufferWidth = width;
+    device->backbufferHeight = height;
+
     // Update viewport to match new size
     device->viewportWidth = width;
     device->viewportHeight = height;
@@ -1317,9 +1321,162 @@ void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x,
 }
 
 void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture** targets, mgint* arraySlices, mgint count) {
-    if (!device) return;
-    printf("Setting render targets for OpenGL graphics device: %zu (count=%d)\n", (size_t)device->context, count);
-    printf("Ending SetRenderTargets for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+
+    if (targets == nullptr || count == 0)
+    {
+        // Bind the default framebuffer (backbuffer).
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        GL_CHECK_ERROR();
+
+        // Clear render target tracking.
+        memset(device->renderTargets, 0, sizeof(device->renderTargets));
+        device->renderTargetCount = 0;
+        for (int i = 0; i < MAX_RENDER_TARGETS; i++)
+            device->renderTargetSlices[i] = std::nullopt;
+
+        // Restore viewport to backbuffer size.
+        glViewport(device->viewportX, device->viewportY, device->viewportWidth, device->viewportHeight);
+#if defined(MG_EMSCRIPTEN)
+        glDepthRangef(device->viewportMinDepth, device->viewportMaxDepth);
+#else
+        glDepthRange((double)device->viewportMinDepth, (double)device->viewportMaxDepth);
+#endif
+        GL_CHECK_ERROR();
+    }
+    else
+    {
+        // Store render target references.
+        for (int i = 0; i < count && i < MAX_RENDER_TARGETS; i++)
+            device->renderTargets[i] = targets[i];
+        for (int i = count; i < MAX_RENDER_TARGETS; i++)
+            device->renderTargets[i] = nullptr;
+        device->renderTargetCount = count;
+
+        // Store array slices.
+        if (arraySlices)
+        {
+            for (int i = 0; i < MAX_RENDER_TARGETS; i++)
+            {
+                if (i < count && arraySlices[i] >= 0)
+                    device->renderTargetSlices[i] = arraySlices[i];
+                else
+                    device->renderTargetSlices[i] = std::nullopt;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < MAX_RENDER_TARGETS; i++)
+                device->renderTargetSlices[i] = std::nullopt;
+        }
+
+        // Bind the off-screen FBO.
+        glBindFramebuffer(GL_FRAMEBUFFER, device->fbo);
+        GL_CHECK_ERROR();
+
+        GLenum drawBuffers[MAX_RENDER_TARGETS];
+        int drawBufferCount = 0;
+
+        for (int i = 0; i < count && i < MAX_RENDER_TARGETS; i++)
+        {
+            MGG_Texture* rt = targets[i];
+            if (!rt) continue;
+
+            GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
+            drawBuffers[drawBufferCount++] = attachment;
+
+            if (device->renderTargetSlices[i].has_value())
+            {
+                int slice = device->renderTargetSlices[i].value();
+
+                if (rt->type == MGTextureType::Cube)
+                {
+                    // Cube map face: GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice
+                    glFramebufferTexture2D(
+                        GL_FRAMEBUFFER,
+                        attachment,
+                        GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice,
+                        rt->texture,
+                        0);
+                }
+                else
+                {
+                    // 3D texture or array texture layer.
+                    glFramebufferTextureLayer(
+                        GL_FRAMEBUFFER,
+                        attachment,
+                        rt->texture,
+                        0,
+                        slice);
+                }
+            }
+            else
+            {
+                // Standard 2D texture.
+                glFramebufferTexture2D(
+                    GL_FRAMEBUFFER,
+                    attachment,
+                    rt->target,
+                    rt->texture,
+                    0);
+            }
+            GL_CHECK_ERROR();
+        }
+
+        // Attach depth/stencil from the first render target if it has one.
+        if (count > 0 && targets[0] && targets[0]->depthRenderbuffer != 0)
+        {
+            MGG_Texture* rt0 = targets[0];
+            if (rt0->depthFormat == MGDepthFormat::Depth24Stencil8)
+            {
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                          GL_RENDERBUFFER, rt0->depthRenderbuffer);
+            }
+            else
+            {
+                glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                          GL_RENDERBUFFER, rt0->depthRenderbuffer);
+            }
+            GL_CHECK_ERROR();
+        }
+        else
+        {
+            // Detach any previously attached depth/stencil.
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                      GL_RENDERBUFFER, 0);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                      GL_RENDERBUFFER, 0);
+            GL_CHECK_ERROR();
+        }
+
+        // Set the draw buffer list.
+        if (drawBufferCount > 0)
+        {
+            glDrawBuffers(drawBufferCount, drawBuffers);
+            GL_CHECK_ERROR();
+        }
+
+        // Validate framebuffer completeness.
+        GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (fbStatus != GL_FRAMEBUFFER_COMPLETE)
+        {
+            fprintf(stderr, "MGG_GraphicsDevice_SetRenderTargets: Framebuffer incomplete, status=0x%x\n", fbStatus);
+        }
+
+        // Set viewport to the first render target's dimensions.
+        if (targets[0])
+        {
+            glViewport(0, 0, targets[0]->width, targets[0]->height);
+#if defined(MG_EMSCRIPTEN)
+            glDepthRangef(0.0f, 1.0f);
+#else
+            glDepthRange(0.0, 1.0);
+#endif
+            GL_CHECK_ERROR();
+        }
+    }
+
+    device->renderTargetDirty = false;
 }
 
 void MGG_GraphicsDevice_SetConstantBuffer(MGG_GraphicsDevice* device, MGShaderStage stage, mgint slot, MGG_Buffer* buffer) {
@@ -2068,15 +2225,61 @@ void MGG_GraphicsDevice_DrawIndexedInstanced(MGG_GraphicsDevice* device, MGPrimi
 }
 
 void MGG_GraphicsDevice_ResolveRenderTargets(MGG_GraphicsDevice* device) {
-    if (!device) return;
-    printf("Resolving render targets for OpenGL graphics device: %zu\n", (size_t)device->context);
-    printf("Ending ResolveRenderTargets for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+
+    // Generate mipmaps for any render targets that have mip levels > 1.
+    // This is the OpenGL equivalent of the Vulkan blit-chain mipmap generation.
+    for (int i = 0; i < device->renderTargetCount; i++)
+    {
+        MGG_Texture* rt = device->renderTargets[i];
+        if (!rt || !rt->isRenderTarget)
+            continue;
+
+        if (rt->mipmaps > 1)
+        {
+            glBindTexture(rt->target, rt->texture);
+            glGenerateMipmap(rt->target);
+            GL_CHECK_ERROR();
+        }
+    }
 }
 
 void MGG_GraphicsDevice_GetBackBufferData(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height, void* data, mgint count, mgint dataBytes) {
-    if (!device || !data) return;
-    printf("Getting back buffer data for OpenGL graphics device: %zu (x=%d, y=%d, width=%d, height=%d, count=%d, dataBytes=%d)\n", (size_t)device->context, x, y, width, height, count, dataBytes);
-    printf("Ending GetBackBufferData for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(data != nullptr);
+    assert(count > 0);
+    assert(dataBytes > 0);
+
+    // Bind the default framebuffer to read from the backbuffer.
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    GL_CHECK_ERROR();
+
+    // OpenGL's origin is bottom-left, so flip the Y coordinate.
+    int bbHeight = device->backbufferHeight > 0 ? device->backbufferHeight : device->viewportHeight;
+    int flippedY = bbHeight - (y + height);
+
+    // Read pixels in RGBA / unsigned byte format.
+    glReadPixels(x, flippedY, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    GL_CHECK_ERROR();
+
+    // OpenGL reads bottom-to-top but callers expect top-to-bottom,
+    // so flip the rows in-place.
+    int bytesPerPixel = 4; // GL_RGBA / GL_UNSIGNED_BYTE
+    int rowBytes = width * bytesPerPixel;
+    uint8_t* pixels = static_cast<uint8_t*>(data);
+    std::vector<uint8_t> tempRow(rowBytes);
+    for (int row = 0; row < height / 2; row++)
+    {
+        uint8_t* topRow = pixels + row * rowBytes;
+        uint8_t* bottomRow = pixels + (height - 1 - row) * rowBytes;
+        memcpy(tempRow.data(), topRow, rowBytes);
+        memcpy(topRow, bottomRow, rowBytes);
+        memcpy(bottomRow, tempRow.data(), rowBytes);
+    }
+
+    // Rebind the current render target if we were targeting an FBO.
+    if (device->renderTargetCount > 0)
+        glBindFramebuffer(GL_FRAMEBUFFER, device->fbo);
 }
 
 MGG_BlendState* MGG_BlendState_Create(MGG_GraphicsDevice* device, MGG_BlendState_Info* infos) {
