@@ -943,6 +943,22 @@ printf("Creating OpenGL graphics device\n");
     device->scissorY = 0;
     device->scissorWidth = 800;  // Default size
     device->scissorHeight = 600; // Default size
+    // Create and bind a single default VAO for the device lifetime.
+    // All vertex attribute state will be configured on this VAO.
+    glGenVertexArrays(1, &device->defaultVAO);
+    glBindVertexArray(device->defaultVAO);
+    GL_CHECK_ERROR();
+
+    // Create a default FBO for render target usage
+    glGenFramebuffers(1, &device->fbo);
+    GL_CHECK_ERROR();
+
+    // Set initial GL state
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    GL_CHECK_ERROR();
+
     printf("Created OpenGL graphics device: %p\n", (void*)device->context);
     return device;
 }
@@ -950,6 +966,25 @@ printf("Creating OpenGL graphics device\n");
 void MGG_GraphicsDevice_Destroy(MGG_GraphicsDevice* device) {
     if (!device) return;
     printf("Destroying OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    // Delete cached linked programs
+    for (auto& pair : device->programCache)
+        glDeleteProgram(pair.second);
+    device->programCache.clear();
+    device->currentProgram = 0;
+
+    // Delete the FBO used for render targets
+    if (device->fbo != 0) {
+        glDeleteFramebuffers(1, &device->fbo);
+        device->fbo = 0;
+    }
+
+    // Delete the default VAO
+    if (device->defaultVAO != 0) {
+        glDeleteVertexArrays(1, &device->defaultVAO);
+        device->defaultVAO = 0;
+    }
+
 #if defined(MG_EMSCRIPTEN)
     // Destroy the OpenGL context
     if (device->context > 0) {
@@ -957,12 +992,13 @@ void MGG_GraphicsDevice_Destroy(MGG_GraphicsDevice* device) {
         device->context = 0;
     }
 #else
-    if (!device->context) {
-        // Dummy context - nothing to destroy
+    if (device->context) {
         SDL_GL_DeleteContext(device->context);
         device->context = nullptr;
     }
 #endif
+
+    delete device;
 }
 
 void MGG_GraphicsDevice_GetCaps(MGG_GraphicsDevice* device, MGG_GraphicsDevice_Caps& caps) {
@@ -1301,9 +1337,10 @@ void MGG_GraphicsDevice_SetShader(MGG_GraphicsDevice* device, MGShaderStage stag
 }
 
 void MGG_GraphicsDevice_SetInputLayout(MGG_GraphicsDevice* device, MGG_InputLayout* layout) {
-    if (!device) return;
-    printf("Setting input layout for OpenGL graphics device: %zu\n", (size_t)device->context);
-    printf("Ending SetInputLayout for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+
+    device->inputLayout = layout;
+    device->inputLayoutDirty = true;
 }
 
 // ============================================================
@@ -2007,17 +2044,34 @@ void MGG_Texture_GetData(MGG_GraphicsDevice* device, MGG_Texture* texture, mgint
 }
 
 MGG_InputLayout* MGG_InputLayout_Create(MGG_GraphicsDevice* device, MGG_Shader* vertexShader, mgint* strides, mgint streamCount, MGG_InputElement* elements, mgint elementCount) {
-    printf("Creating input layout for OpenGL graphics device: %zu\n", (size_t)device->context);
-    if (!device || !vertexShader || elementCount <= 0) return nullptr;
-    
-    MGG_InputLayout* layout = new MGG_InputLayout();
-    printf("Created input layout for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(streamCount >= 0);
+    assert(strides != nullptr);
+    assert(elements != nullptr);
+    assert(elementCount >= 0);
+
+    auto layout = new MGG_InputLayout();
+
+    // Copy the per-stream strides
+    layout->strides.resize(streamCount);
+    for (int i = 0; i < streamCount; i++)
+        layout->strides[i] = strides[i];
+
+    // Copy the vertex element descriptions
+    layout->elements.resize(elementCount);
+    for (int i = 0; i < elementCount; i++)
+        layout->elements[i] = elements[i];
+
     return layout;
 }
 
 void MGG_InputLayout_Destroy(MGG_GraphicsDevice* device, MGG_InputLayout* layout) {
-    if (!device || !layout) return;
-    printf("Destroying input layout for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(layout != nullptr);
+
+    if (layout == nullptr)
+        return;
+
     delete layout;
 }
 
