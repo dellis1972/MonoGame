@@ -48,12 +48,12 @@
 
 // Debug macros
 #ifdef DEBUG
-void GL_CHECK_ERROR() { \
+#define GL_CHECK_ERROR() do { \
     GLenum err = glGetError(); \
     if (err != GL_NO_ERROR) { \
         fprintf(stderr, "OpenGL error %d at %s:%d\n", err, __FILE__, __LINE__); \
     } \
-}
+} while(0)
 #else
 #define GL_CHECK_ERROR() ((void)0)
 #endif
@@ -1387,30 +1387,27 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
             GLenum attachment = GL_COLOR_ATTACHMENT0 + i;
             drawBuffers[drawBufferCount++] = attachment;
 
-            if (device->renderTargetSlices[i].has_value())
+            if (rt->type == MGTextureType::Cube && device->renderTargetSlices[i].has_value())
             {
+                // Cube map face: GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice
                 int slice = device->renderTargetSlices[i].value();
-
-                if (rt->type == MGTextureType::Cube)
-                {
-                    // Cube map face: GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice
-                    glFramebufferTexture2D(
-                        GL_FRAMEBUFFER,
-                        attachment,
-                        GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice,
-                        rt->texture,
-                        0);
-                }
-                else
-                {
-                    // 3D texture or array texture layer.
-                    glFramebufferTextureLayer(
-                        GL_FRAMEBUFFER,
-                        attachment,
-                        rt->texture,
-                        0,
-                        slice);
-                }
+                glFramebufferTexture2D(
+                    GL_FRAMEBUFFER,
+                    attachment,
+                    GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice,
+                    rt->texture,
+                    0);
+            }
+            else if (rt->type == MGTextureType::_3D && device->renderTargetSlices[i].has_value())
+            {
+                // 3D texture or array texture layer.
+                int slice = device->renderTargetSlices[i].value();
+                glFramebufferTextureLayer(
+                    GL_FRAMEBUFFER,
+                    attachment,
+                    rt->texture,
+                    0,
+                    slice);
             }
             else
             {
@@ -1422,7 +1419,6 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
                     rt->texture,
                     0);
             }
-            GL_CHECK_ERROR();
         }
 
         // Attach depth/stencil from the first render target if it has one.
