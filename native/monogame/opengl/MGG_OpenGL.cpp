@@ -1323,35 +1323,49 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
 }
 
 void MGG_GraphicsDevice_SetConstantBuffer(MGG_GraphicsDevice* device, MGShaderStage stage, mgint slot, MGG_Buffer* buffer) {
-    if (!device) return;
-    printf("Setting constant buffer for OpenGL graphics device: %zu (stage=%d, slot=%d)\n", (size_t)device->context, stage, slot);
-    printf("Ending SetConstantBuffer for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(buffer != nullptr);
+    assert(slot >= 0 && slot < MAX_UNIFORM_BUFFER_SLOTS);
+
+    if (device->constantBuffers[slot] != buffer)
+    {
+        device->constantBuffers[slot] = buffer;
+        device->uniformDirty |= 1 << slot;
+    }
 }
 
 void MGG_GraphicsDevice_SetTexture(MGG_GraphicsDevice* device, MGShaderStage stage, mgint slot, MGG_Texture* texture) {
-    if (!device) return;
-    printf("Setting texture for OpenGL graphics device: %zu (stage=%d, slot=%d)\n", (size_t)device->context, stage, slot);
-    printf("Ending SetTexture for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(slot >= 0 && slot < MAX_TEXTURE_SLOTS);
+
+    device->textures[slot] = texture;
+    device->textureDirty |= 1 << slot;
 }
 
 void MGG_GraphicsDevice_SetSamplerState(MGG_GraphicsDevice* device, MGShaderStage stage, mgint slot, MGG_SamplerState* state) {
-    if (!device) return;
-    printf("Setting sampler state for OpenGL graphics device: %zu (stage=%d, slot=%d)\n", (size_t)device->context, stage, slot);
-    
-    if (!state) return;
-    printf("Ending SetSamplerState for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(slot >= 0 && slot < MAX_TEXTURE_SLOTS);
+
+    device->samplers[slot] = state;
+    device->samplerDirty |= 1 << slot;
 }
 
 void MGG_GraphicsDevice_SetIndexBuffer(MGG_GraphicsDevice* device, MGIndexElementSize size, MGG_Buffer* buffer) {
-    if (!device || !buffer) return;
-    printf("Setting index buffer for OpenGL graphics device: %zu (size=%d)\n", (size_t)device->context, size);
-    printf("Ending SetIndexBuffer for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(buffer != nullptr);
+
+    device->indexBuffer = buffer;
+    device->indexBufferSize = size;
 }
 
 void MGG_GraphicsDevice_SetVertexBuffer(MGG_GraphicsDevice* device, mgint slot, MGG_Buffer* buffer, mgint vertexOffset) {
-    if (!device || !buffer) return;
-    printf("Setting vertex buffer for OpenGL graphics device: %zu (slot=%d, offset=%d)\n", (size_t)device->context, slot, vertexOffset);
-    printf("Ending SetVertexBuffer for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(buffer != nullptr);
+    assert(slot >= 0 && slot < MAX_VERTEX_BUFFERS);
+
+    device->vertexBuffers[slot] = buffer;
+    device->vertexOffsets[slot] = vertexOffset;
+    device->vertexBuffersDirty |= 1 << slot;
 }
 
 void MGG_GraphicsDevice_SetShader(MGG_GraphicsDevice* device, MGShaderStage stage, MGG_Shader* shader) {
