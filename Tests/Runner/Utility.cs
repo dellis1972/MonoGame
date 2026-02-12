@@ -355,6 +355,8 @@ namespace MonoGame.Tests {
             type = "DirectX";
 #elif DIRECTX12
             type = "DirectX12";
+#elif DESKTOPGL4
+            type = "OpenGL4";
 #elif DESKTOPGL
             type = "OpenGL";
 #elif VULKAN

@@ -2,6 +2,8 @@
 // This file is subject to the terms and conditions defined in
 // file 'LICENSE.txt', which is part of this source code package.
 
+#include "Include.fxh"
+
 matrix WorldViewProj;
 
 Texture2DArray Texture : register(t0);
@@ -36,7 +38,7 @@ technique
 {
     pass
     {
-        VertexShader = compile vs_4_0 VS_Main();
-        PixelShader = compile ps_4_0 PS_Main();
+        VertexShader = compile VS_PROFILE VS_Main();
+        PixelShader = compile PS_PROFILE PS_Main();
     }
 }

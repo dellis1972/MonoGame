@@ -100,7 +100,12 @@ namespace Microsoft.Xna.Framework.Content.Pipeline
         /// <summary>
         /// Xbox Series S|X
         /// </summary>
-        XboxSeries
+        XboxSeries,
+
+        /// <summary>
+        /// All desktop versions using OpenGL 4 (native backend).
+        /// </summary>
+        DesktopGL4
     }
 
 

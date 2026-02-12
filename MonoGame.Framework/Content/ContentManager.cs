@@ -52,6 +52,7 @@ namespace Microsoft.Xna.Framework.Content
             'V', // DesktopVK
             'G', // Windows GDK
             's', // Xbox Series
+            '4', // DesktopGL4
 
             // NOTE: There are additional identifiers for consoles that
             // are not defined in this repository.  Be sure to ask the

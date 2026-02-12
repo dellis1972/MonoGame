@@ -230,8 +230,11 @@ namespace MonoGame.Effect
                     throw new ShaderCompilerException();
                 }
 
-                // Load up the compiled shader.
-                var bytecode = File.ReadAllBytes(glslFile);
+                // Load up the compiled shader and strip layout(binding = N) qualifiers
+                // that aren't supported on macOS (GL 4.1 doesn't support GL_ARB_shading_language_420pack).
+                var glslText = File.ReadAllText(glslFile);
+                glslText = StripBindingQualifiers(glslText);
+                var bytecode = System.Text.Encoding.UTF8.GetBytes(glslText);
 
                 // First look to see if we already created this same shader.
                 foreach (var shader in effect.Shaders)
@@ -519,6 +522,29 @@ namespace MonoGame.Effect
                     catch { }
                 }
             }
+        }
+
+        /// <summary>
+        /// Strip layout(binding = N) qualifiers and the GL_ARB_shading_language_420pack
+        /// ifdef block from GLSL source. macOS GL 4.1 doesn't support the 420pack extension,
+        /// so these must be removed at compile time. The binding info is already stored in the
+        /// bytecode header and applied at runtime via glUniformBlockBinding / glUniform1i.
+        /// </summary>
+        private static string StripBindingQualifiers(string glsl)
+        {
+            // Remove "binding = N" from layout qualifiers that have other qualifiers too
+            // e.g. layout(binding = 0, std140) -> layout(std140)
+            glsl = Regex.Replace(glsl, @"binding\s*=\s*\d+\s*,\s*", "");
+            glsl = Regex.Replace(glsl, @",\s*binding\s*=\s*\d+", "");
+
+            // Remove layout(binding = N) when binding is the only qualifier
+            // e.g. layout(binding = 0) uniform -> uniform
+            glsl = Regex.Replace(glsl, @"layout\s*\(\s*binding\s*=\s*\d+\s*\)\s*", "");
+
+            // Remove the GL_ARB_shading_language_420pack ifdef block
+            glsl = Regex.Replace(glsl, @"#ifdef GL_ARB_shading_language_420pack\s*\n.*?\n#endif\s*\n", "", RegexOptions.Singleline);
+
+            return glsl;
         }
     }
 }

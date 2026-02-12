@@ -2873,11 +2873,13 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
     }
 
     // --- The remaining bytes are GLSL source text ---
-    const char* glslSource = (const char*)bytecode;
-    GLint glslLength = (GLint)sizeInBytes;
-
     // Store original bytecode for reference (the GLSL part)
     shader->bytecode.assign(bytecode, bytecode + sizeInBytes);
+
+    // The GLSL source has binding qualifiers already stripped at compile time
+    // by the content pipeline (ShaderProfile.OpenGL4.cs).
+    const char* glslSource = (const char*)bytecode;
+    GLint glslLength = (GLint)sizeInBytes;
 
     // --- Create and compile the GL shader ---
     GLenum glStage = (stage == MGShaderStage::Vertex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
