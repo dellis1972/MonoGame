@@ -213,7 +213,7 @@ Tighten up the existing implemented functions:
 ## Verification
 
 1. Build the `desktopgl` project via premake5 to confirm compilation with no errors.
-2. Run the MonoGame test suite (`Tests/MonoGame.Tests.DesktopGL.csproj`) — at minimum, device creation + clear + present should work after Steps 1–2.
+2. Run the MonoGame test suite (`Tests/MonoGame.Tests.DesktopGL4.csproj`) — at minimum, device creation + clear + present should work after Steps 1–2.
 3. After Steps 3–10, verify with a simple `SpriteBatch` draw (requires SpriteEffect shader, a texture, and a draw call).
 4. After all steps, run the full test suite and verify visual parity with the Vulkan backend.
 

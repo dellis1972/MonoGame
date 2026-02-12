@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <IsPackable>false</IsPackable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <DefineConstants>DESKTOPGL4</DefineConstants>
+    <DefineConstants Condition=" $([MSBuild]::IsOsPlatform('osx')) " >$(DefineConstants);MACOS</DefineConstants>
+    <DefineConstants Condition=" $([MSBuild]::IsOsPlatform('windows')) " >$(DefineConstants);WINDOWS</DefineConstants>
+    <DefineConstants Condition=" $([MSBuild]::IsOsPlatform('linux')) " >$(DefineConstants);LINUX</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnitLite" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**\*" />
+    <Compile Remove="Framework\WindowsDX\**" />
+    <Compile Remove="obj\**\*" />
+    <Compile Remove="Properties/**/*" />
+    <Compile Remove="Interactive/**/*" />
+    <Compile Remove="Runner/iOS/**/*" />
+
+    <Compile Remove="Framework/SDL/**/*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets/**/*" CopyToOutputDirectory="PreserveNewest" />
+
+    <Content Include="..\MonoGame.Framework\Platform\Graphics\Effect\Resources\*.fx*">
+      <Link>Assets\Effects\Stock\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Framework\WindowsDX\**" />
+    <None Remove="Framework\WindowsDX\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MonoGame.Framework\MonoGame.Framework.Native.csproj" />
+
+	  <Content Include="..\Artifacts\native\mgruntime\desktopgl\windows\$(Configuration)\mgruntime.dll" Condition="Exists('..\Artifacts\native\mgruntime\desktopgl\windows\$(Configuration)\mgruntime.dll')" Visible="false">
+      <PackagePath>runtimes\win-x64\native</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Artifacts\native\mgruntime\desktopgl\linux\$(Configuration)\libmgruntime.so" Condition="Exists('..\Artifacts\native\mgruntime\desktopgl\linux\$(Configuration)\libmgruntime.so')" Visible="false">
+      <PackagePath>runtimes\linux-x64\native</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Artifacts\native\mgruntime\desktopgl\macosx\$(Configuration)\libmgruntime.dylib" Condition="Exists('..\Artifacts\native\mgruntime\desktopgl\macosx\$(Configuration)\libmgruntime.dylib')" Visible="false">
+      <PackagePath>runtimes\osx\native</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+	  
+  </ItemGroup>
+
+</Project>
