@@ -2959,6 +2959,7 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
             glGetShaderInfoLog(shader->shader, logLength, nullptr, log.data());
             fprintf(stderr, "MGG_Shader_Create: %s shader compilation failed:\n%s\n",
                     (stage == MGShaderStage::Vertex) ? "Vertex" : "Fragment", log.data());
+            fprintf(stderr, "Shader source:\n%s\n", glslSource);
         }
         glDeleteShader(shader->shader);
         delete shader;
