@@ -215,6 +215,8 @@ namespace MonoGame.Effect
 
                 toolArgs = "";
                 toolArgs += "--version 330 ";
+                if (isVertexShader)
+                    toolArgs += "--fixup-clipspace ";
                 toolArgs += " \"" + binFile + "\" ";
                 toolArgs += " --output \"" + glslFile + "\" ";
 
