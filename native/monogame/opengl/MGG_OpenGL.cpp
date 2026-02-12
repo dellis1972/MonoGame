@@ -955,9 +955,33 @@ printf("Creating OpenGL graphics device\n");
 
     // Set initial GL state
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
     glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
+#if !defined(MG_EMSCRIPTEN)
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+#endif
+    glDisable(GL_SCISSOR_TEST);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     GL_CHECK_ERROR();
+
+    // Mark all state as dirty so the first draw call applies everything.
+    device->blendDirty = true;
+    device->depthStencilDirty = true;
+    device->rasterizerDirty = true;
+    device->shaderDirty = true;
+    device->inputLayoutDirty = true;
+    device->uniformDirty = 0xFFFFFFFF;
+    device->textureDirty = 0xFFFFFFFF;
+    device->samplerDirty = 0xFFFFFFFF;
+    device->vertexBuffersDirty = 0xFFFFFFFF;
+    device->blendFactorDirty = true;
+    device->renderTargetDirty = false;
 
     printf("Created OpenGL graphics device: %p\n", (void*)device->context);
     return device;
@@ -972,6 +996,32 @@ void MGG_GraphicsDevice_Destroy(MGG_GraphicsDevice* device) {
         glDeleteProgram(pair.second);
     device->programCache.clear();
     device->currentProgram = 0;
+
+    // Destroy any remaining buffers tracked by the device
+    while (device->all_buffers.size() > 0)
+        MGG_Buffer_Destroy(device, device->all_buffers[0]);
+
+    // Destroy any remaining textures tracked by the device
+    while (device->all_textures.size() > 0)
+        MGG_Texture_Destroy(device, device->all_textures[0]);
+
+    // Destroy deferred occlusion queries
+    for (auto* query : device->deferredOcclusionQueries)
+    {
+        if (query->query != 0)
+            glDeleteQueries(1, &query->query);
+        delete query;
+    }
+    device->deferredOcclusionQueries.clear();
+
+    // Destroy any remaining shaders tracked by the device
+    for (auto* shader : device->all_shaders)
+    {
+        if (shader->shader != 0)
+            glDeleteShader(shader->shader);
+        delete shader;
+    }
+    device->all_shaders.clear();
 
     // Delete the FBO used for render targets
     if (device->fbo != 0) {
@@ -1024,66 +1074,29 @@ void MGG_GraphicsDevice_GetCaps(MGG_GraphicsDevice* device, MGG_GraphicsDevice_C
 void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* nativeWindowHandle, mgint width, mgint height, MGSurfaceFormat color, MGDepthFormat depth, mgint syncInterval) {
     if (!device) return;
     printf("Resizing OpenGL graphics device: %zu (width=%d, height=%d)\n", (size_t)device->context, width, height);
+
+    // Unlike Vulkan, OpenGL does not need to recreate the context or
+    // swapchain on resize.  The default framebuffer is managed by the
+    // windowing system (SDL / Emscripten) and automatically adjusts
+    // when the window size changes.  Destroying and recreating the GL
+    // context here would invalidate every GL object (textures, buffers,
+    // shaders, programs, VAOs, FBOs, etc.) which is catastrophic.
+    //
+    // All we need to do is:
+    //  1. Tell the platform about the new size (canvas / window).
+    //  2. Update our cached backbuffer dimensions.
+    //  3. Update viewport and scissor so subsequent draws use the
+    //     new size.
+
 #if defined(MG_EMSCRIPTEN)
-    // In WebGL, we don't need to explicitly resize the swapchain
-    // The browser handles canvas resizing
-    
-    // We can use emscripten_set_canvas_element_size to resize the canvas if needed
+    // Resize the canvas element to match the requested size.
     if (width > 0 && height > 0) {
         emscripten_set_canvas_element_size("#canvas", width, height);
     }
 #else
-    // For desktop OpenGL, we need to recreate the framebuffer
-    switch (depth)
-    {
-        case MGDepthFormat::None:
-            // No depth buffer needed
-            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
-            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-            break;
-        case MGDepthFormat::Depth16:
-            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-            break;
-        case MGDepthFormat::Depth24:
-            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-            break;
-        case MGDepthFormat::Depth24Stencil8:
-            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-            SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-            SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-            break;
-        default:
-            fprintf(stderr, "Unsupported depth format for OpenGL: %d\n", (int)depth);
-            break;
-    }
-    if (device->context) {
-        SDL_GL_DeleteContext(device->context);
-        device->context = nullptr;
-    }
-    device->context = SDL_GL_CreateContext(device->window);
-    if (!device->context) {
-        fprintf(stderr, "Failed to create OpenGL context: %s\n", SDL_GetError());
-        delete device;
-        return;
-    }
-    // all the tetures will be gone now, so we need to recreate them
-    
-    // Make the context current
-    if (SDL_GL_MakeCurrent(device->window, device->context) < 0) {
-        fprintf(stderr, "Failed to make OpenGL context current: %s\n", SDL_GetError());
-        SDL_GL_DeleteContext(device->context);
-        delete device;
-        return;
-    }
-    // For SDL, we can set the window size
-    if (device->window) {
-        SDL_SetWindowSize(device->window, width, height);
-    }
+    // On desktop, set the VSync interval.  SDL_GL_SetSwapInterval can be
+    // called at any time without recreating the context.
+    SDL_GL_SetSwapInterval(syncInterval);
 #endif
     
     // Store backbuffer dimensions for render target / backbuffer data queries.
@@ -1091,15 +1104,19 @@ void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* native
     device->backbufferHeight = height;
 
     // Update viewport to match new size
+    device->viewportX = 0;
+    device->viewportY = 0;
     device->viewportWidth = width;
     device->viewportHeight = height;
-    glViewport(device->viewportX, device->viewportY, width, height);
+    glViewport(0, 0, width, height);
     GL_CHECK_ERROR();
     
     // Update scissor rectangle to match new size
+    device->scissorX = 0;
+    device->scissorY = 0;
     device->scissorWidth = width;
     device->scissorHeight = height;
-    glScissor(device->scissorX, device->scissorY, width, height);
+    glScissor(0, 0, width, height);
     GL_CHECK_ERROR();
     printf("Resized OpenGL graphics device: %zu\n", (size_t)device->context);
 }
@@ -1250,24 +1267,9 @@ void MGG_GraphicsDevice_SetRasterizerState(MGG_GraphicsDevice* device, MGG_Raste
 }
 
 void MGG_GraphicsDevice_GetTitleSafeArea(mgint& x, mgint& y, mgint& width, mgint& height) {
-    printf("Getting title safe area for OpenGL graphics device\n");
-#if defined(MG_EMSCRIPTEN)
-    // In WebGL, the entire canvas is considered safe
-    // So we'll just return default values
-    double cssWidth, cssHeight;
-    emscripten_get_element_css_size("#canvas", &cssWidth, &cssHeight);
-    
-    x = 0;
-    y = 0;
-    width = static_cast<mgint>(cssWidth);
-    height = static_cast<mgint>(cssHeight);
-#else
-    // Default values
-    x = 0;
-    y = 0;
-    width = 0; 
-    height = 0;
-#endif
+    // Nothing for PC here unless we want to support
+    // things like Steam TV modes and we need platform
+    // specific calls for that.  Matches the Vulkan backend.
     printf("Got title safe area for OpenGL graphics device: (%d, %d, %d, %d)\n", x, y, width, height);
 }
 
