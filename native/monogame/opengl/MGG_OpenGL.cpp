@@ -627,7 +627,7 @@ struct MGG_SamplerState {
 };
 
 struct MGG_BlendState {
-    MGG_BlendState_Info info;
+    MGG_BlendState_Info infos[MAX_RENDER_TARGETS];
 };
 
 struct MGG_DepthStencilState {
@@ -1201,21 +1201,48 @@ void MGG_GraphicsDevice_Present(MGG_GraphicsDevice* device, mgint currentFrame, 
 }
 
 void MGG_GraphicsDevice_SetBlendState(MGG_GraphicsDevice* device, MGG_BlendState* state, mgfloat factorR, mgfloat factorG, mgfloat factorB, mgfloat factorA) {
-    printf("Setting blend state for OpenGL graphics device\n");
-    if (!device || !state) return;
-    printf("End Set blend state for OpenGL graphics device\n");
+    assert(device != nullptr);
+    assert(state != nullptr);
+
+    if (device->blendState != state)
+    {
+        device->blendState = state;
+        device->blendDirty = true;
+    }
+
+    if (device->blendFactor[0] != factorR ||
+        device->blendFactor[1] != factorG ||
+        device->blendFactor[2] != factorB ||
+        device->blendFactor[3] != factorA)
+    {
+        device->blendFactor[0] = factorR;
+        device->blendFactor[1] = factorG;
+        device->blendFactor[2] = factorB;
+        device->blendFactor[3] = factorA;
+        device->blendFactorDirty = true;
+    }
 }
 
 void MGG_GraphicsDevice_SetDepthStencilState(MGG_GraphicsDevice* device, MGG_DepthStencilState* state) {
-    printf("Setting depth stencil state for OpenGL graphics device\n");
-    if (!device || !state) return;
-    printf("End Set depth stencil state for OpenGL graphics device\n");
+    assert(device != nullptr);
+    assert(state != nullptr);
+
+    if (device->depthStencilState != state)
+    {
+        device->depthStencilState = state;
+        device->depthStencilDirty = true;
+    }
 }
 
 void MGG_GraphicsDevice_SetRasterizerState(MGG_GraphicsDevice* device, MGG_RasterizerState* state) {
-    printf("Setting rasterizer state for OpenGL graphics device\n");
-    if (!device || !state) return;
-    printf("End Set rasterizer state for OpenGL graphics device\n");
+    assert(device != nullptr);
+    assert(state != nullptr);
+
+    if (device->rasterizerState != state)
+    {
+        device->rasterizerState = state;
+        device->rasterizerDirty = true;
+    }
 }
 
 void MGG_GraphicsDevice_GetTitleSafeArea(mgint& x, mgint& y, mgint& width, mgint& height) {
@@ -1477,6 +1504,247 @@ static GLuint MGL_ProgramGetOrCreate(MGG_GraphicsDevice* device, MGG_Shader* ver
     return program;
 }
 
+// ============================================================
+// State Application Helpers (Step 8)
+// ============================================================
+
+static bool IsBlendEnabled(const MGG_BlendState_Info* info)
+{
+    return !(info->colorSourceBlend == MGBlend::One &&
+             info->colorDestBlend == MGBlend::Zero &&
+             info->alphaSourceBlend == MGBlend::One &&
+             info->alphaDestBlend == MGBlend::Zero);
+}
+
+static void ApplyBlendState(MGG_GraphicsDevice* device)
+{
+    if (!device->blendDirty && !device->blendFactorDirty)
+        return;
+
+    if (device->blendDirty && device->blendState)
+    {
+        const auto& infos = device->blendState->infos;
+
+        // Check if any render target has blending enabled
+        bool anyBlendEnabled = false;
+        for (int i = 0; i < MAX_RENDER_TARGETS; i++)
+        {
+            if (IsBlendEnabled(&infos[i]))
+            {
+                anyBlendEnabled = true;
+                break;
+            }
+        }
+
+        if (anyBlendEnabled)
+        {
+            glEnable(GL_BLEND);
+
+#if !defined(MG_EMSCRIPTEN)
+            // Desktop GL 4.0+ supports per-target blend
+            for (int i = 0; i < MAX_RENDER_TARGETS; i++)
+            {
+                const auto& info = infos[i];
+
+                if (IsBlendEnabled(&info))
+                {
+                    glEnablei(GL_BLEND, i);
+                    glBlendFuncSeparatei(i,
+                        ToGLBlendFactor(info.colorSourceBlend),
+                        ToGLBlendFactor(info.colorDestBlend),
+                        ToGLBlendFactor(info.alphaSourceBlend),
+                        ToGLBlendFactor(info.alphaDestBlend));
+                    glBlendEquationSeparatei(i,
+                        ToGLBlendOp(info.colorBlendFunc),
+                        ToGLBlendOp(info.alphaBlendFunc));
+                }
+                else
+                {
+                    glDisablei(GL_BLEND, i);
+                }
+
+                // Apply color write mask per target
+                GLboolean r = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Red) ? GL_TRUE : GL_FALSE;
+                GLboolean g = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Green) ? GL_TRUE : GL_FALSE;
+                GLboolean b = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Blue) ? GL_TRUE : GL_FALSE;
+                GLboolean a = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Alpha) ? GL_TRUE : GL_FALSE;
+                glColorMaski(i, r, g, b, a);
+            }
+#else
+            // WebGL2/ES 3.0: single-target blend only (use target 0)
+            {
+                const auto& info = infos[0];
+                glBlendFuncSeparate(
+                    ToGLBlendFactor(info.colorSourceBlend),
+                    ToGLBlendFactor(info.colorDestBlend),
+                    ToGLBlendFactor(info.alphaSourceBlend),
+                    ToGLBlendFactor(info.alphaDestBlend));
+                glBlendEquationSeparate(
+                    ToGLBlendOp(info.colorBlendFunc),
+                    ToGLBlendOp(info.alphaBlendFunc));
+
+                GLboolean r = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Red) ? GL_TRUE : GL_FALSE;
+                GLboolean g = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Green) ? GL_TRUE : GL_FALSE;
+                GLboolean b = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Blue) ? GL_TRUE : GL_FALSE;
+                GLboolean a = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Alpha) ? GL_TRUE : GL_FALSE;
+                glColorMask(r, g, b, a);
+            }
+#endif
+        }
+        else
+        {
+            glDisable(GL_BLEND);
+
+            // Still need to apply color write masks even when blend is disabled
+#if !defined(MG_EMSCRIPTEN)
+            for (int i = 0; i < MAX_RENDER_TARGETS; i++)
+            {
+                const auto& info = infos[i];
+                GLboolean r = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Red) ? GL_TRUE : GL_FALSE;
+                GLboolean g = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Green) ? GL_TRUE : GL_FALSE;
+                GLboolean b = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Blue) ? GL_TRUE : GL_FALSE;
+                GLboolean a = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Alpha) ? GL_TRUE : GL_FALSE;
+                glColorMaski(i, r, g, b, a);
+            }
+#else
+            {
+                const auto& info = infos[0];
+                GLboolean r = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Red) ? GL_TRUE : GL_FALSE;
+                GLboolean g = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Green) ? GL_TRUE : GL_FALSE;
+                GLboolean b = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Blue) ? GL_TRUE : GL_FALSE;
+                GLboolean a = ((int)info.colorWriteChannels & (int)MGColorWriteChannels::Alpha) ? GL_TRUE : GL_FALSE;
+                glColorMask(r, g, b, a);
+            }
+#endif
+        }
+
+        device->blendDirty = false;
+    }
+
+    if (device->blendFactorDirty)
+    {
+        glBlendColor(
+            device->blendFactor[0],
+            device->blendFactor[1],
+            device->blendFactor[2],
+            device->blendFactor[3]);
+        device->blendFactorDirty = false;
+    }
+
+    GL_CHECK_ERROR();
+}
+
+static void ApplyDepthStencilState(MGG_GraphicsDevice* device)
+{
+    if (!device->depthStencilDirty || !device->depthStencilState)
+        return;
+
+    const auto& info = device->depthStencilState->info;
+
+    // Depth test
+    if (info.depthBufferEnable)
+    {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(ToGLCompareFunc(info.depthBufferFunction));
+    }
+    else
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
+
+    // Depth write
+    glDepthMask(info.depthBufferWriteEnable ? GL_TRUE : GL_FALSE);
+
+    // Stencil
+    if (info.stencilEnable)
+    {
+        glEnable(GL_STENCIL_TEST);
+
+        glStencilMask(info.stencilWriteMask);
+
+        // Apply stencil function and operations (front and back faces)
+        glStencilFuncSeparate(
+            GL_FRONT_AND_BACK,
+            ToGLCompareFunc(info.stencilFunction),
+            info.referenceStencil,
+            info.stencilMask);
+
+        glStencilOpSeparate(
+            GL_FRONT_AND_BACK,
+            ToGLStencilOp(info.stencilFail),
+            ToGLStencilOp(info.stencilDepthBufferFail),
+            ToGLStencilOp(info.stencilPass));
+    }
+    else
+    {
+        glDisable(GL_STENCIL_TEST);
+    }
+
+    device->depthStencilDirty = false;
+    GL_CHECK_ERROR();
+}
+
+static void ApplyRasterizerState(MGG_GraphicsDevice* device)
+{
+    if (!device->rasterizerDirty || !device->rasterizerState)
+        return;
+
+    const auto& info = device->rasterizerState->info;
+
+    // Cull mode
+    if (info.cullMode == MGCullMode::None)
+    {
+        glDisable(GL_CULL_FACE);
+    }
+    else
+    {
+        glEnable(GL_CULL_FACE);
+        glCullFace(ToGLCullMode(info.cullMode));
+        glFrontFace(GL_CW);
+    }
+
+    // Fill mode (desktop only)
+#if !defined(MG_EMSCRIPTEN)
+    glPolygonMode(GL_FRONT_AND_BACK, ToGLFillMode(info.fillMode));
+#endif
+
+    // Scissor test
+    if (info.scissorTestEnable)
+        glEnable(GL_SCISSOR_TEST);
+    else
+        glDisable(GL_SCISSOR_TEST);
+
+    // Depth bias / polygon offset
+    if (info.depthBias != 0.0f || info.slopeScaleDepthBias != 0.0f)
+    {
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(info.slopeScaleDepthBias, info.depthBias);
+    }
+    else
+    {
+        glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+
+    // Depth clipping: GL_DEPTH_CLAMP *disables* clipping, so invert the flag
+#if !defined(MG_EMSCRIPTEN)
+    if (info.depthClipEnable)
+        glDisable(GL_DEPTH_CLAMP);
+    else
+        glEnable(GL_DEPTH_CLAMP);
+#endif
+
+    // Multisample anti-aliasing
+#if !defined(MG_EMSCRIPTEN)
+    if (info.multiSampleAntiAlias)
+        glEnable(GL_MULTISAMPLE);
+    else
+        glDisable(GL_MULTISAMPLE);
+#endif
+
+    device->rasterizerDirty = false;
+    GL_CHECK_ERROR();
+}
+
 void MGG_GraphicsDevice_Draw(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint vertexStart, mgint vertexCount) {
     if (!device || vertexCount <= 0) return;
     printf("Drawing OpenGL graphics device: %zu (primitiveType=%d, vertexStart=%d, vertexCount=%d)\n", (size_t)device->context, primitiveType, vertexStart, vertexCount);
@@ -1507,14 +1775,13 @@ void MGG_GraphicsDevice_GetBackBufferData(MGG_GraphicsDevice* device, mgint x, m
     printf("Ending GetBackBufferData for OpenGL graphics device: %zu\n", (size_t)device->context);
 }
 
-MGG_BlendState* MGG_BlendState_Create(MGG_GraphicsDevice* device, MGG_BlendState_Info* info) {
-    printf("Creating blend state for OpenGL graphics device: %zu\n", (size_t)device->context);
+MGG_BlendState* MGG_BlendState_Create(MGG_GraphicsDevice* device, MGG_BlendState_Info* infos) {
+    assert(device != nullptr);
+    assert(infos != nullptr);
+
     MGG_BlendState* state = new MGG_BlendState();
-    state->info = *info;
-    
-    // OpenGL doesn't have explicit state objects like Direct3D
-    // Instead, we just store the state information and apply it when needed
-    
+    memcpy(state->infos, infos, sizeof(MGG_BlendState_Info) * MAX_RENDER_TARGETS);
+
     return state;
 }
 
