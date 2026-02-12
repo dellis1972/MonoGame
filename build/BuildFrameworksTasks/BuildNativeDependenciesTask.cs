@@ -120,7 +120,7 @@ public sealed class BuildNativeDependenciesTask : FrostingTask<BuildContext>
             throw new Exception("SDL2 Emscripten build failed!");
         }
 
-        var sourcePath = context.GetOutputPath($"Artifacts/monogame.native/emscripten/wasm/{context.BuildConfiguration}");
+        var sourcePath = context.GetOutputPath($"Artifacts/native/mgruntime/wasm/emscripten/{context.BuildConfiguration}");
 
         if (!context.DirectoryExists(sourcePath))
         {
@@ -180,7 +180,7 @@ public sealed class BuildNativeDependenciesTask : FrostingTask<BuildContext>
             throw new Exception("FAudio Emscripten build failed!");
         }
 
-        var sourcePath = context.GetOutputPath($"Artifacts/monogame.native/emscripten/wasm/{context.BuildConfiguration}");
+        var sourcePath = context.GetOutputPath($"Artifacts/native/mgruntime/wasm/emscripten/{context.BuildConfiguration}");
 
         if (!context.DirectoryExists(sourcePath))
         {
