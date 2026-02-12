@@ -2945,33 +2945,95 @@ void MGG_Shader_Destroy(MGG_GraphicsDevice* device, MGG_Shader* shader) {
 }
 
 MGG_OcclusionQuery* MGG_OcclusionQuery_Create(MGG_GraphicsDevice* device) {
+    assert(device != nullptr);
     if (!device) return nullptr;
-    printf("Creating occlusion query for OpenGL graphics device: %zu\n", (size_t)device->context);
-    MGG_OcclusionQuery* query = new MGG_OcclusionQuery();
-    printf("Created occlusion query for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    auto query = new MGG_OcclusionQuery();
+    glGenQueries(1, &query->query);
+    GL_CHECK_ERROR();
+
     return query;
 }
 
 void MGG_OcclusionQuery_Destroy(MGG_GraphicsDevice* device, MGG_OcclusionQuery* query) {
+    assert(device != nullptr);
+    assert(query != nullptr);
     if (!device || !query) return;
-    printf("Destroying occlusion query for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+    if (query->query != 0)
+    {
+        glDeleteQueries(1, &query->query);
+        GL_CHECK_ERROR();
+    }
+
     delete query;
 }
 
 void MGG_OcclusionQuery_Begin(MGG_GraphicsDevice* device, MGG_OcclusionQuery* query) {
+    assert(device != nullptr);
+    assert(query != nullptr);
     if (!device || !query) return;
-    printf("Beginning occlusion query for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+#if defined(MG_EMSCRIPTEN)
+    glBeginQuery(GL_ANY_SAMPLES_PASSED, query->query);
+#else
+    glBeginQuery(GL_SAMPLES_PASSED, query->query);
+#endif
+    GL_CHECK_ERROR();
+
+    query->isActive = true;
+    query->isComplete = false;
+    query->pixelCount = 0;
 }
 
 void MGG_OcclusionQuery_End(MGG_GraphicsDevice* device, MGG_OcclusionQuery* query) {
+    assert(device != nullptr);
+    assert(query != nullptr);
     if (!device || !query || !query->isActive) return;
-    printf("Ending occlusion query for OpenGL graphics device: %zu\n", (size_t)device->context);
+
+#if defined(MG_EMSCRIPTEN)
+    glEndQuery(GL_ANY_SAMPLES_PASSED);
+#else
+    glEndQuery(GL_SAMPLES_PASSED);
+#endif
+    GL_CHECK_ERROR();
+
+    query->isActive = false;
 }
 
 mgbyte MGG_OcclusionQuery_GetResult(MGG_GraphicsDevice* device, MGG_OcclusionQuery* query, mgint& pixelCount) {
+    assert(device != nullptr);
+    assert(query != nullptr);
     if (!device || !query) {
         pixelCount = 0;
         return false;
-    }    
-    return true;
+    }
+
+    // If the result was already retrieved, return it immediately.
+    if (query->isComplete)
+    {
+        pixelCount = query->pixelCount;
+        return true;
+    }
+
+    // Poll for result availability without stalling.
+    GLuint available = 0;
+    glGetQueryObjectuiv(query->query, GL_QUERY_RESULT_AVAILABLE, &available);
+    GL_CHECK_ERROR();
+
+    if (available)
+    {
+        GLuint result = 0;
+        glGetQueryObjectuiv(query->query, GL_QUERY_RESULT, &result);
+        GL_CHECK_ERROR();
+
+        query->pixelCount = (mgint)result;
+        query->isComplete = true;
+        pixelCount = query->pixelCount;
+        return true;
+    }
+
+    // Not ready yet.
+    pixelCount = 0;
+    return false;
 }
