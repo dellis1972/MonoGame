@@ -1759,22 +1759,312 @@ static void ApplyRasterizerState(MGG_GraphicsDevice* device)
     GL_CHECK_ERROR();
 }
 
+// ============================================================
+// Index count helper — primitiveCount → index/vertex count
+// ============================================================
+
+static int MGL_GetIndexCount(MGPrimitiveType primitiveType, mgint primitiveCount)
+{
+    switch (primitiveType)
+    {
+    case MGPrimitiveType::LineList:
+        return primitiveCount * 2;
+    case MGPrimitiveType::LineStrip:
+        return primitiveCount + 1;
+    case MGPrimitiveType::TriangleList:
+        return primitiveCount * 3;
+    case MGPrimitiveType::TriangleStrip:
+        return primitiveCount + 2;
+    default:
+    case MGPrimitiveType::PointList:
+        return primitiveCount;
+    }
+}
+
+// ============================================================
+// ApplyState — deferred state application before every draw
+// ============================================================
+
+static void ApplyState(MGG_GraphicsDevice* device)
+{
+    // 1. Shader / program binding
+    if (device->shaderDirty)
+    {
+        auto vs = device->shaders[(mgint)MGShaderStage::Vertex];
+        auto ps = device->shaders[(mgint)MGShaderStage::Pixel];
+        if (vs && ps)
+        {
+            GLuint program = MGL_ProgramGetOrCreate(device, vs, ps);
+            if (program != device->currentProgram)
+            {
+                glUseProgram(program);
+                device->currentProgram = program;
+
+                // When the program changes, all resource bindings must be re-applied
+                device->uniformDirty = 0xFFFFFFFF;
+                device->textureDirty = 0xFFFFFFFF;
+                device->samplerDirty = 0xFFFFFFFF;
+            }
+        }
+        device->shaderDirty = false;
+    }
+
+    // 2. Blend state
+    if (device->blendDirty || device->blendFactorDirty)
+        ApplyBlendState(device);
+
+    // 3. Depth/stencil state
+    if (device->depthStencilDirty)
+        ApplyDepthStencilState(device);
+
+    // 4. Rasterizer state
+    if (device->rasterizerDirty)
+        ApplyRasterizerState(device);
+
+    // 5. Uniform buffer bindings
+    if (device->uniformDirty)
+    {
+        // Gather active uniform slots from both shaders
+        uint32_t activeSlots = 0;
+        for (int s = 0; s < (int)MGShaderStage::Count; s++)
+        {
+            auto sh = device->shaders[s];
+            if (sh)
+                activeSlots |= sh->uniformSlots;
+        }
+
+        uint32_t slotsToUpdate = device->uniformDirty & activeSlots;
+        for (int slot = 0; slot < MAX_UNIFORM_BUFFER_SLOTS && slotsToUpdate; slot++)
+        {
+            if (slotsToUpdate & (1 << slot))
+            {
+                auto buffer = device->constantBuffers[slot];
+                if (buffer)
+                {
+                    // Bind UBO to the binding point.
+                    // Vertex shader uses binding point = slot,
+                    // Pixel shader uses binding point = 1 + slot (offset by stage).
+                    // Since we bind all active slots for both stages, we bind per-stage:
+                    for (int s = 0; s < (int)MGShaderStage::Count; s++)
+                    {
+                        auto sh = device->shaders[s];
+                        if (sh && (sh->uniformSlots & (1 << slot)))
+                        {
+                            int bindingPoint = s + slot;
+                            glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer->handle);
+                        }
+                    }
+                }
+                slotsToUpdate &= ~(1 << slot);
+            }
+        }
+        device->uniformDirty = 0;
+    }
+
+    // 6. Texture bindings
+    if (device->textureDirty)
+    {
+        uint32_t activeSlots = 0;
+        for (int s = 0; s < (int)MGShaderStage::Count; s++)
+        {
+            auto sh = device->shaders[s];
+            if (sh)
+                activeSlots |= sh->textureSlots;
+        }
+
+        uint32_t slotsToUpdate = device->textureDirty & activeSlots;
+        for (int slot = 0; slot < MAX_TEXTURE_SLOTS && slotsToUpdate; slot++)
+        {
+            if (slotsToUpdate & (1 << slot))
+            {
+                glActiveTexture(GL_TEXTURE0 + slot);
+                auto tex = device->textures[slot];
+                if (tex)
+                    glBindTexture(tex->target, tex->texture);
+                else
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                slotsToUpdate &= ~(1 << slot);
+            }
+        }
+        device->textureDirty = 0;
+    }
+
+    // 7. Sampler bindings
+    if (device->samplerDirty)
+    {
+        uint32_t activeSlots = 0;
+        for (int s = 0; s < (int)MGShaderStage::Count; s++)
+        {
+            auto sh = device->shaders[s];
+            if (sh)
+                activeSlots |= sh->samplerSlots;
+        }
+
+        uint32_t slotsToUpdate = device->samplerDirty & activeSlots;
+        for (int slot = 0; slot < MAX_TEXTURE_SLOTS && slotsToUpdate; slot++)
+        {
+            if (slotsToUpdate & (1 << slot))
+            {
+                auto sampler = device->samplers[slot];
+                if (sampler)
+                    glBindSampler(slot, sampler->sampler);
+                else
+                    glBindSampler(slot, 0);
+                slotsToUpdate &= ~(1 << slot);
+            }
+        }
+        device->samplerDirty = 0;
+    }
+
+    // 8. Input layout / vertex attribute setup
+    if (device->inputLayoutDirty || device->vertexBuffersDirty)
+    {
+        auto layout = device->inputLayout;
+        if (layout)
+        {
+            int elementCount = (int)layout->elements.size();
+
+            // Disable all attribute slots first, then enable the ones we need
+            // to avoid stale attributes from a previous layout.
+            for (int i = 0; i < elementCount; i++)
+                glEnableVertexAttribArray(i);
+
+            for (int i = 0; i < elementCount; i++)
+            {
+                const auto& elem = layout->elements[i];
+                int vbSlot = elem.VertexBufferSlot;
+                auto vb = device->vertexBuffers[vbSlot];
+                if (!vb)
+                    continue;
+
+                int stride = (vbSlot < (int)layout->strides.size()) ? layout->strides[vbSlot] : 0;
+                auto attrib = ToGLVertexAttribType(elem.Format);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vb->handle);
+
+                // Compute the byte offset: element's aligned offset + vertex offset * stride
+                uintptr_t offset = (uintptr_t)elem.AlignedByteOffset + (uintptr_t)device->vertexOffsets[vbSlot] * stride;
+
+                glVertexAttribPointer(
+                    i,                      // location
+                    attrib.size,            // component count
+                    attrib.type,            // component type
+                    attrib.normalized,      // normalized
+                    stride,                 // stride
+                    (const void*)offset     // offset
+                );
+
+                // Set up instancing divisor
+                if (elem.InstanceDataStepRate > 0)
+                    glVertexAttribDivisor(i, elem.InstanceDataStepRate);
+                else
+                    glVertexAttribDivisor(i, 0);
+            }
+        }
+        device->inputLayoutDirty = false;
+        device->vertexBuffersDirty = 0;
+    }
+
+    // 9. Index buffer binding
+    if (device->indexBuffer)
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, device->indexBuffer->handle);
+    }
+
+    GL_CHECK_ERROR();
+}
+
+// ============================================================
+// Draw Calls
+// ============================================================
+
 void MGG_GraphicsDevice_Draw(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint vertexStart, mgint vertexCount) {
-    if (!device || vertexCount <= 0) return;
-    printf("Drawing OpenGL graphics device: %zu (primitiveType=%d, vertexStart=%d, vertexCount=%d)\n", (size_t)device->context, primitiveType, vertexStart, vertexCount);
-    printf("Ending Draw for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(vertexStart >= 0);
+
+    if (vertexCount <= 0)
+        return;
+
+    ApplyState(device);
+
+    GLenum topology = ToGLPrimitiveType(primitiveType);
+    glDrawArrays(topology, vertexStart, vertexCount);
+    GL_CHECK_ERROR();
 }
 
 void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint primitiveCount, mgint indexStart, mgint vertexStart) {
-    if (!device || primitiveCount <= 0) return;
-    printf("Drawing indexed OpenGL graphics device: %zu (primitiveType=%d, primitiveCount=%d, indexStart=%d, vertexStart=%d)\n", (size_t)device->context, primitiveType, primitiveCount, indexStart, vertexStart);
-    printf("Ending DrawIndexed for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(primitiveCount >= 0);
+    assert(indexStart >= 0);
+    assert(vertexStart >= 0);
+
+    if (primitiveCount <= 0)
+        return;
+
+    ApplyState(device);
+
+    GLenum topology = ToGLPrimitiveType(primitiveType);
+    int indexCount = MGL_GetIndexCount(primitiveType, primitiveCount);
+    GLenum indexType = (device->indexBufferSize == MGIndexElementSize::SixteenBits) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+    int indexElementBytes = (device->indexBufferSize == MGIndexElementSize::SixteenBits) ? 2 : 4;
+
+    // glDrawElementsBaseVertex allows a base vertex offset without modifying the index buffer
+#if !defined(MG_EMSCRIPTEN)
+    glDrawElementsBaseVertex(
+        topology,
+        indexCount,
+        indexType,
+        (const void*)(uintptr_t)(indexStart * indexElementBytes),
+        vertexStart);
+#else
+    // WebGL2 does not have glDrawElementsBaseVertex; vertexStart must be 0 or
+    // the caller needs to pre-offset indices.
+    (void)vertexStart;
+    glDrawElements(
+        topology,
+        indexCount,
+        indexType,
+        (const void*)(uintptr_t)(indexStart * indexElementBytes));
+#endif
+    GL_CHECK_ERROR();
 }
 
 void MGG_GraphicsDevice_DrawIndexedInstanced(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint primitiveCount, mgint indexStart, mgint vertexStart, mgint instanceCount) {
-    if (!device || primitiveCount <= 0 || instanceCount <= 0) return;
-    printf("Drawing instanced indexed OpenGL graphics device: %zu (primitiveType=%d, primitiveCount=%d, indexStart=%d, vertexStart=%d, instanceCount=%d)\n", (size_t)device->context, primitiveType, primitiveCount, indexStart, vertexStart, instanceCount);
-    printf("Ending DrawIndexedInstanced for OpenGL graphics device: %zu\n", (size_t)device->context);
+    assert(device != nullptr);
+    assert(primitiveCount >= 0);
+    assert(indexStart >= 0);
+    assert(vertexStart >= 0);
+    assert(instanceCount > 0);
+
+    if (primitiveCount <= 0)
+        return;
+
+    ApplyState(device);
+
+    GLenum topology = ToGLPrimitiveType(primitiveType);
+    int indexCount = MGL_GetIndexCount(primitiveType, primitiveCount);
+    GLenum indexType = (device->indexBufferSize == MGIndexElementSize::SixteenBits) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+    int indexElementBytes = (device->indexBufferSize == MGIndexElementSize::SixteenBits) ? 2 : 4;
+
+#if !defined(MG_EMSCRIPTEN)
+    glDrawElementsInstancedBaseVertex(
+        topology,
+        indexCount,
+        indexType,
+        (const void*)(uintptr_t)(indexStart * indexElementBytes),
+        instanceCount,
+        vertexStart);
+#else
+    // WebGL2 does not have glDrawElementsInstancedBaseVertex
+    (void)vertexStart;
+    glDrawElementsInstanced(
+        topology,
+        indexCount,
+        indexType,
+        (const void*)(uintptr_t)(indexStart * indexElementBytes),
+        instanceCount);
+#endif
+    GL_CHECK_ERROR();
 }
 
 void MGG_GraphicsDevice_ResolveRenderTargets(MGG_GraphicsDevice* device) {
