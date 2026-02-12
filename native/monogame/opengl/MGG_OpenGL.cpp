@@ -698,6 +698,9 @@ struct MGG_GraphicsDevice
     SDL_Window* window = nullptr;
 #endif
 
+    // Whether the GL context and initial state have been set up.
+    bool contextInitialized = false;
+
     // Default VAO (one global VAO for the device)
     GLuint defaultVAO = 0;
 
@@ -833,12 +836,106 @@ void MGG_GraphicsAdapter_GetInfo(MGG_GraphicsAdapter* adapter, MGG_GraphicsAdapt
     info.CurrentDisplayMode = { MGSurfaceFormat::Color, 0, 0 };
 }
 
+// Helper: create the GL context and set up initial GL state.
+// Called on the first ResizeSwapchain when we have a valid window handle.
+#if !defined(MG_EMSCRIPTEN)
+static bool MGL_InitContext(MGG_GraphicsDevice* device, SDL_Window* window) {
+    device->window = window;
+
+    // Set OpenGL attributes for SDL
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+    // Create OpenGL context
+    device->context = SDL_GL_CreateContext(device->window);
+    // If 4.3 fails, try 4.1 (for macOS)
+    if (!device->context) {
+        printf("OpenGL 4.3 not available, trying 4.1...\n");
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        device->context = SDL_GL_CreateContext(device->window);
+    }
+
+    if (!device->context) {
+        fprintf(stderr, "Failed to create OpenGL context: %s\n", SDL_GetError());
+        return false;
+    }
+
+    // Make the context current
+    if (SDL_GL_MakeCurrent(device->window, device->context) < 0) {
+        fprintf(stderr, "Failed to make OpenGL context current: %s\n", SDL_GetError());
+        SDL_GL_DeleteContext(device->context);
+        device->context = nullptr;
+        return false;
+    }
+
+    // Print OpenGL version information
+    const GLubyte* version = glGetString(GL_VERSION);
+    const GLubyte* vendor = glGetString(GL_VENDOR);
+    const GLubyte* renderer = glGetString(GL_RENDERER);
+    const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+    printf("=== OpenGL Context Information ===\n");
+    printf("OpenGL Version: %s\n", version ? (const char*)version : "Unknown");
+    printf("OpenGL Vendor: %s\n", vendor ? (const char*)vendor : "Unknown");
+    printf("OpenGL Renderer: %s\n", renderer ? (const char*)renderer : "Unknown");
+    printf("GLSL Version: %s\n", glslVersion ? (const char*)glslVersion : "Unknown");
+    printf("==================================\n");
+
+    // Create and bind a single default VAO for the device lifetime.
+    glGenVertexArrays(1, &device->defaultVAO);
+    glBindVertexArray(device->defaultVAO);
+    GL_CHECK_ERROR();
+
+    // Create a default FBO for render target usage
+    glGenFramebuffers(1, &device->fbo);
+    GL_CHECK_ERROR();
+
+    // Set initial GL state
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CW);
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+    glDisable(GL_SCISSOR_TEST);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    GL_CHECK_ERROR();
+
+    // Mark all state as dirty so the first draw call applies everything.
+    device->blendDirty = true;
+    device->depthStencilDirty = true;
+    device->rasterizerDirty = true;
+    device->shaderDirty = true;
+    device->inputLayoutDirty = true;
+    device->uniformDirty = 0xFFFFFFFF;
+    device->textureDirty = 0xFFFFFFFF;
+    device->samplerDirty = 0xFFFFFFFF;
+    device->vertexBuffersDirty = 0xFFFFFFFF;
+    device->blendFactorDirty = true;
+    device->renderTargetDirty = false;
+
+    device->contextInitialized = true;
+    printf("Created OpenGL context: %p for window: %p\n", (void*)device->context, (void*)device->window);
+    return true;
+}
+#endif
+
 MGG_GraphicsDevice* MGG_GraphicsDevice_Create(MGG_GraphicsSystem* system, MGG_GraphicsAdapter* adapter) {
     printf("Creating OpenGL graphics device\n");
     MGG_GraphicsDevice* device = new MGG_GraphicsDevice();
     device->system = system;
     device->adapter = adapter;
-printf("Creating OpenGL graphics device\n");
+
 #if defined(MG_EMSCRIPTEN)
     // Set up OpenGL context attributes
     EmscriptenWebGLContextAttributes attrs;
@@ -873,50 +970,7 @@ printf("Creating OpenGL graphics device\n");
         delete device;
         return nullptr;
     }
-#else
-    // Set OpenGL attributes for SDL
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-    // GLES compatibility
-    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-    // SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    // dont use this for max compatibility
-    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-    
-    // Try to get the current window first
-    device->window = SDL_GetWindowFromID(1);
-
-    // Create OpenGL context
-    device->context = SDL_GL_CreateContext(device->window);
-    // If 4.3 fails, try 4.1 (for macOS)
-    if (!device->context) {
-        printf("OpenGL 4.3 not available, trying 4.1...\n");
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-        device->context = SDL_GL_CreateContext(device->window);
-    }
-    
-    if (!device->context) {
-        fprintf(stderr, "Failed to create OpenGL context: %s\n", SDL_GetError());
-        delete device;
-        return nullptr;
-    }
-    
-    // Make the context current
-    if (SDL_GL_MakeCurrent(device->window, device->context) < 0) {
-        fprintf(stderr, "Failed to make OpenGL context current: %s\n", SDL_GetError());
-        SDL_GL_DeleteContext(device->context);
-        delete device;
-        return nullptr;
-    }
-#endif
     // Print OpenGL version information
     const GLubyte* version = glGetString(GL_VERSION);
     const GLubyte* vendor = glGetString(GL_VENDOR);
@@ -930,21 +984,7 @@ printf("Creating OpenGL graphics device\n");
     printf("GLSL Version: %s\n", glslVersion ? (const char*)glslVersion : "Unknown");
     printf("==================================\n");
 
-    // Initialize default viewport state
-    device->viewportX = 0;
-    device->viewportY = 0;
-    device->viewportWidth = 800;  // Default size
-    device->viewportHeight = 600; // Default size
-    device->viewportMinDepth = 0.0f;
-    device->viewportMaxDepth = 1.0f;
-    
-    // Initialize default scissor state
-    device->scissorX = 0;
-    device->scissorY = 0;
-    device->scissorWidth = 800;  // Default size
-    device->scissorHeight = 600; // Default size
     // Create and bind a single default VAO for the device lifetime.
-    // All vertex attribute state will be configured on this VAO.
     glGenVertexArrays(1, &device->defaultVAO);
     glBindVertexArray(device->defaultVAO);
     GL_CHECK_ERROR();
@@ -962,10 +1002,6 @@ printf("Creating OpenGL graphics device\n");
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CW);
-#if !defined(MG_EMSCRIPTEN)
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_FRAMEBUFFER_SRGB);
-#endif
     glDisable(GL_SCISSOR_TEST);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     GL_CHECK_ERROR();
@@ -982,8 +1018,29 @@ printf("Creating OpenGL graphics device\n");
     device->vertexBuffersDirty = 0xFFFFFFFF;
     device->blendFactorDirty = true;
     device->renderTargetDirty = false;
+    device->contextInitialized = true;
+#else
+    // On desktop (SDL), we defer GL context creation to ResizeSwapchain
+    // where the actual window handle is provided. This avoids the problem
+    // of hardcoding a window ID that becomes invalid when windows are
+    // destroyed and recreated (e.g. between test runs).
+#endif
 
-    printf("Created OpenGL graphics device: %p\n", (void*)device->context);
+    // Initialize default viewport state
+    device->viewportX = 0;
+    device->viewportY = 0;
+    device->viewportWidth = 800;  // Default size
+    device->viewportHeight = 600; // Default size
+    device->viewportMinDepth = 0.0f;
+    device->viewportMaxDepth = 1.0f;
+    
+    // Initialize default scissor state
+    device->scissorX = 0;
+    device->scissorY = 0;
+    device->scissorWidth = 800;  // Default size
+    device->scissorHeight = 600; // Default size
+
+    printf("Created OpenGL graphics device (context deferred): %p\n", (void*)device);
     return device;
 }
 
@@ -1053,18 +1110,26 @@ void MGG_GraphicsDevice_Destroy(MGG_GraphicsDevice* device) {
 
 void MGG_GraphicsDevice_GetCaps(MGG_GraphicsDevice* device, MGG_GraphicsDevice_Caps& caps) {
     // Set device capabilities based on OpenGL capabilities
-    printf("Getting capabilities for OpenGL graphics device: %zu\n", (size_t)device->context);
-#if defined(MG_EMSCRIPTEN)
+    printf("Getting capabilities for OpenGL graphics device\n");
+#if !defined(MG_EMSCRIPTEN)
+    if (device->contextInitialized) {
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &caps.MaxTextureSlots);
+        GL_CHECK_ERROR();
+        glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &caps.MaxVertexTextureSlots);
+        GL_CHECK_ERROR();
+        glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &caps.MaxVertexBufferSlots);
+        GL_CHECK_ERROR();
+    } else {
+        // Context not yet created (deferred to ResizeSwapchain).
+        // Return safe defaults matching GL 4.1+ minimum guarantees.
+        caps.MaxTextureSlots = 16;
+        caps.MaxVertexBufferSlots = 16;
+        caps.MaxVertexTextureSlots = 16;
+    }
+#else
     caps.MaxTextureSlots = 16;
     caps.MaxVertexBufferSlots = 8;
     caps.MaxVertexTextureSlots = 8;
-#else
-    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &caps.MaxTextureSlots);
-    GL_CHECK_ERROR();
-    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &caps.MaxVertexTextureSlots);
-    GL_CHECK_ERROR();
-    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &caps.MaxVertexBufferSlots);
-    GL_CHECK_ERROR();
 #endif
     caps.ShaderProfile = 0; // OpenGL MonoGame Shader Profile
     printf("Device capabilities: MaxTextureSlots=%d, MaxVertexBufferSlots=%d, MaxVertexTextureSlots=%d\n",
@@ -1073,20 +1138,7 @@ void MGG_GraphicsDevice_GetCaps(MGG_GraphicsDevice* device, MGG_GraphicsDevice_C
 
 void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* nativeWindowHandle, mgint width, mgint height, MGSurfaceFormat color, MGDepthFormat depth, mgint syncInterval) {
     if (!device) return;
-    printf("Resizing OpenGL graphics device: %zu (width=%d, height=%d)\n", (size_t)device->context, width, height);
-
-    // Unlike Vulkan, OpenGL does not need to recreate the context or
-    // swapchain on resize.  The default framebuffer is managed by the
-    // windowing system (SDL / Emscripten) and automatically adjusts
-    // when the window size changes.  Destroying and recreating the GL
-    // context here would invalidate every GL object (textures, buffers,
-    // shaders, programs, VAOs, FBOs, etc.) which is catastrophic.
-    //
-    // All we need to do is:
-    //  1. Tell the platform about the new size (canvas / window).
-    //  2. Update our cached backbuffer dimensions.
-    //  3. Update viewport and scissor so subsequent draws use the
-    //     new size.
+    printf("Resizing OpenGL graphics device (width=%d, height=%d)\n", width, height);
 
 #if defined(MG_EMSCRIPTEN)
     // Resize the canvas element to match the requested size.
@@ -1094,8 +1146,29 @@ void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* native
         emscripten_set_canvas_element_size("#canvas", width, height);
     }
 #else
-    // On desktop, set the VSync interval.  SDL_GL_SetSwapInterval can be
-    // called at any time without recreating the context.
+    // On the first call, create the GL context using the provided window
+    // handle.  We defer this from MGG_GraphicsDevice_Create because the
+    // window handle is not available there.
+    if (!device->contextInitialized) {
+        SDL_Window* sdlWindow = (SDL_Window*)nativeWindowHandle;
+        if (!sdlWindow) {
+            fprintf(stderr, "ResizeSwapchain: nativeWindowHandle is NULL, cannot create GL context\n");
+            return;
+        }
+        if (!MGL_InitContext(device, sdlWindow)) {
+            fprintf(stderr, "ResizeSwapchain: Failed to initialize GL context\n");
+            return;
+        }
+    } else if ((SDL_Window*)nativeWindowHandle != device->window) {
+        // The window handle changed (shouldn't normally happen, but handle
+        // it gracefully by updating the stored pointer and making our
+        // context current on the new window).
+        device->window = (SDL_Window*)nativeWindowHandle;
+        SDL_GL_MakeCurrent(device->window, device->context);
+    }
+
+    // Set the VSync interval.  SDL_GL_SetSwapInterval can be called at
+    // any time without recreating the context.
     SDL_GL_SetSwapInterval(syncInterval);
 #endif
     
