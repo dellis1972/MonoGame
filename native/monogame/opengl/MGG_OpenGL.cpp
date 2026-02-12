@@ -6,13 +6,13 @@
 #include "mg_common.h"
 
 // Effect includes for OpenGL
-// #include "AlphaTestEffect.ogl.mgfxo.h"
-// #include "BasicEffect.ogl.mgfxo.h"
-// #include "DualTextureEffect.ogl.mgfxo.h"
-// #include "EnvironmentMapEffect.ogl.mgfxo.h"
-// #include "SkinnedEffect.ogl.mgfxo.h"
-// #include "SpriteEffect.ogl.mgfxo.h"
-//#include "mg_effect.h"
+#include "AlphaTestEffect.ogl.mgfxo.h"
+#include "BasicEffect.ogl.mgfxo.h"
+#include "DualTextureEffect.ogl.mgfxo.h"
+#include "EnvironmentMapEffect.ogl.mgfxo.h"
+#include "SkinnedEffect.ogl.mgfxo.h"
+#include "SpriteEffect.ogl.mgfxo.h"
+#include "mg_effect.h"
 
 // Include required headers for OpenGL/Emscripten
 #if defined(MG_EMSCRIPTEN)
