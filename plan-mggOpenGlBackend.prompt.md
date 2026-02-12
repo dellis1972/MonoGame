@@ -10,6 +10,8 @@ The approach keeps everything in a single file and targets Linux/macOS + Emscrip
 
 Use the following premake5 command to build the desktop GL backend:
 
+You need to `cd` into the `native/monogame` which is where the premake5.lua script is located.
+
 ```bash
 VULKAN_SDK=~/VulkanSDK/1.4.304.0/macOS premake5 gmake 2>&1
 ```
