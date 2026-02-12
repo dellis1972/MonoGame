@@ -20,7 +20,7 @@ VULKAN_SDK=~/VulkanSDK/1.4.304.0/macOS premake5 gmake 2>&1
 VULKAN_SDK=~/VulkanSDK/1.4.304.0/macOS make desktopgl config=debug 2>&1
 ```
 
-You can also build the Emscripten target with:
+You can also build the Emscripten target with the following from the root of the repository:
 
 ```bash
 source ../emsdk/emsdk_env.sh
@@ -35,6 +35,12 @@ VULKAN_SDK=~/VulkanSDK/1.4.304.0/macOS make config=debug 2>&1
 ```
 
 Be sure to build after each step to catch any compilation errors early. The final goal is to have a fully implemented OpenGL backend that passes all tests and achieves visual parity with the Vulkan backend.
+
+To build the built in effect we need to use the following from the root of the repository:
+
+```bash
+cd build && dotnet run -- --target="Build OpenGL 4 Shaders" 2>&1
+```
 
 **Steps**
 
