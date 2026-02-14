@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <MonoGamePlatform Condition="'$(MonoGamePlatform)' == ''">DesktopVK</MonoGamePlatform>
+    <MonoGamePlatform Condition="'$(MonoGamePlatform)' == ''">DesktopGL</MonoGamePlatform>
     <DefineConstants>$(DefineConstants);MONOGAME;MG_$(MonoGamePlatform)</DefineConstants>
   </PropertyGroup>
 
@@ -13,10 +13,14 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(MonoGamePlatform)' == 'DesktopVK'">
-    <Content Include="..\Artifacts\monogame.native\macosx\desktopvk\Release\libmonogame.native.dylib" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Artifacts\native\mgruntime\desktopvk\macosx\Release\libmgruntime.dylib" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup Condition="'$(MonoGamePlatform)' == 'DesktopGL'">
-    <Content Include="..\Artifacts\monogame.native\macosx\desktopgl\Release\libmonogame.native.dylib" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\Artifacts\native\mgruntime\desktopgl\macosx\Release\libmgruntime.dylib" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Content\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

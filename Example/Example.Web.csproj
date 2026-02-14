@@ -10,7 +10,7 @@
     <InvariantGlobalization>true</InvariantGlobalization>
     <WasmBuildNative>true</WasmBuildNative>
     <WasmAllowUndefinedSymbols>true</WasmAllowUndefinedSymbols>
-    <EmccExtraLDFlags>-sFULL_ES3</EmccExtraLDFlags>
+    <EmccExtraLDFlags>-sFULL_ES3 -sUSE_WEBGL2=1 -sTOTAL_STACK=5242880</EmccExtraLDFlags>
     <WasmEmitSymbolMap>true</WasmEmitSymbolMap>
     <EmccFlags>-sVERBOSE=1 -Wbad-function-cast -Wcast-function-type -O2 -g3 -sINITIAL_MEMORY=128MB -sMAXIMUM_MEMORY=2048MB -sALLOW_MEMORY_GROWTH=1</EmccFlags>
   </PropertyGroup>
@@ -19,12 +19,19 @@
     <ProjectReference Include="..\MonoGame.Framework\MonoGame.Framework.Native.csproj" />
   </ItemGroup>
 
+  <!-- Serve Content files as static web assets so they can be fetched at runtime.
+       The WebAssembly dev server only serves from wwwroot/, so copy Content there. -->
+  <Target Name="_CopyContentToWwwroot" BeforeTargets="Build">
+    <ItemGroup>
+      <_GameContent Include="Content\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_GameContent)" DestinationFolder="wwwroot/Content/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
   <ItemGroup Condition="'$(MonoGamePlatform)' == 'Web'">
-    <LinkerArg Include="-s USE_WEBGL2=1 -s FULL_ES3=1 -s TOTAL_STACK=5242880" />
-    <WasmShellExtraEmccFlags Include="--preload-file $(MSBuildThisFileDirectory)..\Content@/Content" />
-    <NativeFileReference Include="..\Artifacts\monogame.native\emscripten\wasm\Release\monogame.native.a" CopyToOutputDirectory="PreserveNewest" />
-    <NativeFileReference Include="..\Artifacts\monogame.native\emscripten\wasm\Release\libSDL2.a" CopyToOutputDirectory="PreserveNewest" />
-    <NativeFileReference Include="..\Artifacts\monogame.native\emscripten\wasm\Release\libFAudio.a" CopyToOutputDirectory="PreserveNewest" />
+    <NativeFileReference Include="..\Artifacts\native\mgruntime\wasm\emscripten\Release\mgruntime.a" CopyToOutputDirectory="PreserveNewest" />
+    <NativeFileReference Include="..\Artifacts\native\mgruntime\wasm\emscripten\Release\libSDL2.a" CopyToOutputDirectory="PreserveNewest" />
+    <NativeFileReference Include="..\Artifacts\native\mgruntime\wasm\emscripten\Release\libFAudio.a" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

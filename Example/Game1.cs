@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -10,9 +12,10 @@ namespace Example;
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
-    // private SpriteBatch _spriteBatch;
-    // private Texture2D _texture;
-    // private RenderTarget2D _renderTarget;
+    private SpriteBatch _spriteBatch;
+    private Texture2D _texture;
+    private SoundEffectInstance _soundEffect;
+    private RenderTarget2D _renderTarget;
 
     public Game1()
     {
@@ -30,32 +33,44 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
-        // _spriteBatch = new SpriteBatch(GraphicsDevice);
+        _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // _texture = new Texture2D(GraphicsDevice, 2, 2);
-        // Color[] data = [Color.Red, Color.Green, Color.Blue, Color.Yellow];
-        // _texture.SetData(data);
+        _texture = Content.Load<Texture2D>("test");
 
-        // _renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200);
+        _soundEffect = Content.Load<SoundEffect>("testsound").CreateInstance();
+        _soundEffect.IsLooped = true;
+        _soundEffect.Play();
+
+        _renderTarget = new RenderTarget2D(GraphicsDevice, 200, 200);
     }
+
+    int x, y = 10;
 
     protected override void Update(GameTime gameTime)
     {
         var keyboardState = Keyboard.GetState();
-        if (keyboardState.IsKeyDown(Keys.Escape))
-            Exit();
+        if (keyboardState.IsKeyDown(Keys.Left))
+            x--;
+        if (keyboardState.IsKeyDown(Keys.Right))
+            x++;
+        if (keyboardState.IsKeyDown(Keys.Up))
+            y--;
+        if (keyboardState.IsKeyDown(Keys.Down))
+            y++;
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.SetRenderTarget(_renderTarget);
+        GraphicsDevice.Clear(Color.MonoGameOrange);
+        GraphicsDevice.SetRenderTarget(null);
 
         var oldViewport = GraphicsDevice.Viewport;
 
         GraphicsDevice.Viewport = new Viewport(0, 0, 10, 10);
 
-        GraphicsDevice.Clear(Color.Red);
+        GraphicsDevice.Clear(Color.CornflowerBlue);
 
         GraphicsDevice.Viewport = oldViewport;
 
@@ -64,10 +79,11 @@ public class Game1 : Game
         // GraphicsDevice.DepthStencilState = DepthStencilState.None;
         // GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-        // _spriteBatch.Begin();
-        // // Draw your game objects here
-        // _spriteBatch.Draw(_texture, new Rectangle(10, 20, 100, 60), Color.White);
-        // _spriteBatch.End();
+        _spriteBatch.Begin();
+        // Draw your game objects here
+        _spriteBatch.Draw(_texture, new Rectangle(x, y, 60, 60), Color.White);
+        //_spriteBatch.Draw(_renderTarget, new Rectangle(120, 20, 100, 60), Color.White);
+        _spriteBatch.End();
 
         base.Draw(gameTime);
     }
@@ -86,6 +102,7 @@ public static class Program
     {
 #endif
         Console.WriteLine("Creating Game1");
+        try {
         using (var game = new Game1())
         {
             Console.WriteLine("Running Game1");
@@ -95,6 +112,11 @@ public static class Program
             await tcs.Task;
             Console.WriteLine("Resuming after yield");
 #endif
+        }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Exception in Main: " + ex);
         }
     }
 }
