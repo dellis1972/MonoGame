@@ -252,9 +252,9 @@ static GLenum ToGLType(MGSurfaceFormat format)
 	case MGSurfaceFormat::Bgra32SRgb:
 		return GL_UNSIGNED_BYTE;
 	case MGSurfaceFormat::Bgr565:
-		return GL_UNSIGNED_SHORT_5_6_5;
+		return GL_UNSIGNED_SHORT_5_6_5_REV;
 	case MGSurfaceFormat::Bgra5551:
-		return GL_UNSIGNED_SHORT_5_5_5_1;
+		return GL_UNSIGNED_SHORT_1_5_5_5_REV;
 	case MGSurfaceFormat::Bgra4444:
 		return GL_UNSIGNED_SHORT_4_4_4_4;
 	case MGSurfaceFormat::Rgba1010102:
@@ -906,7 +906,7 @@ static bool MGL_InitContext(MGG_GraphicsDevice* device, SDL_Window* window) {
     glCullFace(GL_BACK);
     glFrontFace(GL_CW);
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    glDisable(GL_FRAMEBUFFER_SRGB);
     glDisable(GL_SCISSOR_TEST);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
     GL_CHECK_ERROR();
@@ -1388,9 +1388,10 @@ void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x,
     GL_CHECK_ERROR();
     
     // Set scissor rectangle
-    // Note: OpenGL has (0,0) at bottom-left, need to flip Y coordinate
-    int flippedY = device->viewportHeight - (y + height);
-    glScissor(x, flippedY, width, height);
+    // SPIRV-Cross flips gl_Position.y in all vertex shaders, which means
+    // rendered content is already Y-inverted in the framebuffer. So we
+    // pass the scissor rect without additional Y flipping.
+    glScissor(x, y, width, height);
     
     GL_CHECK_ERROR();
 }
@@ -2313,28 +2314,13 @@ void MGG_GraphicsDevice_GetBackBufferData(MGG_GraphicsDevice* device, mgint x, m
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     GL_CHECK_ERROR();
 
-    // OpenGL's origin is bottom-left, so flip the Y coordinate.
-    int bbHeight = device->backbufferHeight > 0 ? device->backbufferHeight : device->viewportHeight;
-    int flippedY = bbHeight - (y + height);
-
-    // Read pixels in RGBA / unsigned byte format.
-    glReadPixels(x, flippedY, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    // SPIRV-Cross flips gl_Position.y in vertex shaders, so the rendered
+    // content is already in top-to-bottom order in the framebuffer.
+    // glReadPixels reads bottom-to-top, which reverses the SPIRV-Cross
+    // flip, producing the correct top-to-bottom order for the caller.
+    // No additional Y coordinate or row flipping is needed.
+    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
     GL_CHECK_ERROR();
-
-    // OpenGL reads bottom-to-top but callers expect top-to-bottom,
-    // so flip the rows in-place.
-    int bytesPerPixel = 4; // GL_RGBA / GL_UNSIGNED_BYTE
-    int rowBytes = width * bytesPerPixel;
-    uint8_t* pixels = static_cast<uint8_t*>(data);
-    std::vector<uint8_t> tempRow(rowBytes);
-    for (int row = 0; row < height / 2; row++)
-    {
-        uint8_t* topRow = pixels + row * rowBytes;
-        uint8_t* bottomRow = pixels + (height - 1 - row) * rowBytes;
-        memcpy(tempRow.data(), topRow, rowBytes);
-        memcpy(topRow, bottomRow, rowBytes);
-        memcpy(bottomRow, tempRow.data(), rowBytes);
-    }
 
     // Rebind the current render target if we were targeting an FBO.
     if (device->renderTargetCount > 0)
@@ -2403,7 +2389,10 @@ MGG_SamplerState* MGG_SamplerState_Create(MGG_GraphicsDevice* device, MGG_Sample
     }
 
     // Mip LOD bias and clamp
+#if !defined(MG_EMSCRIPTEN)
+    // GL_TEXTURE_LOD_BIAS is not supported in WebGL 2 / OpenGL ES 3.0
     glSamplerParameterf(state->sampler, GL_TEXTURE_LOD_BIAS, info->MipMapLevelOfDetailBias);
+#endif
     glSamplerParameterf(state->sampler, GL_TEXTURE_MIN_LOD, 0.0f);
     glSamplerParameterf(state->sampler, GL_TEXTURE_MAX_LOD, 1000.0f);
 
@@ -2549,15 +2538,13 @@ void MGG_Buffer_GetData(MGG_GraphicsDevice* device, MGG_Buffer* buffer, mgint of
 
 #if !defined(MG_EMSCRIPTEN)
     // Desktop GL — use glGetBufferSubData
-    auto totalSize = dataCount * dataStride;
     if (dataStride == dataBytes) {
+        auto totalSize = dataCount * dataStride;
         glGetBufferSubData(buffer->target, offset, totalSize, data);
     } else {
-        // Read into a temp buffer then scatter-copy
-        std::vector<mgbyte> temp(totalSize);
-        glGetBufferSubData(buffer->target, offset, totalSize, temp.data());
+        // Non-contiguous data — read element by element.
         for (mgint i = 0; i < dataCount; ++i) {
-            memcpy(data + i * dataBytes, temp.data() + i * dataStride, dataBytes);
+            glGetBufferSubData(buffer->target, offset + i * dataStride, dataBytes, data + i * dataBytes);
         }
     }
 #else
@@ -2729,6 +2716,11 @@ void MGG_Texture_SetData(MGG_GraphicsDevice* device, MGG_Texture* texture, mgint
 
     bool compressed = IsCompressedFormat(texture->format);
 
+    // Set byte-aligned unpacking so non-power-of-2 widths with small formats work correctly.
+    if (!compressed) {
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    }
+
     switch (texture->type) {
     case MGTextureType::_2D:
         glBindTexture(GL_TEXTURE_2D, texture->texture);
@@ -2798,6 +2790,11 @@ void MGG_Texture_GetData(MGG_GraphicsDevice* device, MGG_Texture* texture, mgint
         depth = mipDepth;
     }
 
+    // Set byte-aligned packing so non-power-of-2 widths with small formats work correctly.
+    if (!IsCompressedFormat(texture->format)) {
+        glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    }
+
 #if !defined(MG_EMSCRIPTEN)
     // Desktop GL — use glGetTexImage for full mip level reads,
     // or FBO + glReadPixels for sub-region reads.
@@ -2817,14 +2814,65 @@ void MGG_Texture_GetData(MGG_GraphicsDevice* device, MGG_Texture* texture, mgint
         }
         glBindTexture(texture->target, 0);
     } else if (IsCompressedFormat(texture->format)) {
-        // Compressed format — use glGetCompressedTexImage
-        glBindTexture(texture->target, texture->texture);
-        if (texture->type == MGTextureType::Cube) {
-            glGetCompressedTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, level, data);
-        } else {
-            glGetCompressedTexImage(texture->target, level, data);
+        // Compressed format — glGetCompressedTexImage always reads the full mip level.
+        // We must read into a temp buffer and extract the requested sub-region blocks.
+        const mgint blockSize = 4;
+        mgint bytesPerBlock;
+        switch (texture->format) {
+            case MGSurfaceFormat::Dxt1:
+            case MGSurfaceFormat::Dxt1SRgb:
+            case MGSurfaceFormat::Dxt1a:
+                bytesPerBlock = 8;
+                break;
+            default:
+                bytesPerBlock = 16;
+                break;
         }
-        glBindTexture(texture->target, 0);
+
+        mgint mipBlocksWide = (mipWidth + blockSize - 1) / blockSize;
+        mgint mipBlocksTall = (mipHeight + blockSize - 1) / blockSize;
+        mgint fullMipSize = mipBlocksWide * mipBlocksTall * bytesPerBlock;
+
+        bool isFullMip = (x == 0 && y == 0 && width == mipWidth && height == mipHeight);
+
+        if (isFullMip && dataBytes >= fullMipSize) {
+            // Full mip read — write directly to caller's buffer
+            glBindTexture(texture->target, texture->texture);
+            if (texture->type == MGTextureType::Cube)
+                glGetCompressedTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, level, data);
+            else
+                glGetCompressedTexImage(texture->target, level, data);
+            glBindTexture(texture->target, 0);
+        } else {
+            // Sub-region read — read full mip into temp buffer, extract requested blocks
+            mgbyte* tempBuf = new mgbyte[fullMipSize];
+            glBindTexture(texture->target, texture->texture);
+            if (texture->type == MGTextureType::Cube)
+                glGetCompressedTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + slice, level, tempBuf);
+            else
+                glGetCompressedTexImage(texture->target, level, tempBuf);
+            glBindTexture(texture->target, 0);
+
+            // Extract blocks for the requested region.
+            // x,y are already block-aligned by managed code; width,height are in pixels.
+            mgint startBlockX = x / blockSize;
+            mgint startBlockY = y / blockSize;
+            mgint regionBlocksWide = (width + blockSize - 1) / blockSize;
+            mgint regionBlocksTall = (height + blockSize - 1) / blockSize;
+            mgint regionRowBytes = regionBlocksWide * bytesPerBlock;
+
+            mgint copied = 0;
+            for (mgint by = 0; by < regionBlocksTall && copied < dataBytes; by++) {
+                mgint srcOffset = ((startBlockY + by) * mipBlocksWide + startBlockX) * bytesPerBlock;
+                mgint toCopy = regionRowBytes;
+                if (copied + toCopy > dataBytes)
+                    toCopy = dataBytes - copied;
+                memcpy(data + copied, tempBuf + srcOffset, toCopy);
+                copied += toCopy;
+            }
+
+            delete[] tempBuf;
+        }
     } else {
         // Sub-region read — attach to a temporary FBO and use glReadPixels
         GLuint tempFBO;
@@ -2941,6 +2989,34 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
     // by the content pipeline (ShaderProfile.OpenGL4.cs).
     const char* glslSource = (const char*)bytecode;
     GLint glslLength = (GLint)sizeInBytes;
+
+#if defined(MG_EMSCRIPTEN)
+    // WebGL 2 uses GLSL ES 3.00, but the content pipeline generates #version 330.
+    // Patch the GLSL source at runtime to make it compatible with WebGL 2.
+    std::string patchedGlsl(glslSource, glslLength);
+    {
+        // Replace "#version 330" with "#version 300 es"
+        const std::string v330 = "#version 330";
+        auto pos = patchedGlsl.find(v330);
+        if (pos != std::string::npos) {
+            patchedGlsl.replace(pos, v330.length(), "#version 300 es");
+        }
+
+        // Find the end of the #version line to insert precision qualifiers after it
+        auto versionEnd = patchedGlsl.find('\n');
+        if (versionEnd != std::string::npos) {
+            std::string precisionBlock;
+            if (stage == MGShaderStage::Pixel) {
+                precisionBlock = "\nprecision mediump float;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n";
+            } else {
+                precisionBlock = "\nprecision highp float;\n";
+            }
+            patchedGlsl.insert(versionEnd + 1, precisionBlock);
+        }
+    }
+    glslSource = patchedGlsl.c_str();
+    glslLength = (GLint)patchedGlsl.size();
+#endif
 
     // --- Create and compile the GL shader ---
     GLenum glStage = (stage == MGShaderStage::Vertex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;

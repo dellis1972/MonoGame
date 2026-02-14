@@ -10,7 +10,7 @@ using System.IO;
 namespace MonoGame.Tests.Graphics
 {
     // TODO: Bring this suite of tests to the other APIs - it's a good check that they all handle params similarly.
-#if VULKAN
+#if VULKAN || DESKTOPGL4
     [TestFixture]
     [NonParallelizable]
     class EffectParameterTests : GraphicsDeviceTestFixtureBase

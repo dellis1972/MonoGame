@@ -153,7 +153,6 @@ namespace MonoGame.Effect
                 toolArgs = "";
                 toolArgs += "-nologo ";
                 toolArgs += "-spirv ";
-                toolArgs += "-fvk-use-dx-layout ";
 
                 // Adds HLSL specific reflection information to the SPIR-V
                 // https://github.com/Microsoft/DirectXShaderCompiler/blob/main/docs/SPIR-V.rst#reflection

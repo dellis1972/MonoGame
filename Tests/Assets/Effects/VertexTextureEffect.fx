@@ -1,13 +1,15 @@
 // MonoGame - Copyright (C) MonoGame Foundation, Inc
 // This file is subject to the terms and conditions defined in
 // file 'LICENSE.txt', which is part of this source code package.
+#include "Include.fxh"
 
 matrix WorldViewProj;
 
 float HeightMapSize;
+
 Texture2D HeightMapTexture;
 
-sampler2D HeightMapSampler = sampler_state
+sampler HeightMapSampler = sampler_state
 {
     Texture = (HeightMapTexture);
     MinFilter = POINT;
@@ -23,7 +25,12 @@ struct VSOutput
 
 VSOutput VS_Main(float2 xy : POSITION)
 {
-    float height = tex2Dlod(HeightMapSampler, float4((xy + float2(0.5, 0.5)) / HeightMapSize, 0, 0)).r;
+    float2 uv = (xy + float2(0.5, 0.5)) / HeightMapSize;
+#if SM6 || SM4
+    float height = HeightMapTexture.SampleLevel(HeightMapSampler, uv, 0).r;
+#else
+    float height = tex2Dlod(HeightMapSampler, float4(uv, 0, 0)).r;
+#endif
     float3 worldPosition = float3(xy.x, height, xy.y);
 
     VSOutput output;
@@ -37,18 +44,6 @@ float4 PS_Main(VSOutput input) : SV_TARGET0
 {
     return input.Color;
 }
-
-#if SM4
-
-#define PS_PROFILE ps_4_0
-#define VS_PROFILE vs_4_0
-
-#else
-
-#define PS_PROFILE ps_3_0
-#define VS_PROFILE vs_3_0
-
-#endif
 
 technique
 {
