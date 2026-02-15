@@ -58,6 +58,10 @@
 #define GL_CHECK_ERROR() ((void)0)
 #endif
 
+// Limit verbose per-frame logging to the first N frames to avoid
+// overflowing the browser console buffer and losing early diagnostics.
+#define FRAME_LOG_LIMIT 20
+
 // ============================================================
 // Enum Conversion Helpers — MonoGame enums → GL enums
 // ============================================================
@@ -779,6 +783,9 @@ struct MGG_GraphicsDevice
     mgint renderTargetCount = 0;
     bool renderTargetDirty = false;
 
+    // --- Frame tracking ---
+    int frameNumber = 0;
+
     // --- Tracking for cleanup ---
     std::vector<MGG_Buffer*> all_buffers;
     std::vector<MGG_Texture*> all_textures;
@@ -948,9 +955,9 @@ MGG_GraphicsDevice* MGG_GraphicsDevice_Create(MGG_GraphicsSystem* system, MGG_Gr
     attrs.alpha = 1;
     attrs.depth = 1;
     attrs.stencil = 1;
-    attrs.antialias = 1;
-    attrs.premultipliedAlpha = 1;
-    attrs.preserveDrawingBuffer = 0;
+    attrs.antialias = 0;           // MSAA causes alpha corruption during compositor resolve on WebGL
+    attrs.premultipliedAlpha = 0;   // MonoGame renders non-premultiplied alpha
+    attrs.preserveDrawingBuffer = 1;
     attrs.powerPreference = EM_WEBGL_POWER_PREFERENCE_DEFAULT;
     attrs.failIfMajorPerformanceCaveat = 0;
     printf("Getting canvas\n");
@@ -1198,32 +1205,42 @@ void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* native
 }
 
 mgint MGG_GraphicsDevice_BeginFrame(MGG_GraphicsDevice* device) {
-    printf("Beginning frame for OpenGL graphics device\n");
     if (!device) return 0;
+    device->frameNumber++;
+    
+    if (device->frameNumber <= FRAME_LOG_LIMIT) {
+        // Log the current FBO state at frame start
+        GLint currentFBO = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
+        printf("[Frame %d] === BeginFrame === (currentFBO=%d, rtCount=%d)\n", 
+               device->frameNumber, currentFBO, device->renderTargetCount);
+    }
     
 #if defined(MG_EMSCRIPTEN)
     // Make sure our context is current
     EMSCRIPTEN_RESULT result = emscripten_webgl_make_context_current(device->context);
     if (result != EMSCRIPTEN_RESULT_SUCCESS) {
-        fprintf(stderr, "Failed to make OpenGL context current: %d\n", result);
+        fprintf(stderr, "[Frame %d] Failed to make OpenGL context current: %d\n", device->frameNumber, result);
         return 0;
     }
 #else
     SDL_GL_MakeCurrent(device->window, device->context);
 #endif
-    printf("Ending frame for OpenGL graphics device: %zu\n", (size_t)device->context);
 
     return 1; // Frame index - OpenGL doesn't use multiple frames like Vulkan
 }
 
 void MGG_GraphicsDevice_Clear(MGG_GraphicsDevice* device, MGClearOptions options, Vector4& color, mgfloat depth, mgint stencil) {
-    printf("Clearing OpenGL graphics device\n");
     if (!device) return;
     
-    // Check which framebuffer is currently bound
-    GLint currentFramebuffer = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
-    printf("Current framebuffer: %d\n", currentFramebuffer);
+    if (device->frameNumber <= FRAME_LOG_LIMIT) {
+        GLint currentFramebuffer = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+        const char* target = (currentFramebuffer == 0) ? "BACKBUFFER" : "RENDERTARGET";
+        printf("[Frame %d] Clear %s (FBO=%d, rtCount=%d, color=(%.3f,%.3f,%.3f,%.3f))\n",
+               device->frameNumber, target, currentFramebuffer, device->renderTargetCount,
+               color.X, color.Y, color.Z, color.W);
+    }
     
     GLbitfield clearMask = 0;
     
@@ -1232,21 +1249,17 @@ void MGG_GraphicsDevice_Clear(MGG_GraphicsDevice* device, MGClearOptions options
         glClearColor(color.X, color.Y, color.Z, color.W);
         GL_CHECK_ERROR();
         clearMask |= GL_COLOR_BUFFER_BIT;
-        printf("Clear color: (%f, %f, %f, %f)\n", color.X, color.Y, color.Z, color.W);
     }
     
     // Set clear depth if depth buffer is being cleared
     if (static_cast<mgint>(options) & static_cast<mgint>(MGClearOptions::DepthBuffer)) {
 #if defined(MG_EMSCRIPTEN)
-        // WebGL/OpenGL ES uses glClearDepthf
         glClearDepthf(depth);
 #else
-        // Desktop OpenGL uses glClearDepth with double parameters
         glClearDepth((double)depth);
 #endif
         GL_CHECK_ERROR();
         clearMask |= GL_DEPTH_BUFFER_BIT;
-        printf("Clear depth: %f\n", depth);
     }
     
     // Set clear stencil if stencil buffer is being cleared
@@ -1254,47 +1267,140 @@ void MGG_GraphicsDevice_Clear(MGG_GraphicsDevice* device, MGClearOptions options
         glClearStencil(stencil);
         GL_CHECK_ERROR();
         clearMask |= GL_STENCIL_BUFFER_BIT;
-        printf("Clear stencil: %d\n", stencil);
     }
     
     // Perform the clear operation
     if (clearMask != 0) {
-        printf("Calling glClear with mask: 0x%x\n", clearMask);
+        // glClear is affected by scissor test, depth mask, and color mask.
+        // We must temporarily disable scissor and enable all write masks to
+        // ensure the entire buffer is cleared, matching XNA/MonoGame behavior.
+        // Save and restore state afterwards so draw calls are not affected.
+        
+        // Save scissor state and disable it during clear
+        GLboolean scissorWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+        if (scissorWasEnabled)
+            glDisable(GL_SCISSOR_TEST);
+        
+        // Save and force depth write enable (glClear(GL_DEPTH_BUFFER_BIT)
+        // is silently ignored when glDepthMask(GL_FALSE))
+        GLboolean depthMaskWas = GL_TRUE;
+        if (clearMask & GL_DEPTH_BUFFER_BIT) {
+            glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMaskWas);
+            if (!depthMaskWas)
+                glDepthMask(GL_TRUE);
+        }
+        
+        // Save and force color write mask (glClear(GL_COLOR_BUFFER_BIT)
+        // respects glColorMask)
+        GLboolean colorMaskWas[4] = { GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE };
+        if (clearMask & GL_COLOR_BUFFER_BIT) {
+            glGetBooleanv(GL_COLOR_WRITEMASK, colorMaskWas);
+            if (!colorMaskWas[0] || !colorMaskWas[1] || !colorMaskWas[2] || !colorMaskWas[3])
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        }
+        
+        if (device->frameNumber <= FRAME_LOG_LIMIT)
+            printf("[Frame %d]   glClear(0x%x) scissorWas=%s, depthMaskWas=%d\n",
+                   device->frameNumber, clearMask,
+                   scissorWasEnabled ? "ON" : "OFF", depthMaskWas);
+        
         glClear(clearMask);
         GL_CHECK_ERROR();
+        
+        // Diagnostic: verify clear actually wrote pixels (first 3 frames, backbuffer only)
+        if (device->frameNumber <= 3 && (clearMask & GL_COLOR_BUFFER_BIT)) {
+            GLint postClearFBO = 0;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &postClearFBO);
+            unsigned char px[4] = {0};
+            glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
+            GLenum readErr = glGetError();
+            printf("[Frame %d]   POST-CLEAR readback at (0,0) FBO=%d: RGBA=(%d,%d,%d,%d) glErr=%d\n",
+                   device->frameNumber, postClearFBO, px[0], px[1], px[2], px[3], readErr);
+        }
+        
+        // Restore previous state
+        if (scissorWasEnabled)
+            glEnable(GL_SCISSOR_TEST);
+        if ((clearMask & GL_DEPTH_BUFFER_BIT) && !depthMaskWas)
+            glDepthMask(GL_FALSE);
+        if ((clearMask & GL_COLOR_BUFFER_BIT) &&
+            (!colorMaskWas[0] || !colorMaskWas[1] || !colorMaskWas[2] || !colorMaskWas[3]))
+            glColorMask(colorMaskWas[0], colorMaskWas[1], colorMaskWas[2], colorMaskWas[3]);
     }
     
     GL_CHECK_ERROR();
-
-    printf("Cleared OpenGL graphics device\n");
 }
 
 void MGG_GraphicsDevice_Present(MGG_GraphicsDevice* device, mgint currentFrame, mgint syncInterval) {
     if (!device) return;
-    printf("Presenting OpenGL graphics device: %zu (syncInterval=%d)\n", (size_t)device->context, syncInterval);
+    
+    // Verify we're presenting from the backbuffer (FBO 0)
+    GLint currentFBO = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
+    
+    if (device->frameNumber <= FRAME_LOG_LIMIT)
+        printf("[Frame %d] === Present === (FBO=%d, rtCount=%d, syncInterval=%d)\n",
+               device->frameNumber, currentFBO, device->renderTargetCount, syncInterval);
+    
+    if (currentFBO != 0) {
+        fprintf(stderr, "[Frame %d] WARNING: Present called while FBO %d is bound (not backbuffer!)\n",
+                device->frameNumber, currentFBO);
+    }
    
 #if defined(MG_EMSCRIPTEN)
-    // In WebGL, the browser handles buffer swapping with requestAnimationFrame
-    // We don't need to do anything special here, as opposed to other APIs
-    
-    // We could potentially use emscripten_set_main_loop_timing to control frame rate
-    // But typically the browser's requestAnimationFrame handles this well
+    // In WebGL, the browser composites FBO 0 when the rAF callback returns.
+    // We must ensure all GL commands are submitted before returning.
+    glFlush();
+    if (device->frameNumber <= FRAME_LOG_LIMIT)
+        printf("[Frame %d] glFlush() completed (WebGL - browser will composite on event loop return)\n",
+               device->frameNumber);
 #else
-    // Ensure we're swapping the correct window
     SDL_Window* currentWindow = SDL_GL_GetCurrentWindow();
-    printf("Current SDL window: %p, device window: %p\n", currentWindow, device->window);
-    
     if (currentWindow != device->window) {
-        fprintf(stderr, "Warning: Current window doesn't match device window!\n");
+        fprintf(stderr, "[Frame %d] WARNING: Current window doesn't match device window!\n", device->frameNumber);
     }
     
-    printf("Calling SDL_GL_SwapWindow...\n");
     SDL_GL_SwapWindow(device->window);
-    printf("SDL_GL_SwapWindow completed\n");
 #endif
     
     GL_CHECK_ERROR();
-    printf("Present completed\n");
+    
+    // For the first few frames, read back multiple positions from the backbuffer
+    // to diagnose what is actually being composited by the browser.
+    if (device->frameNumber <= 5) {
+        // Check for GL errors accumulated during the frame
+        GLenum preErr = glGetError();
+        if (preErr != GL_NO_ERROR)
+            printf("[Frame %d] GL ERROR before readback: 0x%x\n", device->frameNumber, preErr);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
+        // Read corner (0,0)
+        unsigned char px00[4] = {0};
+        glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px00);
+        GLenum err00 = glGetError();
+        
+        // Read center
+        unsigned char pxC[4] = {0};
+        int cx = device->backbufferWidth / 2;
+        int cy = device->backbufferHeight / 2;
+        glReadPixels(cx, cy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pxC);
+        GLenum errC = glGetError();
+        
+        // Query actual drawing buffer dimensions
+        GLint dbViewport[4] = {0, 0, 0, 0};
+        glGetIntegerv(GL_VIEWPORT, dbViewport);
+        
+        printf("[Frame %d] READBACK (0,0): RGBA=(%d,%d,%d,%d) err=%d\n",
+               device->frameNumber, px00[0], px00[1], px00[2], px00[3], err00);
+        printf("[Frame %d] READBACK center(%d,%d): RGBA=(%d,%d,%d,%d) err=%d\n",
+               device->frameNumber, cx, cy, pxC[0], pxC[1], pxC[2], pxC[3], errC);
+        printf("[Frame %d] backbuffer=%dx%d\n",
+               device->frameNumber, device->backbufferWidth, device->backbufferHeight);
+    }
+    
+    if (device->frameNumber <= FRAME_LOG_LIMIT)
+        printf("[Frame %d] === Present completed ===\n", device->frameNumber);
 }
 
 void MGG_GraphicsDevice_SetBlendState(MGG_GraphicsDevice* device, MGG_BlendState* state, mgfloat factorR, mgfloat factorG, mgfloat factorB, mgfloat factorA) {
@@ -1351,7 +1457,12 @@ void MGG_GraphicsDevice_GetTitleSafeArea(mgint& x, mgint& y, mgint& width, mgint
 
 void MGG_GraphicsDevice_SetViewport(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height, mgfloat minDepth, mgfloat maxDepth) {
     if (!device) return;
-    printf("Setting viewport for OpenGL graphics device: %zu (%d, %d, %d, %d)\n", (size_t)device->context, x, y, width, height);
+    if (device->frameNumber <= FRAME_LOG_LIMIT) {
+        GLint currentFBO = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
+        printf("[Frame %d] SetViewport(%d, %d, %d, %d) FBO=%d rtCount=%d\n", 
+               device->frameNumber, x, y, width, height, currentFBO, device->renderTargetCount);
+    }
     
     // Store viewport values - actual glViewport call deferred to ApplyState
     // where we know the correct render target state for Y flip
@@ -1366,7 +1477,9 @@ void MGG_GraphicsDevice_SetViewport(MGG_GraphicsDevice* device, mgint x, mgint y
 
 void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height) {
     if (!device) return;
-    printf("Setting scissor rectangle for OpenGL graphics device: %zu (%d, %d, %d, %d)\n", (size_t)device->context, x, y, width, height);
+    if (device->frameNumber <= FRAME_LOG_LIMIT)
+        printf("[Frame %d] SetScissor(%d, %d, %d, %d) rtCount=%d\n", 
+               device->frameNumber, x, y, width, height, device->renderTargetCount);
     
     // Store scissor values - actual glScissor call deferred to ApplyState
     // where we know the correct render target state for Y flip
@@ -1380,8 +1493,15 @@ void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x,
 void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture** targets, mgint* arraySlices, mgint count) {
     assert(device != nullptr);
 
+    GLint prevFBO = 0;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
+
     if (targets == nullptr || count == 0)
     {
+        if (device->frameNumber <= FRAME_LOG_LIMIT)
+            printf("[Frame %d] SetRenderTargets -> BACKBUFFER (FBO 0, was FBO %d, prev rtCount=%d)\n",
+                   device->frameNumber, prevFBO, device->renderTargetCount);
+
         // Bind the default framebuffer (backbuffer).
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         GL_CHECK_ERROR();
@@ -1420,6 +1540,20 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
         {
             for (int i = 0; i < MAX_RENDER_TARGETS; i++)
                 device->renderTargetSlices[i] = std::nullopt;
+        }
+
+        if (device->frameNumber <= FRAME_LOG_LIMIT) {
+            printf("[Frame %d] SetRenderTargets -> %d RT(s) (FBO %d, was FBO %d)\n",
+                   device->frameNumber, count, device->fbo, prevFBO);
+            for (int i = 0; i < count && i < MAX_RENDER_TARGETS; i++) {
+                if (targets[i]) {
+                    printf("[Frame %d]   RT[%d]: tex=%u %dx%d isRT=%d depthFmt=%d usage=%d\n",
+                           device->frameNumber, i, targets[i]->texture, 
+                           targets[i]->width, targets[i]->height,
+                           targets[i]->isRenderTarget, (int)targets[i]->depthFormat,
+                           (int)targets[i]->usage);
+                }
+            }
         }
 
         // Bind the off-screen FBO.
@@ -1508,7 +1642,12 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
         GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (fbStatus != GL_FRAMEBUFFER_COMPLETE)
         {
-            fprintf(stderr, "MGG_GraphicsDevice_SetRenderTargets: Framebuffer incomplete, status=0x%x\n", fbStatus);
+            fprintf(stderr, "[Frame %d] ERROR: Framebuffer incomplete, status=0x%x\n", device->frameNumber, fbStatus);
+        }
+        else
+        {
+            if (device->frameNumber <= FRAME_LOG_LIMIT)
+                printf("[Frame %d]   FBO %d complete\n", device->frameNumber, device->fbo);
         }
 
         // Mark viewport/scissor dirty so they get reapplied without Y flip for render target
@@ -1897,33 +2036,31 @@ static void ApplyRasterizerState(MGG_GraphicsDevice* device)
         glCullFace(GL_BACK);
         if (info.cullMode == MGCullMode::CullClockwiseFace)
         {
-            // SPIRV-Cross emits a Y-flip (_pos.y = -_pos.y) in all vertex shaders
-            // when targeting OpenGL from HLSL→SPIR-V→GLSL. This reverses the
-            // triangle winding order, so we use GL_CCW instead of GL_CW to
-            // compensate and match MonoGame/DirectX CW-front-face convention.
+            // posFixup flips Y when rendering to render targets (rtCount > 0),
+            // which reverses the triangle winding order. Adjust glFrontFace
+            // to compensate and match MonoGame/DirectX CW-front-face convention.
             if (device->renderTargetCount == 0)
             {
                 glFrontFace(GL_CCW);
             }
             else
             {
-                // For off-screen render targets, we don't apply the Y flip, so use GL_CW.
+                // posFixup flips Y for render targets, reversing winding.
                 glFrontFace(GL_CW);
             }
         }
         else
         {
-            // SPIRV-Cross emits a Y-flip (_pos.y = -_pos.y) in all vertex shaders
-            // when targeting OpenGL from HLSL→SPIR-V→GLSL. This reverses the
-            // triangle winding order, so we use GL_CCW instead of GL_CW to
-            // compensate and match MonoGame/DirectX CW-front-face convention.
+            // posFixup flips Y when rendering to render targets (rtCount > 0),
+            // which reverses the triangle winding order. Adjust glFrontFace
+            // to compensate.
             if (device->renderTargetCount == 0)
             {
                 glFrontFace(GL_CW);
             }
             else
             {
-                // For off-screen render targets, we don't apply the Y flip, so use GL_CW.
+                // posFixup flips Y for render targets, reversing winding.
                 glFrontFace(GL_CCW);
             }
         }
@@ -2018,8 +2155,12 @@ static void ApplyState(MGG_GraphicsDevice* device)
         glViewport(x, y, width, height);
         GL_CHECK_ERROR();
        
-        printf("ApplyState viewport: glViewport(%d, %d, %d, %d), bbh=%d, rtCount=%d\n", 
-               x, y, width, height, device->backbufferHeight, device->renderTargetCount);
+        if (device->frameNumber <= FRAME_LOG_LIMIT) {
+            GLint applyFBO = 0;
+            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &applyFBO);
+            printf("[Frame %d] ApplyState viewport: glViewport(%d, %d, %d, %d), FBO=%d, bbh=%d, rtCount=%d\n", 
+                   device->frameNumber, x, y, width, height, applyFBO, device->backbufferHeight, device->renderTargetCount);
+        }
         
 #if defined(MG_EMSCRIPTEN)
         glDepthRangef(device->viewportMinDepth, device->viewportMaxDepth);
@@ -2075,8 +2216,10 @@ static void ApplyState(MGG_GraphicsDevice* device)
 
     // 4. Set posFixup uniform for Y-flip handling
     // This uniform is injected into all vertex shaders by the content pipeline.
-    // For backbuffer: flip Y (posFixup.y = -1) because OpenGL origin is bottom-left, but MonoGame expects top-left.
-    // For render targets: don't flip (posFixup.y = 1) because the texture will be sampled with UV coordinates that account for this.
+    // Matches the standard MonoGame OpenGL backend (GraphicsDevice.OpenGL.cs):
+    //   - Backbuffer (rtCount == 0): posFixup.y = 1.0 (no flip)
+    //   - Render targets (rtCount > 0): posFixup.y = -1.0 (flip Y so the
+    //     texture is stored top-down, matching DirectX UV convention)
     if (device->currentProgram != 0)
     {
         GLint posFixupLoc = glGetUniformLocation(device->currentProgram, "posFixup");
@@ -2087,16 +2230,18 @@ static void ApplyState(MGG_GraphicsDevice* device)
             posFixup[1] = 1.0f;
             posFixup[2] = 0.0f;  // Half-pixel offset X (unused)
             posFixup[3] = 0.0f;  // Half-pixel offset Y (unused)
-            // Flip Y for backbuffer to convert from DirectX (Y+ up in NDC, Y=0 at top in window)
-            // to OpenGL (Y+ up in NDC, Y=0 at bottom in window)
-            // For render targets: no flip, the texture will be sampled correctly
+            // Flip Y for render targets so texture content is stored top-down,
+            // matching DirectX UV convention when sampled later.
+            // No flip for backbuffer — the ortho projection already maps
+            // screen coords correctly for OpenGL's bottom-up window coords.
             if (device->renderTargetCount > 0)
             {
-                posFixup[1] *= -1.0f;  // Y flip for backbuffer
-                posFixup[3] *= -1.0f;  // Y flip for backbuffer
+                posFixup[1] *= -1.0f;  // Y flip for render targets
+                posFixup[3] *= -1.0f;  // Y flip for render targets
             }
             glUniform4fv(posFixupLoc, 1, posFixup);
-            printf("ApplyState: posFixup.y = %.1f, renderTargetCount = %d\n", posFixup[1], device->renderTargetCount);
+            if (device->frameNumber <= FRAME_LOG_LIMIT)
+                printf("[Frame %d] ApplyState: posFixup.y = %.1f, rtCount=%d\n", device->frameNumber, posFixup[1], device->renderTargetCount);
         }
         else
         {
@@ -2273,6 +2418,46 @@ static void ApplyState(MGG_GraphicsDevice* device)
 // Draw Calls
 // ============================================================
 
+#if defined(MG_EMSCRIPTEN)
+// Emulate glDrawElementsBaseVertex on WebGL by temporarily offsetting
+// all vertex attribute pointers by vertexStart * stride.
+static void EmulateBaseVertex(MGG_GraphicsDevice* device, mgint vertexStart) {
+    if (vertexStart == 0 || !device->inputLayout)
+        return;
+
+    auto layout = device->inputLayout;
+    int elementCount = (int)layout->elements.size();
+
+    for (int i = 0; i < elementCount; i++) {
+        const auto& elem = layout->elements[i];
+        int vbSlot = elem.VertexBufferSlot;
+        auto vb = device->vertexBuffers[vbSlot];
+        if (!vb)
+            continue;
+
+        int stride = (vbSlot < (int)layout->strides.size()) ? layout->strides[vbSlot] : 0;
+        auto attrib = ToGLVertexAttribType(elem.Format);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vb->handle);
+
+        uintptr_t offset = (uintptr_t)elem.AlignedByteOffset +
+                           ((uintptr_t)device->vertexOffsets[vbSlot] + vertexStart) * stride;
+
+        glVertexAttribPointer(
+            i,
+            attrib.size,
+            attrib.type,
+            attrib.normalized,
+            stride,
+            (const void*)offset
+        );
+    }
+
+    // Mark dirty so next ApplyState restores the original pointers.
+    device->vertexBuffersDirty = 0xFFFFFFFF;
+}
+#endif
+
 void MGG_GraphicsDevice_Draw(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint vertexStart, mgint vertexCount) {
     assert(device != nullptr);
     assert(vertexStart >= 0);
@@ -2296,9 +2481,13 @@ void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType 
     if (primitiveCount <= 0)
         return;
 
-    printf("DrawIndexed: primCount=%d, viewport=(%d,%d,%d,%d), rtCount=%d\n", 
-           primitiveCount, device->viewportX, device->viewportY, 
-           device->viewportWidth, device->viewportHeight, device->renderTargetCount);
+    if (device->frameNumber <= FRAME_LOG_LIMIT) {
+        GLint drawFBO = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawFBO);
+        printf("[Frame %d] DrawIndexed: primCount=%d, FBO=%d, viewport=(%d,%d,%d,%d), rtCount=%d\n", 
+               device->frameNumber, primitiveCount, drawFBO, device->viewportX, device->viewportY, 
+               device->viewportWidth, device->viewportHeight, device->renderTargetCount);
+    }
 
     ApplyState(device);
 
@@ -2316,9 +2505,9 @@ void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType 
         (const void*)(uintptr_t)(indexStart * indexElementBytes),
         vertexStart);
 #else
-    // WebGL2 does not have glDrawElementsBaseVertex; vertexStart must be 0 or
-    // the caller needs to pre-offset indices.
-    (void)vertexStart;
+    // WebGL2 does not have glDrawElementsBaseVertex; emulate it by
+    // temporarily offsetting vertex attribute pointers.
+    EmulateBaseVertex(device, vertexStart);
     glDrawElements(
         topology,
         indexCount,
@@ -2326,6 +2515,26 @@ void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType 
         (const void*)(uintptr_t)(indexStart * indexElementBytes));
 #endif
     GL_CHECK_ERROR();
+    
+    // Diagnostic: after first draw call in early frames, read back to see if the draw produced output
+    if (device->frameNumber <= 3) {
+        GLenum drawErr = glGetError();
+        GLint drawFBO2 = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawFBO2);
+        unsigned char px[4] = {0};
+        glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
+        GLenum readErr = glGetError();
+        printf("[Frame %d] POST-DRAW readback FBO=%d: RGBA=(%d,%d,%d,%d) drawErr=%d readErr=%d prog=%u\n",
+               device->frameNumber, drawFBO2, px[0], px[1], px[2], px[3], drawErr, readErr, device->currentProgram);
+        
+        // Check program link status
+        if (device->currentProgram != 0) {
+            GLint linkStatus = 0;
+            glGetProgramiv(device->currentProgram, GL_LINK_STATUS, &linkStatus);
+            printf("[Frame %d]   shader program %u linkStatus=%d\n",
+                   device->frameNumber, device->currentProgram, linkStatus);
+        }
+    }
 }
 
 void MGG_GraphicsDevice_DrawIndexedInstanced(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint primitiveCount, mgint indexStart, mgint vertexStart, mgint instanceCount) {
@@ -2354,8 +2563,8 @@ void MGG_GraphicsDevice_DrawIndexedInstanced(MGG_GraphicsDevice* device, MGPrimi
         instanceCount,
         vertexStart);
 #else
-    // WebGL2 does not have glDrawElementsInstancedBaseVertex
-    (void)vertexStart;
+    // WebGL2 does not have glDrawElementsInstancedBaseVertex; emulate it.
+    EmulateBaseVertex(device, vertexStart);
     glDrawElementsInstanced(
         topology,
         indexCount,
@@ -2396,11 +2605,11 @@ void MGG_GraphicsDevice_GetBackBufferData(MGG_GraphicsDevice* device, mgint x, m
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     GL_CHECK_ERROR();
 
-    // SPIRV-Cross flips gl_Position.y in vertex shaders, so the rendered
-    // content is already in top-to-bottom order in the framebuffer.
-    // glReadPixels reads bottom-to-top, which reverses the SPIRV-Cross
-    // flip, producing the correct top-to-bottom order for the caller.
-    // No additional Y coordinate or row flipping is needed.
+    // For the backbuffer, posFixup.y = 1.0 (no flip), so the SpriteBatch
+    // ortho projection renders content in the standard OpenGL bottom-up order.
+    // glReadPixels reads bottom-to-top, matching this order.
+    // The caller expects top-to-bottom data, so rows may need to be flipped
+    // by the managed layer if required.
     glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
     GL_CHECK_ERROR();
 
