@@ -769,6 +769,8 @@ struct MGG_GraphicsDevice
     bool blendDirty = false;
     bool depthStencilDirty = false;
     bool rasterizerDirty = false;
+    bool viewportDirty = false;
+    bool scissorDirty = false;
 
     // --- Render targets (FBO) ---
     GLuint fbo = 0;
@@ -1176,7 +1178,8 @@ void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* native
     device->backbufferWidth = width;
     device->backbufferHeight = height;
 
-    // Update viewport to match new size
+    // Update viewport to match new size.
+    // Y flip is handled in the shader via posFixup, not here.
     device->viewportX = 0;
     device->viewportY = 0;
     device->viewportWidth = width;
@@ -1184,7 +1187,7 @@ void MGG_GraphicsDevice_ResizeSwapchain(MGG_GraphicsDevice* device, void* native
     glViewport(0, 0, width, height);
     GL_CHECK_ERROR();
     
-    // Update scissor rectangle to match new size
+    // Update scissor rectangle to match new size.
     device->scissorX = 0;
     device->scissorY = 0;
     device->scissorWidth = width;
@@ -1347,53 +1350,31 @@ void MGG_GraphicsDevice_GetTitleSafeArea(mgint& x, mgint& y, mgint& width, mgint
 }
 
 void MGG_GraphicsDevice_SetViewport(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height, mgfloat minDepth, mgfloat maxDepth) {
-    printf("Setting viewport for OpenGL graphics device: %zu (%d, %d, %d, %d)\n", (size_t)device->context, x, y, width, height);
     if (!device) return;
+    printf("Setting viewport for OpenGL graphics device: %zu (%d, %d, %d, %d)\n", (size_t)device->context, x, y, width, height);
     
-    // Store viewport values
+    // Store viewport values - actual glViewport call deferred to ApplyState
+    // where we know the correct render target state for Y flip
     device->viewportX = x;
     device->viewportY = y;
     device->viewportWidth = width;
     device->viewportHeight = height;
     device->viewportMinDepth = minDepth;
     device->viewportMaxDepth = maxDepth;
-    
-    // Set the viewport in OpenGLES
-    glViewport(x, y, width, height);
-    GL_CHECK_ERROR();
-    
-    // Note: OpenGL depth range is [0,1], but Direct3D is [-1,1]
-    // minDepth and maxDepth are in the Direct3D range, so we need to map them
-#if defined(MG_EMSCRIPTEN)
-    // WebGL/OpenGL ES uses glDepthRangef
-    glDepthRangef(minDepth, maxDepth);
-#else
-    // Desktop OpenGL uses glDepthRange with double parameters
-    glDepthRange((double)minDepth, (double)maxDepth);
-#endif
-    GL_CHECK_ERROR();
+    device->viewportDirty = true;
 }
 
 void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height) {
     if (!device) return;
     printf("Setting scissor rectangle for OpenGL graphics device: %zu (%d, %d, %d, %d)\n", (size_t)device->context, x, y, width, height);
-    // Store scissor values
+    
+    // Store scissor values - actual glScissor call deferred to ApplyState
+    // where we know the correct render target state for Y flip
     device->scissorX = x;
     device->scissorY = y;
     device->scissorWidth = width;
     device->scissorHeight = height;
-    
-    // Enable scissor test
-    glEnable(GL_SCISSOR_TEST);
-    GL_CHECK_ERROR();
-    
-    // Set scissor rectangle
-    // SPIRV-Cross flips gl_Position.y in all vertex shaders, which means
-    // rendered content is already Y-inverted in the framebuffer. So we
-    // pass the scissor rect without additional Y flipping.
-    glScissor(x, y, width, height);
-    
-    GL_CHECK_ERROR();
+    device->scissorDirty = true;
 }
 
 void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture** targets, mgint* arraySlices, mgint count) {
@@ -1411,14 +1392,9 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
         for (int i = 0; i < MAX_RENDER_TARGETS; i++)
             device->renderTargetSlices[i] = std::nullopt;
 
-        // Restore viewport to backbuffer size.
-        glViewport(device->viewportX, device->viewportY, device->viewportWidth, device->viewportHeight);
-#if defined(MG_EMSCRIPTEN)
-        glDepthRangef(device->viewportMinDepth, device->viewportMaxDepth);
-#else
-        glDepthRange((double)device->viewportMinDepth, (double)device->viewportMaxDepth);
-#endif
-        GL_CHECK_ERROR();
+        // Mark viewport/scissor dirty so they get reapplied with correct Y flip for backbuffer
+        device->viewportDirty = true;
+        device->scissorDirty = true;
     }
     else
     {
@@ -1535,17 +1511,9 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
             fprintf(stderr, "MGG_GraphicsDevice_SetRenderTargets: Framebuffer incomplete, status=0x%x\n", fbStatus);
         }
 
-        // Set viewport to the first render target's dimensions.
-        if (targets[0])
-        {
-            glViewport(0, 0, targets[0]->width, targets[0]->height);
-#if defined(MG_EMSCRIPTEN)
-            glDepthRangef(0.0f, 1.0f);
-#else
-            glDepthRange(0.0, 1.0);
-#endif
-            GL_CHECK_ERROR();
-        }
+        // Mark viewport/scissor dirty so they get reapplied without Y flip for render target
+        device->viewportDirty = true;
+        device->scissorDirty = true;
     }
 
     device->renderTargetDirty = false;
@@ -1926,12 +1894,40 @@ static void ApplyRasterizerState(MGG_GraphicsDevice* device)
     else
     {
         glEnable(GL_CULL_FACE);
-        glCullFace(ToGLCullMode(info.cullMode));
-        // SPIRV-Cross emits a Y-flip (_pos.y = -_pos.y) in all vertex shaders
-        // when targeting OpenGL from HLSL→SPIR-V→GLSL. This reverses the
-        // triangle winding order, so we use GL_CCW instead of GL_CW to
-        // compensate and match MonoGame/DirectX CW-front-face convention.
-        glFrontFace(GL_CCW);
+        glCullFace(GL_BACK);
+        if (info.cullMode == MGCullMode::CullClockwiseFace)
+        {
+            // SPIRV-Cross emits a Y-flip (_pos.y = -_pos.y) in all vertex shaders
+            // when targeting OpenGL from HLSL→SPIR-V→GLSL. This reverses the
+            // triangle winding order, so we use GL_CCW instead of GL_CW to
+            // compensate and match MonoGame/DirectX CW-front-face convention.
+            if (device->renderTargetCount == 0)
+            {
+                glFrontFace(GL_CCW);
+            }
+            else
+            {
+                // For off-screen render targets, we don't apply the Y flip, so use GL_CW.
+                glFrontFace(GL_CW);
+            }
+        }
+        else
+        {
+            // SPIRV-Cross emits a Y-flip (_pos.y = -_pos.y) in all vertex shaders
+            // when targeting OpenGL from HLSL→SPIR-V→GLSL. This reverses the
+            // triangle winding order, so we use GL_CCW instead of GL_CW to
+            // compensate and match MonoGame/DirectX CW-front-face convention.
+            if (device->renderTargetCount == 0)
+            {
+                glFrontFace(GL_CW);
+            }
+            else
+            {
+                // For off-screen render targets, we don't apply the Y flip, so use GL_CW.
+                glFrontFace(GL_CCW);
+            }
+        }
+        
     }
 
     // Fill mode (desktop only)
@@ -2004,7 +2000,58 @@ static int MGL_GetIndexCount(MGPrimitiveType primitiveType, mgint primitiveCount
 
 static void ApplyState(MGG_GraphicsDevice* device)
 {
-    // 1. Shader / program binding
+    // 1. Viewport - apply (no Y flip, handled by posFixup shader)
+    if (device->viewportDirty)
+    {
+        int x = device->viewportX;
+        int y = device->viewportY;
+        int width = device->viewportWidth;
+        int height = device->viewportHeight;
+        
+        // No viewport flip - Y flip is handled in the shader via posFixup
+        if (device->renderTargetCount == 0)
+        {
+            // For backbuffer, we could flip the viewport Y here instead of in the shader, but it's simpler to keep it consistent and do all Y flipping in the shader.
+            // y = framebufferHeight - (y - height);
+            //y = device->backbufferHeight - y - height;
+        }
+        glViewport(x, y, width, height);
+        GL_CHECK_ERROR();
+       
+        printf("ApplyState viewport: glViewport(%d, %d, %d, %d), bbh=%d, rtCount=%d\n", 
+               x, y, width, height, device->backbufferHeight, device->renderTargetCount);
+        
+#if defined(MG_EMSCRIPTEN)
+        glDepthRangef(device->viewportMinDepth, device->viewportMaxDepth);
+#else
+        glDepthRange((double)device->viewportMinDepth, (double)device->viewportMaxDepth);
+#endif
+        GL_CHECK_ERROR();
+        device->viewportDirty = false;
+    }
+
+    // 2. Scissor - apply (no Y flip, handled by posFixup shader)
+    if (device->scissorDirty)
+    {
+        int x = device->scissorX;
+        int y = device->scissorY;
+        int width = device->scissorWidth;
+        int height = device->scissorHeight;
+        
+        glEnable(GL_SCISSOR_TEST);
+        
+        if (device->renderTargetCount == 0)
+        {
+            // For backbuffer, we could flip the viewport Y here instead of in the shader, but it's simpler to keep it consistent and do all Y flipping in the shader.
+            // y = framebufferHeight - (y - height);
+            //y = device->backbufferHeight - y - height;
+        }
+        glScissor(x, y, width, height);
+        GL_CHECK_ERROR();
+        device->scissorDirty = false;
+    }
+
+    // 3. Shader / program binding
     if (device->shaderDirty)
     {
         auto vs = device->shaders[(mgint)MGShaderStage::Vertex];
@@ -2026,19 +2073,50 @@ static void ApplyState(MGG_GraphicsDevice* device)
         device->shaderDirty = false;
     }
 
-    // 2. Blend state
+    // 4. Set posFixup uniform for Y-flip handling
+    // This uniform is injected into all vertex shaders by the content pipeline.
+    // For backbuffer: flip Y (posFixup.y = -1) because OpenGL origin is bottom-left, but MonoGame expects top-left.
+    // For render targets: don't flip (posFixup.y = 1) because the texture will be sampled with UV coordinates that account for this.
+    if (device->currentProgram != 0)
+    {
+        GLint posFixupLoc = glGetUniformLocation(device->currentProgram, "posFixup");
+        if (posFixupLoc != -1)
+        {
+            float posFixup[4];
+            posFixup[0] = 1.0f;  // Unused, for compatibility
+            posFixup[1] = 1.0f;
+            posFixup[2] = 0.0f;  // Half-pixel offset X (unused)
+            posFixup[3] = 0.0f;  // Half-pixel offset Y (unused)
+            // Flip Y for backbuffer to convert from DirectX (Y+ up in NDC, Y=0 at top in window)
+            // to OpenGL (Y+ up in NDC, Y=0 at bottom in window)
+            // For render targets: no flip, the texture will be sampled correctly
+            if (device->renderTargetCount > 0)
+            {
+                posFixup[1] *= -1.0f;  // Y flip for backbuffer
+                posFixup[3] *= -1.0f;  // Y flip for backbuffer
+            }
+            glUniform4fv(posFixupLoc, 1, posFixup);
+            printf("ApplyState: posFixup.y = %.1f, renderTargetCount = %d\n", posFixup[1], device->renderTargetCount);
+        }
+        else
+        {
+            printf("ApplyState: posFixup uniform not found in shader program %u\n", device->currentProgram);
+        }
+    }
+
+    // 5. Blend state
     if (device->blendDirty || device->blendFactorDirty)
         ApplyBlendState(device);
 
-    // 3. Depth/stencil state
+    // 6. Depth/stencil state
     if (device->depthStencilDirty)
         ApplyDepthStencilState(device);
 
-    // 4. Rasterizer state
+    // 7. Rasterizer state
     if (device->rasterizerDirty)
         ApplyRasterizerState(device);
 
-    // 5. Uniform buffer bindings
+    // 8. Uniform buffer bindings
     if (device->uniformDirty)
     {
         // Gather active uniform slots from both shaders
@@ -2078,7 +2156,7 @@ static void ApplyState(MGG_GraphicsDevice* device)
         device->uniformDirty = 0;
     }
 
-    // 6. Texture bindings
+    // 9. Texture bindings
     if (device->textureDirty)
     {
         uint32_t activeSlots = 0;
@@ -2106,7 +2184,7 @@ static void ApplyState(MGG_GraphicsDevice* device)
         device->textureDirty = 0;
     }
 
-    // 7. Sampler bindings
+    // 10. Sampler bindings
     if (device->samplerDirty)
     {
         uint32_t activeSlots = 0;
@@ -2133,7 +2211,7 @@ static void ApplyState(MGG_GraphicsDevice* device)
         device->samplerDirty = 0;
     }
 
-    // 8. Input layout / vertex attribute setup
+    // 11. Input layout / vertex attribute setup
     if (device->inputLayoutDirty || device->vertexBuffersDirty)
     {
         auto layout = device->inputLayout;
@@ -2182,7 +2260,7 @@ static void ApplyState(MGG_GraphicsDevice* device)
         device->vertexBuffersDirty = 0;
     }
 
-    // 9. Index buffer binding
+    // 12. Index buffer binding
     if (device->indexBuffer)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, device->indexBuffer->handle);
@@ -2217,6 +2295,10 @@ void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType 
 
     if (primitiveCount <= 0)
         return;
+
+    printf("DrawIndexed: primCount=%d, viewport=(%d,%d,%d,%d), rtCount=%d\n", 
+           primitiveCount, device->viewportX, device->viewportY, 
+           device->viewportWidth, device->viewportHeight, device->renderTargetCount);
 
     ApplyState(device);
 
@@ -3041,6 +3123,8 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
         delete shader;
         return nullptr;
     }
+
+    printf("Shader source:\n%s\n", glslSource);
 
     shader->id = ++device->currentShaderId;
     device->all_shaders.push_back(shader);

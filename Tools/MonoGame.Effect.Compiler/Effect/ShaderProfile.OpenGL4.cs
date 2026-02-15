@@ -160,7 +160,10 @@ namespace MonoGame.Effect
 
                 if (isVertexShader)
                 {
-                    toolArgs += "-fvk-invert-y ";
+                    // Note: We do NOT use -fvk-invert-y here. Instead, we inject a posFixup
+                    // uniform into vertex shaders and apply the Y flip at runtime based on
+                    // whether we're rendering to a render target or the backbuffer.
+                    // This matches the legacy OpenGL backend behavior.
                     toolArgs += "-fvk-use-dx-position-w ";
                 }
                 else
@@ -214,8 +217,11 @@ namespace MonoGame.Effect
 
                 toolArgs = "";
                 toolArgs += "--version 330 ";
-                if (isVertexShader)
-                    toolArgs += "--fixup-clipspace ";
+                //toolArgs += " --flip-vert-y --fixup-clipspace";
+                // Note: We do NOT use --fixup-clipspace or -fvk-invert-y.
+                // The Y flip is handled at runtime via the posFixup uniform injected
+                // into vertex shaders. This allows conditional flipping based on whether
+                // we're rendering to a render target (flip) or backbuffer (no flip).
                 toolArgs += " \"" + binFile + "\" ";
                 toolArgs += " --output \"" + glslFile + "\" ";
 
@@ -226,7 +232,7 @@ namespace MonoGame.Effect
                 //      but if the return code was not success=0 then treat stdout as stderr
                 if (toolResult != 0)
                 {
-                    errorsAndWarnings += string.Format("spirv-cross.exe returned error code '{0}'.\n", toolResult);
+                    errorsAndWarnings += $"spirv-cross.exe returned error code '{toolResult}'.\n";
                     errorsAndWarnings += stdout;
                     throw new ShaderCompilerException();
                 }
@@ -234,8 +240,14 @@ namespace MonoGame.Effect
                 // Load up the compiled shader and strip layout(binding = N) qualifiers
                 // that aren't supported on macOS (GL 4.1 doesn't support GL_ARB_shading_language_420pack).
                 var glslText = File.ReadAllText(glslFile);
-                glslText = StripBindingQualifiers(glslText);
-                glslText = FixVaryingNames(glslText, isVertexShader);
+                ShaderStage shaderStage = isVertexShader ? ShaderStage.Vertex : ShaderStage.Pixel;
+
+                GLSLManipulator.RemoveInGlPerVertex(ref glslText);
+                GLSLManipulator.RemoveOutGlPerVertex(ref glslText);
+                GLSLManipulator.AddPosFixupUniformAndCode(ref glslText, shaderStage);
+                GLSLManipulator.StripBindingQualifiers(ref glslText);
+                GLSLManipulator.FixVaryingNames(ref glslText, isVertexShader);
+                
                 var bytecode = System.Text.Encoding.UTF8.GetBytes(glslText);
 
                 // First look to see if we already created this same shader.
@@ -524,49 +536,6 @@ namespace MonoGame.Effect
                     catch { }
                 }
             }
-        }
-
-        /// <summary>
-        /// Strip layout(binding = N) qualifiers and the GL_ARB_shading_language_420pack
-        /// ifdef block from GLSL source. macOS GL 4.1 doesn't support the 420pack extension,
-        /// so these must be removed at compile time. The binding info is already stored in the
-        /// bytecode header and applied at runtime via glUniformBlockBinding / glUniform1i.
-        /// </summary>
-        private static string StripBindingQualifiers(string glsl)
-        {
-            // Remove "binding = N" from layout qualifiers that have other qualifiers too
-            // e.g. layout(binding = 0, std140) -> layout(std140)
-            glsl = Regex.Replace(glsl, @"binding\s*=\s*\d+\s*,\s*", "");
-            glsl = Regex.Replace(glsl, @",\s*binding\s*=\s*\d+", "");
-
-            // Remove layout(binding = N) when binding is the only qualifier
-            // e.g. layout(binding = 0) uniform -> uniform
-            glsl = Regex.Replace(glsl, @"layout\s*\(\s*binding\s*=\s*\d+\s*\)\s*", "");
-
-            // Remove the GL_ARB_shading_language_420pack ifdef block
-            glsl = Regex.Replace(glsl, @"#ifdef GL_ARB_shading_language_420pack\s*\n.*?\n#endif\s*\n", "", RegexOptions.Singleline);
-
-            return glsl;
-        }
-
-        /// <summary>
-        /// Fix SPIRV-Cross varying name mismatch between vertex and fragment shaders.
-        /// SPIRV-Cross prefixes vertex shader outputs with "out_var_" and fragment shader
-        /// inputs with "in_var_", but GLSL 330 matches inter-stage variables by name.
-        /// This renames both to a common "mg_" prefix so they match at link time.
-        /// </summary>
-        /// <remarks>
-        /// This is safe because:
-        /// - Vertex shader inputs (in_var_*) use layout(location) and are matched by location, not name.
-        /// - Fragment shader outputs (out_var_SV_Target*) use layout(location) and are matched by location, not name.
-        /// So only the inter-stage varyings (vertex out_var_ / fragment in_var_) are affected.
-        /// </remarks>
-        private static string FixVaryingNames(string glsl, bool isVertexShader)
-        {
-            if (isVertexShader)
-                return glsl.Replace("out_var_", "mg_");
-            else
-                return glsl.Replace("in_var_", "mg_");
         }
     }
 }
