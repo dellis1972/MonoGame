@@ -45,6 +45,7 @@
 #include <unordered_map>
 #include <queue>
 #include <optional>
+#include <algorithm>
 
 // Debug macros
 #ifdef DEBUG
@@ -58,9 +59,6 @@
 #define GL_CHECK_ERROR() ((void)0)
 #endif
 
-// Limit verbose per-frame logging to the first N frames to avoid
-// overflowing the browser console buffer and losing early diagnostics.
-#define FRAME_LOG_LIMIT 20
 
 // ============================================================
 // Enum Conversion Helpers — MonoGame enums → GL enums
@@ -582,6 +580,7 @@ static GLVertexAttribInfo ToGLVertexAttribType(MGVertexElementFormat format)
 // ============================================================
 
 static const int MAX_TEXTURE_SLOTS = 16;
+static const int MAX_TOTAL_TEXTURE_SLOTS = 32; // pixel (0..15) + vertex (16..31)
 static const int MAX_VERTEX_BUFFERS = 8;
 static const int MAX_RENDER_TARGETS = 4;
 static const int MAX_UNIFORM_BUFFER_SLOTS = 16;
@@ -750,9 +749,9 @@ struct MGG_GraphicsDevice
     MGG_Buffer* constantBuffers[MAX_UNIFORM_BUFFER_SLOTS] = { nullptr };
     uint32_t uniformDirty = 0;
 
-    // Textures and samplers
-    MGG_Texture* textures[MAX_TEXTURE_SLOTS] = { nullptr };
-    MGG_SamplerState* samplers[MAX_TEXTURE_SLOTS] = { nullptr };
+    // Textures and samplers (pixel slots 0..15, vertex slots 16..31)
+    MGG_Texture* textures[MAX_TOTAL_TEXTURE_SLOTS] = { nullptr };
+    MGG_SamplerState* samplers[MAX_TOTAL_TEXTURE_SLOTS] = { nullptr };
     uint32_t textureDirty = 0;
     uint32_t samplerDirty = 0;
 
@@ -1208,14 +1207,6 @@ mgint MGG_GraphicsDevice_BeginFrame(MGG_GraphicsDevice* device) {
     if (!device) return 0;
     device->frameNumber++;
     
-    if (device->frameNumber <= FRAME_LOG_LIMIT) {
-        // Log the current FBO state at frame start
-        GLint currentFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
-        printf("[Frame %d] === BeginFrame === (currentFBO=%d, rtCount=%d)\n", 
-               device->frameNumber, currentFBO, device->renderTargetCount);
-    }
-    
 #if defined(MG_EMSCRIPTEN)
     // Make sure our context is current
     EMSCRIPTEN_RESULT result = emscripten_webgl_make_context_current(device->context);
@@ -1232,15 +1223,6 @@ mgint MGG_GraphicsDevice_BeginFrame(MGG_GraphicsDevice* device) {
 
 void MGG_GraphicsDevice_Clear(MGG_GraphicsDevice* device, MGClearOptions options, Vector4& color, mgfloat depth, mgint stencil) {
     if (!device) return;
-    
-    if (device->frameNumber <= FRAME_LOG_LIMIT) {
-        GLint currentFramebuffer = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
-        const char* target = (currentFramebuffer == 0) ? "BACKBUFFER" : "RENDERTARGET";
-        printf("[Frame %d] Clear %s (FBO=%d, rtCount=%d, color=(%.3f,%.3f,%.3f,%.3f))\n",
-               device->frameNumber, target, currentFramebuffer, device->renderTargetCount,
-               color.X, color.Y, color.Z, color.W);
-    }
     
     GLbitfield clearMask = 0;
     
@@ -1299,24 +1281,8 @@ void MGG_GraphicsDevice_Clear(MGG_GraphicsDevice* device, MGClearOptions options
                 glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         }
         
-        if (device->frameNumber <= FRAME_LOG_LIMIT)
-            printf("[Frame %d]   glClear(0x%x) scissorWas=%s, depthMaskWas=%d\n",
-                   device->frameNumber, clearMask,
-                   scissorWasEnabled ? "ON" : "OFF", depthMaskWas);
-        
         glClear(clearMask);
         GL_CHECK_ERROR();
-        
-        // Diagnostic: verify clear actually wrote pixels (first 3 frames, backbuffer only)
-        if (device->frameNumber <= 3 && (clearMask & GL_COLOR_BUFFER_BIT)) {
-            GLint postClearFBO = 0;
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &postClearFBO);
-            unsigned char px[4] = {0};
-            glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
-            GLenum readErr = glGetError();
-            printf("[Frame %d]   POST-CLEAR readback at (0,0) FBO=%d: RGBA=(%d,%d,%d,%d) glErr=%d\n",
-                   device->frameNumber, postClearFBO, px[0], px[1], px[2], px[3], readErr);
-        }
         
         // Restore previous state
         if (scissorWasEnabled)
@@ -1338,10 +1304,6 @@ void MGG_GraphicsDevice_Present(MGG_GraphicsDevice* device, mgint currentFrame, 
     GLint currentFBO = 0;
     glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
     
-    if (device->frameNumber <= FRAME_LOG_LIMIT)
-        printf("[Frame %d] === Present === (FBO=%d, rtCount=%d, syncInterval=%d)\n",
-               device->frameNumber, currentFBO, device->renderTargetCount, syncInterval);
-    
     if (currentFBO != 0) {
         fprintf(stderr, "[Frame %d] WARNING: Present called while FBO %d is bound (not backbuffer!)\n",
                 device->frameNumber, currentFBO);
@@ -1351,9 +1313,6 @@ void MGG_GraphicsDevice_Present(MGG_GraphicsDevice* device, mgint currentFrame, 
     // In WebGL, the browser composites FBO 0 when the rAF callback returns.
     // We must ensure all GL commands are submitted before returning.
     glFlush();
-    if (device->frameNumber <= FRAME_LOG_LIMIT)
-        printf("[Frame %d] glFlush() completed (WebGL - browser will composite on event loop return)\n",
-               device->frameNumber);
 #else
     SDL_Window* currentWindow = SDL_GL_GetCurrentWindow();
     if (currentWindow != device->window) {
@@ -1365,42 +1324,6 @@ void MGG_GraphicsDevice_Present(MGG_GraphicsDevice* device, mgint currentFrame, 
     
     GL_CHECK_ERROR();
     
-    // For the first few frames, read back multiple positions from the backbuffer
-    // to diagnose what is actually being composited by the browser.
-    if (device->frameNumber <= 5) {
-        // Check for GL errors accumulated during the frame
-        GLenum preErr = glGetError();
-        if (preErr != GL_NO_ERROR)
-            printf("[Frame %d] GL ERROR before readback: 0x%x\n", device->frameNumber, preErr);
-        
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
-        // Read corner (0,0)
-        unsigned char px00[4] = {0};
-        glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px00);
-        GLenum err00 = glGetError();
-        
-        // Read center
-        unsigned char pxC[4] = {0};
-        int cx = device->backbufferWidth / 2;
-        int cy = device->backbufferHeight / 2;
-        glReadPixels(cx, cy, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pxC);
-        GLenum errC = glGetError();
-        
-        // Query actual drawing buffer dimensions
-        GLint dbViewport[4] = {0, 0, 0, 0};
-        glGetIntegerv(GL_VIEWPORT, dbViewport);
-        
-        printf("[Frame %d] READBACK (0,0): RGBA=(%d,%d,%d,%d) err=%d\n",
-               device->frameNumber, px00[0], px00[1], px00[2], px00[3], err00);
-        printf("[Frame %d] READBACK center(%d,%d): RGBA=(%d,%d,%d,%d) err=%d\n",
-               device->frameNumber, cx, cy, pxC[0], pxC[1], pxC[2], pxC[3], errC);
-        printf("[Frame %d] backbuffer=%dx%d\n",
-               device->frameNumber, device->backbufferWidth, device->backbufferHeight);
-    }
-    
-    if (device->frameNumber <= FRAME_LOG_LIMIT)
-        printf("[Frame %d] === Present completed ===\n", device->frameNumber);
 }
 
 void MGG_GraphicsDevice_SetBlendState(MGG_GraphicsDevice* device, MGG_BlendState* state, mgfloat factorR, mgfloat factorG, mgfloat factorB, mgfloat factorA) {
@@ -1457,12 +1380,6 @@ void MGG_GraphicsDevice_GetTitleSafeArea(mgint& x, mgint& y, mgint& width, mgint
 
 void MGG_GraphicsDevice_SetViewport(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height, mgfloat minDepth, mgfloat maxDepth) {
     if (!device) return;
-    if (device->frameNumber <= FRAME_LOG_LIMIT) {
-        GLint currentFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
-        printf("[Frame %d] SetViewport(%d, %d, %d, %d) FBO=%d rtCount=%d\n", 
-               device->frameNumber, x, y, width, height, currentFBO, device->renderTargetCount);
-    }
     
     // Store viewport values - actual glViewport call deferred to ApplyState
     // where we know the correct render target state for Y flip
@@ -1477,9 +1394,6 @@ void MGG_GraphicsDevice_SetViewport(MGG_GraphicsDevice* device, mgint x, mgint y
 
 void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x, mgint y, mgint width, mgint height) {
     if (!device) return;
-    if (device->frameNumber <= FRAME_LOG_LIMIT)
-        printf("[Frame %d] SetScissor(%d, %d, %d, %d) rtCount=%d\n", 
-               device->frameNumber, x, y, width, height, device->renderTargetCount);
     
     // Store scissor values - actual glScissor call deferred to ApplyState
     // where we know the correct render target state for Y flip
@@ -1493,15 +1407,8 @@ void MGG_GraphicsDevice_SetScissorRectangle(MGG_GraphicsDevice* device, mgint x,
 void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture** targets, mgint* arraySlices, mgint count) {
     assert(device != nullptr);
 
-    GLint prevFBO = 0;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFBO);
-
     if (targets == nullptr || count == 0)
     {
-        if (device->frameNumber <= FRAME_LOG_LIMIT)
-            printf("[Frame %d] SetRenderTargets -> BACKBUFFER (FBO 0, was FBO %d, prev rtCount=%d)\n",
-                   device->frameNumber, prevFBO, device->renderTargetCount);
-
         // Bind the default framebuffer (backbuffer).
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         GL_CHECK_ERROR();
@@ -1512,9 +1419,10 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
         for (int i = 0; i < MAX_RENDER_TARGETS; i++)
             device->renderTargetSlices[i] = std::nullopt;
 
-        // Mark viewport/scissor dirty so they get reapplied with correct Y flip for backbuffer
+        // Mark viewport/scissor/rasterizer dirty so they get reapplied with correct Y flip for backbuffer
         device->viewportDirty = true;
         device->scissorDirty = true;
+        device->rasterizerDirty = true;
     }
     else
     {
@@ -1540,20 +1448,6 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
         {
             for (int i = 0; i < MAX_RENDER_TARGETS; i++)
                 device->renderTargetSlices[i] = std::nullopt;
-        }
-
-        if (device->frameNumber <= FRAME_LOG_LIMIT) {
-            printf("[Frame %d] SetRenderTargets -> %d RT(s) (FBO %d, was FBO %d)\n",
-                   device->frameNumber, count, device->fbo, prevFBO);
-            for (int i = 0; i < count && i < MAX_RENDER_TARGETS; i++) {
-                if (targets[i]) {
-                    printf("[Frame %d]   RT[%d]: tex=%u %dx%d isRT=%d depthFmt=%d usage=%d\n",
-                           device->frameNumber, i, targets[i]->texture, 
-                           targets[i]->width, targets[i]->height,
-                           targets[i]->isRenderTarget, (int)targets[i]->depthFormat,
-                           (int)targets[i]->usage);
-                }
-            }
         }
 
         // Bind the off-screen FBO.
@@ -1644,15 +1538,11 @@ void MGG_GraphicsDevice_SetRenderTargets(MGG_GraphicsDevice* device, MGG_Texture
         {
             fprintf(stderr, "[Frame %d] ERROR: Framebuffer incomplete, status=0x%x\n", device->frameNumber, fbStatus);
         }
-        else
-        {
-            if (device->frameNumber <= FRAME_LOG_LIMIT)
-                printf("[Frame %d]   FBO %d complete\n", device->frameNumber, device->fbo);
-        }
 
-        // Mark viewport/scissor dirty so they get reapplied without Y flip for render target
+        // Mark viewport/scissor/rasterizer dirty so they get reapplied without Y flip for render target
         device->viewportDirty = true;
         device->scissorDirty = true;
+        device->rasterizerDirty = true;
     }
 
     device->renderTargetDirty = false;
@@ -1674,6 +1564,12 @@ void MGG_GraphicsDevice_SetTexture(MGG_GraphicsDevice* device, MGShaderStage sta
     assert(device != nullptr);
     assert(slot >= 0 && slot < MAX_TEXTURE_SLOTS);
 
+    // Vertex textures are offset by MAX_TEXTURE_SLOTS to avoid
+    // colliding with pixel texture slots in the shared GL texture
+    // unit namespace.
+    if (stage == MGShaderStage::Vertex)
+        slot += MAX_TEXTURE_SLOTS;
+
     device->textures[slot] = texture;
     device->textureDirty |= 1 << slot;
 }
@@ -1681,6 +1577,9 @@ void MGG_GraphicsDevice_SetTexture(MGG_GraphicsDevice* device, MGShaderStage sta
 void MGG_GraphicsDevice_SetSamplerState(MGG_GraphicsDevice* device, MGShaderStage stage, mgint slot, MGG_SamplerState* state) {
     assert(device != nullptr);
     assert(slot >= 0 && slot < MAX_TEXTURE_SLOTS);
+
+    if (stage == MGShaderStage::Vertex)
+        slot += MAX_TEXTURE_SLOTS;
 
     device->samplers[slot] = state;
     device->samplerDirty |= 1 << slot;
@@ -1787,47 +1686,87 @@ static GLuint MGL_ProgramGetOrCreate(MGG_GraphicsDevice* device, MGG_Shader* ver
     }
 
     // --- Set up sampler uniform → texture unit mappings ---
-    // For each shader, iterate bindings that are texture/sampler types and
-    // assign the corresponding sampler uniforms to texture unit = (binding - TEXTURE_SLOT_OFFSET).
-    GLint numActiveUniforms = 0;
-    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
-
+    // Collect sampler bindings from both shaders and match them to active
+    // sampler uniforms. We use COMBINED_IMAGE_SAMPLER and SAMPLED_IMAGE
+    // bindings (skip SAMPLER-only since OpenGL uses combined samplers).
+    // Vertex shader samplers are offset by MAX_TEXTURE_SLOTS so they use
+    // separate GL texture units from pixel shader samplers.
+    struct SamplerBinding { uint32_t binding; int textureUnit; };
+    std::vector<SamplerBinding> samplerBindings;
     for (int s = 0; s < 2; s++) {
         MGG_Shader* sh = shaders[s];
+        int stageOffset = (sh->stage == MGShaderStage::Vertex) ? MAX_TEXTURE_SLOTS : 0;
         for (int i = 0; i < sh->bindingCount; i++) {
             auto& b = sh->bindings[i];
             if (b.descriptorType == MG_BINDING_TYPE_COMBINED_IMAGE_SAMPLER ||
-                b.descriptorType == MG_BINDING_TYPE_SAMPLED_IMAGE ||
-                b.descriptorType == MG_BINDING_TYPE_SAMPLER) {
-                int textureUnit = (int)b.binding - MG_TEXTURE_SLOT_OFFSET;
-
-                // Search active uniforms for sampler types and match by binding
-                for (GLint ui = 0; ui < numActiveUniforms; ui++) {
-                    char uniformName[256];
-                    GLsizei nameLength = 0;
-                    GLint uniformSize = 0;
-                    GLenum uniformType = 0;
-                    glGetActiveUniform(program, ui, sizeof(uniformName), &nameLength, &uniformSize, &uniformType, uniformName);
-
-                    // Check if this is a sampler type
-                    if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_3D ||
-                        uniformType == GL_SAMPLER_CUBE || uniformType == GL_SAMPLER_2D_SHADOW ||
-                        uniformType == GL_SAMPLER_2D_ARRAY ||
-#if !defined(MG_EMSCRIPTEN)
-                        uniformType == GL_SAMPLER_1D ||
-#endif
-                        uniformType == GL_INT_SAMPLER_2D || uniformType == GL_UNSIGNED_INT_SAMPLER_2D) {
-                        GLint location = glGetUniformLocation(program, uniformName);
-                        if (location >= 0) {
-                            GLint currentUnit = -1;
-                            glGetUniformiv(program, location, &currentUnit);
-                            if (currentUnit == (GLint)b.binding) {
-                                glUniform1i(location, textureUnit);
-                            }
-                        }
-                    }
-                }
+                b.descriptorType == MG_BINDING_TYPE_SAMPLED_IMAGE) {
+                samplerBindings.push_back({b.binding, (int)b.binding - MG_TEXTURE_SLOT_OFFSET + stageOffset});
             }
+        }
+    }
+    // Sort by binding index and deduplicate
+    std::sort(samplerBindings.begin(), samplerBindings.end(),
+        [](const SamplerBinding& a, const SamplerBinding& b) { return a.binding < b.binding; });
+    samplerBindings.erase(
+        std::unique(samplerBindings.begin(), samplerBindings.end(),
+            [](const SamplerBinding& a, const SamplerBinding& b) { return a.binding == b.binding; }),
+        samplerBindings.end());
+
+    // Collect active sampler uniforms in declaration order
+    GLint numActiveUniforms = 0;
+    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
+
+    struct ActiveSampler { GLint location; GLint currentUnit; };
+    std::vector<ActiveSampler> activeSamplers;
+    for (GLint ui = 0; ui < numActiveUniforms; ui++) {
+        char uniformName[256];
+        GLsizei nameLength = 0;
+        GLint uniformSize = 0;
+        GLenum uniformType = 0;
+        glGetActiveUniform(program, ui, sizeof(uniformName), &nameLength, &uniformSize, &uniformType, uniformName);
+
+        if (uniformType == GL_SAMPLER_2D || uniformType == GL_SAMPLER_3D ||
+            uniformType == GL_SAMPLER_CUBE || uniformType == GL_SAMPLER_2D_SHADOW ||
+            uniformType == GL_SAMPLER_2D_ARRAY ||
+#if !defined(MG_EMSCRIPTEN)
+            uniformType == GL_SAMPLER_1D ||
+#endif
+            uniformType == GL_INT_SAMPLER_2D || uniformType == GL_UNSIGNED_INT_SAMPLER_2D) {
+            GLint location = glGetUniformLocation(program, uniformName);
+            if (location >= 0) {
+                GLint currentUnit = -1;
+                glGetUniformiv(program, location, &currentUnit);
+                activeSamplers.push_back({location, currentUnit});
+            }
+        }
+    }
+
+    // First pass: value-based matching (works on GL 4.2+ with layout(binding=X))
+    std::vector<bool> bindingMatched(samplerBindings.size(), false);
+    std::vector<bool> uniformMatched(activeSamplers.size(), false);
+    for (size_t bi = 0; bi < samplerBindings.size(); bi++) {
+        for (size_t ui = 0; ui < activeSamplers.size(); ui++) {
+            if (uniformMatched[ui]) continue;
+            if (activeSamplers[ui].currentUnit == (GLint)samplerBindings[bi].binding) {
+                glUniform1i(activeSamplers[ui].location, samplerBindings[bi].textureUnit);
+                bindingMatched[bi] = true;
+                uniformMatched[ui] = true;
+                break;
+            }
+        }
+    }
+
+    // Second pass: order-based matching for any remaining (GL 4.1 without layout(binding=X))
+    // SPIRV-Cross declares combined samplers in binding order, and glGetActiveUniform
+    // returns them in declaration order, so the ordering is consistent.
+    {
+        size_t bi = 0, ui = 0;
+        while (bi < samplerBindings.size() && ui < activeSamplers.size()) {
+            if (bindingMatched[bi]) { bi++; continue; }
+            if (uniformMatched[ui]) { ui++; continue; }
+            glUniform1i(activeSamplers[ui].location, samplerBindings[bi].textureUnit);
+            bi++;
+            ui++;
         }
     }
 
@@ -2154,13 +2093,6 @@ static void ApplyState(MGG_GraphicsDevice* device)
         }
         glViewport(x, y, width, height);
         GL_CHECK_ERROR();
-       
-        if (device->frameNumber <= FRAME_LOG_LIMIT) {
-            GLint applyFBO = 0;
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &applyFBO);
-            printf("[Frame %d] ApplyState viewport: glViewport(%d, %d, %d, %d), FBO=%d, bbh=%d, rtCount=%d\n", 
-                   device->frameNumber, x, y, width, height, applyFBO, device->backbufferHeight, device->renderTargetCount);
-        }
         
 #if defined(MG_EMSCRIPTEN)
         glDepthRangef(device->viewportMinDepth, device->viewportMaxDepth);
@@ -2171,23 +2103,12 @@ static void ApplyState(MGG_GraphicsDevice* device)
         device->viewportDirty = false;
     }
 
-    // 2. Scissor - apply (no Y flip, handled by posFixup shader)
+    // 2. Scissor rect - just update the rectangle; enable/disable is
+    //    controlled by the rasterizer state (scissorTestEnable).
     if (device->scissorDirty)
     {
-        int x = device->scissorX;
-        int y = device->scissorY;
-        int width = device->scissorWidth;
-        int height = device->scissorHeight;
-        
-        glEnable(GL_SCISSOR_TEST);
-        
-        if (device->renderTargetCount == 0)
-        {
-            // For backbuffer, we could flip the viewport Y here instead of in the shader, but it's simpler to keep it consistent and do all Y flipping in the shader.
-            // y = framebufferHeight - (y - height);
-            //y = device->backbufferHeight - y - height;
-        }
-        glScissor(x, y, width, height);
+        glScissor(device->scissorX, device->scissorY,
+                  device->scissorWidth, device->scissorHeight);
         GL_CHECK_ERROR();
         device->scissorDirty = false;
     }
@@ -2240,12 +2161,6 @@ static void ApplyState(MGG_GraphicsDevice* device)
                 posFixup[3] *= -1.0f;  // Y flip for render targets
             }
             glUniform4fv(posFixupLoc, 1, posFixup);
-            if (device->frameNumber <= FRAME_LOG_LIMIT)
-                printf("[Frame %d] ApplyState: posFixup.y = %.1f, rtCount=%d\n", device->frameNumber, posFixup[1], device->renderTargetCount);
-        }
-        else
-        {
-            printf("ApplyState: posFixup uniform not found in shader program %u\n", device->currentProgram);
         }
     }
 
@@ -2304,16 +2219,17 @@ static void ApplyState(MGG_GraphicsDevice* device)
     // 9. Texture bindings
     if (device->textureDirty)
     {
+        // Build active slot masks per-stage and combine.
+        // Pixel shader slots are in bits 0..15, vertex shader slots
+        // are shifted to bits 16..31.
         uint32_t activeSlots = 0;
-        for (int s = 0; s < (int)MGShaderStage::Count; s++)
-        {
-            auto sh = device->shaders[s];
-            if (sh)
-                activeSlots |= sh->textureSlots;
-        }
+        auto psh = device->shaders[(int)MGShaderStage::Pixel];
+        if (psh) activeSlots |= psh->textureSlots;
+        auto vsh = device->shaders[(int)MGShaderStage::Vertex];
+        if (vsh) activeSlots |= (vsh->textureSlots << MAX_TEXTURE_SLOTS);
 
         uint32_t slotsToUpdate = device->textureDirty & activeSlots;
-        for (int slot = 0; slot < MAX_TEXTURE_SLOTS && slotsToUpdate; slot++)
+        for (int slot = 0; slot < MAX_TOTAL_TEXTURE_SLOTS && slotsToUpdate; slot++)
         {
             if (slotsToUpdate & (1 << slot))
             {
@@ -2333,15 +2249,13 @@ static void ApplyState(MGG_GraphicsDevice* device)
     if (device->samplerDirty)
     {
         uint32_t activeSlots = 0;
-        for (int s = 0; s < (int)MGShaderStage::Count; s++)
-        {
-            auto sh = device->shaders[s];
-            if (sh)
-                activeSlots |= sh->samplerSlots;
-        }
+        auto psh = device->shaders[(int)MGShaderStage::Pixel];
+        if (psh) activeSlots |= psh->samplerSlots;
+        auto vsh = device->shaders[(int)MGShaderStage::Vertex];
+        if (vsh) activeSlots |= (vsh->samplerSlots << MAX_TEXTURE_SLOTS);
 
         uint32_t slotsToUpdate = device->samplerDirty & activeSlots;
-        for (int slot = 0; slot < MAX_TEXTURE_SLOTS && slotsToUpdate; slot++)
+        for (int slot = 0; slot < MAX_TOTAL_TEXTURE_SLOTS && slotsToUpdate; slot++)
         {
             if (slotsToUpdate & (1 << slot))
             {
@@ -2481,14 +2395,6 @@ void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType 
     if (primitiveCount <= 0)
         return;
 
-    if (device->frameNumber <= FRAME_LOG_LIMIT) {
-        GLint drawFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawFBO);
-        printf("[Frame %d] DrawIndexed: primCount=%d, FBO=%d, viewport=(%d,%d,%d,%d), rtCount=%d\n", 
-               device->frameNumber, primitiveCount, drawFBO, device->viewportX, device->viewportY, 
-               device->viewportWidth, device->viewportHeight, device->renderTargetCount);
-    }
-
     ApplyState(device);
 
     GLenum topology = ToGLPrimitiveType(primitiveType);
@@ -2515,26 +2421,6 @@ void MGG_GraphicsDevice_DrawIndexed(MGG_GraphicsDevice* device, MGPrimitiveType 
         (const void*)(uintptr_t)(indexStart * indexElementBytes));
 #endif
     GL_CHECK_ERROR();
-    
-    // Diagnostic: after first draw call in early frames, read back to see if the draw produced output
-    if (device->frameNumber <= 3) {
-        GLenum drawErr = glGetError();
-        GLint drawFBO2 = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &drawFBO2);
-        unsigned char px[4] = {0};
-        glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
-        GLenum readErr = glGetError();
-        printf("[Frame %d] POST-DRAW readback FBO=%d: RGBA=(%d,%d,%d,%d) drawErr=%d readErr=%d prog=%u\n",
-               device->frameNumber, drawFBO2, px[0], px[1], px[2], px[3], drawErr, readErr, device->currentProgram);
-        
-        // Check program link status
-        if (device->currentProgram != 0) {
-            GLint linkStatus = 0;
-            glGetProgramiv(device->currentProgram, GL_LINK_STATUS, &linkStatus);
-            printf("[Frame %d]   shader program %u linkStatus=%d\n",
-                   device->frameNumber, device->currentProgram, linkStatus);
-        }
-    }
 }
 
 void MGG_GraphicsDevice_DrawIndexedInstanced(MGG_GraphicsDevice* device, MGPrimitiveType primitiveType, mgint primitiveCount, mgint indexStart, mgint vertexStart, mgint instanceCount) {
@@ -2605,13 +2491,26 @@ void MGG_GraphicsDevice_GetBackBufferData(MGG_GraphicsDevice* device, mgint x, m
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     GL_CHECK_ERROR();
 
-    // For the backbuffer, posFixup.y = 1.0 (no flip), so the SpriteBatch
-    // ortho projection renders content in the standard OpenGL bottom-up order.
-    // glReadPixels reads bottom-to-top, matching this order.
-    // The caller expects top-to-bottom data, so rows may need to be flipped
-    // by the managed layer if required.
-    glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    // glReadPixels returns rows bottom-to-top (OpenGL convention).
+    // The caller expects top-to-bottom (DirectX convention), so we
+    // flip the Y coordinate for the read region and then reverse the rows.
+    mgint bbHeight = device->backbufferHeight;
+    mgint flippedY = bbHeight - y - height;
+    glReadPixels(x, flippedY, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
     GL_CHECK_ERROR();
+
+    // Flip rows in-place to convert from bottom-to-top to top-to-bottom.
+    int rowBytes = width * 4; // RGBA = 4 bytes per pixel
+    auto* bytes = (uint8_t*)data;
+    for (int top = 0, bot = height - 1; top < bot; top++, bot--) {
+        uint8_t* rowA = bytes + top * rowBytes;
+        uint8_t* rowB = bytes + bot * rowBytes;
+        for (int i = 0; i < rowBytes; i++) {
+            uint8_t tmp = rowA[i];
+            rowA[i] = rowB[i];
+            rowB[i] = tmp;
+        }
+    }
 
     // Rebind the current render target if we were targeting an FBO.
     if (device->renderTargetCount > 0)
@@ -3333,7 +3232,9 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
         return nullptr;
     }
 
+#ifndef NDEBUG
     printf("Shader source:\n%s\n", glslSource);
+#endif
 
     shader->id = ++device->currentShaderId;
     device->all_shaders.push_back(shader);

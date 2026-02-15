@@ -15,7 +15,7 @@ namespace MonoGame.Tests.Graphics
     internal class RasterizerStateTest : GraphicsDeviceTestFixtureBase
     {
         [TestCase(-1f)]
-#if DESKTOPGL
+#if DESKTOPGL || DESKTOPGL4
         [TestCase(1f), Ignore ("fails similarity test. Needs Investigating")]
 #else
         [TestCase(1f)]

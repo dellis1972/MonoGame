@@ -325,11 +325,19 @@ namespace MonoGame.Effect
                             var samplerType = samplerVariable.Pointer.PointerType as SpirvTypeSampler;
                             var imageType = imageVariable.Pointer.PointerType as SpirvTypeImage;
 
+                            // DXC only applies -fvk-t-shift/-fvk-s-shift to resources
+                            // with explicit register() assignments.  Resources without
+                            // explicit registers get sequentially-assigned bindings that
+                            // are *not* shifted, so we must detect that and use the
+                            // binding value directly as the slot.
+                            int rawSamplerSlot = (int)samplerVariable.BindingSlot.Value;
+                            int rawTextureSlot = (int)imageVariable.BindingSlot.Value;
+
                             var sampler = new ShaderData.Sampler
                             {
-                                samplerSlot = (int)samplerVariable.BindingSlot.Value - SlotOffset,
+                                samplerSlot = rawSamplerSlot >= SlotOffset ? rawSamplerSlot - SlotOffset : rawSamplerSlot,
                                 samplerName = samplerVariable.Name,
-                                textureSlot = (int)imageVariable.BindingSlot.Value - SlotOffset,
+                                textureSlot = rawTextureSlot >= SlotOffset ? rawTextureSlot - SlotOffset : rawTextureSlot,
                             };
 
                             // This image is only sampled by one sampler, we can safely use the texture name for the parameter.
