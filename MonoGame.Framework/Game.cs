@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
+using MonoGame.Framework.Utilities;
 
 
 namespace Microsoft.Xna.Framework
@@ -534,7 +535,7 @@ namespace Microsoft.Xna.Framework
             _accumulatedElapsedTime += TimeSpan.FromTicks(currentTicks - _previousTicks);
             _previousTicks = currentTicks;
 
-            if (IsFixedTimeStep && _accumulatedElapsedTime < TargetElapsedTime)
+            if (PlatformInfo.MonoGamePlatform != MonoGamePlatform.WebGL && IsFixedTimeStep && _accumulatedElapsedTime < TargetElapsedTime)
             {
                 // Sleep for as long as possible without overshooting the update time
                 var sleepTime = (TargetElapsedTime - _accumulatedElapsedTime).TotalMilliseconds;
@@ -542,6 +543,10 @@ namespace Microsoft.Xna.Framework
 #if WINDOWS && !DESKTOPGL
                 MonoGame.Framework.Utilities.TimerHelper.SleepForNoMoreThan(sleepTime);
 #elif DESKTOPGL || ANDROID || IOS || NATIVE
+                // On WebGL, Thread.Sleep can yield to the browser event loop (via JSPI),
+                // which triggers canvas compositing mid-frame and causes render target
+                // content to appear in separate frames instead of being composited together.
+                // The browser's requestAnimationFrame already handles frame pacing for WebGL.
                 if (sleepTime >= 2.0)
                     System.Threading.Thread.Sleep(1);
 #endif
