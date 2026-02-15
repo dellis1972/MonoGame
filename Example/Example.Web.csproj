@@ -5,6 +5,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <MonoGamePlatform>Web</MonoGamePlatform>
+    <OutputPath>bin\Web\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\Web\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>$(DefineConstants);MONOGAME;MG_$(MonoGamePlatform)</DefineConstants>
     <!-- This is to basically disable globalization to exclude icudt.dat (1.5MB) and reduce size of dotnet.wasm -->
     <InvariantGlobalization>true</InvariantGlobalization>
