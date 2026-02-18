@@ -65,16 +65,11 @@ partial class VertexInputLayout
             // Build a string listing elements actually present in the vertex declaration(s),
             // using the same HLSL semantic names that the shader expects.
             var sb = new System.Text.StringBuilder();
-            for (int j = 0; j < Count; j++)
+            for (int j = 0; j < inputs.Length; j++)
             {
-                var vertexElements = VertexDeclarations[j].InternalVertexElements;
-                foreach (var ve in vertexElements)
-                {
-                    if (sb.Length > 0)
-                        sb.Append(", ");
-                    sb.Append(VertexElementUsageToSemantic(ve.VertexElementUsage));
-                    sb.Append(ve.UsageIndex);
-                }
+                if (sb.Length > 0)
+                    sb.Append(", ");
+                sb.Append(inputs[j].ToShaderSemantic());
             }
 
             var message = "An error occurred while preparing to draw. "
@@ -83,27 +78,6 @@ partial class VertexInputLayout
                         + sb.ToString() + ".";
 
             throw new InvalidOperationException(message);
-        }
-    }
-
-    private static string VertexElementUsageToSemantic(VertexElementUsage usage)
-    {
-        switch (usage)
-        {
-            case VertexElementUsage.Position: return "POSITION";
-            case VertexElementUsage.Color: return "COLOR";
-            case VertexElementUsage.Normal: return "NORMAL";
-            case VertexElementUsage.TextureCoordinate: return "TEXCOORD";
-            case VertexElementUsage.BlendIndices: return "BLENDINDICES";
-            case VertexElementUsage.BlendWeight: return "BLENDWEIGHT";
-            case VertexElementUsage.Binormal: return "BINORMAL";
-            case VertexElementUsage.Tangent: return "TANGENT";
-            case VertexElementUsage.PointSize: return "PSIZE";
-            case VertexElementUsage.Depth: return "DEPTH";
-            case VertexElementUsage.Fog: return "FOG";
-            case VertexElementUsage.Sample: return "SAMPLE";
-            case VertexElementUsage.TessellateFactor: return "TESSELLATEFACTOR";
-            default: return usage.ToString().ToUpperInvariant();
         }
     }
 }
