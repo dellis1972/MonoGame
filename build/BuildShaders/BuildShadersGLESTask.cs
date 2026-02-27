@@ -1,9 +1,9 @@
 
 namespace BuildScripts;
 
-[TaskName("Build OpenGL 4 Shaders")]
+[TaskName("Build GLES Shaders")]
 [IsDependentOn(typeof(BuildMGFXCTask))]
-public sealed class BuildShadersOGL4Task : FrostingTask<BuildContext>
+public sealed class BuildShadersGLESTask : FrostingTask<BuildContext>
 {
     public override void Run(BuildContext context)
     {
@@ -14,7 +14,7 @@ public sealed class BuildShadersOGL4Task : FrostingTask<BuildContext>
         foreach (var filePath in context.GetFiles($"{shadersDir}/*.fx"))
         {
             context.Information($"Building {filePath.GetFilename()}");
-            context.DotNetRun(mgfxc, $"\"{filePath}\" {filePath.GetFilenameWithoutExtension()}.ogl.mgfxo.h /Profile:OpenGL4", workingDir);
+            context.DotNetRun(mgfxc, $"\"{filePath}\" {filePath.GetFilenameWithoutExtension()}.ogles.mgfxo.h /Profile:GLES", workingDir);
             context.Information("");
         }
     }

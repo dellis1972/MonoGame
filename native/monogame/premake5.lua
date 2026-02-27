@@ -44,6 +44,7 @@ function common(project_name)
     if os.target() == "emscripten" then
         kind "StaticLib"
         targetprefix "" -- remove lib prefix
+        defines {"MINIMP3_NO_SIMD"}
     end
     defines {"DLL_EXPORT"}
     targetdir(platform_target_path)

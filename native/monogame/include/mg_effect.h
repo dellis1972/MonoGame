@@ -9,6 +9,8 @@
 #define MG_BUILTIN_EFFECT_SYMBOL(name) name##_dx12_mgfxo
 #elif defined(MG_VULKAN)
 #define MG_BUILTIN_EFFECT_SYMBOL(name) name##_vk_mgfxo
+#elif defined(MG_EMSCRIPTEN)
+#define MG_BUILTIN_EFFECT_SYMBOL(name) name##_ogles_mgfxo
 #elif defined(MG_OPENGL)
 #define MG_BUILTIN_EFFECT_SYMBOL(name) name##_ogl_mgfxo
 #else

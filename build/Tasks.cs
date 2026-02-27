@@ -6,6 +6,7 @@ namespace BuildScripts;
 [IsDependentOn(typeof(BuildShadersDX12Task))]
 [IsDependentOn(typeof(BuildShadersOGLTask))]
 [IsDependentOn(typeof(BuildShadersOGL4Task))]
+[IsDependentOn(typeof(BuildShadersGLESTask))]
 [IsDependentOn(typeof(BuildShadersVulkanTask))]
 public sealed class BuildShadersTask : FrostingTask<BuildContext> { }
 

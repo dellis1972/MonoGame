@@ -9,6 +9,7 @@
 #if defined(MG_EMSCRIPTEN)
 #include <dirent.h>
 #include <sys/stat.h>
+#include <emscripten.h>
 #endif
 
 struct MG_Asset
@@ -56,7 +57,7 @@ mgbool MG_Asset_Open(const char* path, MG_Asset*& handle, mglong& length)
 
     // lets see what is in the virtual file system for debugging purposes
     printf("Listing files in virtual file system:\n");
-    listVirtualFileSystem("/Content"); // Start listing from the root of the virtual file system
+    listVirtualFileSystem("/"); // Start listing from the root of the virtual file system
 
     // Append a leading / to the path to ensure it is treated as a file and not a directory, which can cause issues in some environments
     char modifiedPath[1024];

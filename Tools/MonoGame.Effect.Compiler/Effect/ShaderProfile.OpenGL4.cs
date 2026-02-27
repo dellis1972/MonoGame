@@ -80,8 +80,14 @@ namespace MonoGame.Effect
             public nint pImmutableSamplers;
         };
 
-        public OpenGL4ShaderProfile()
-            : base("OpenGL4", 0)
+        protected virtual bool IsGLES => false;
+
+        public OpenGL4ShaderProfile() : this ("OpenGL4")
+        {
+        }
+
+        public OpenGL4ShaderProfile(string name = "OpenGL4")
+            : base(name, 0)
         {
         }
 
@@ -116,14 +122,15 @@ namespace MonoGame.Effect
             // TODO: We have no intermediate folder in 2MGFX for temp stuff
             // that isn't content, but could be useful later.  So just putting
             // them into the output then cleaning it up after.
+            var suffix = IsGLES ? ".gles" : "";
             var intermediateDir = outputPath;
-            var hlslFile = Path.Combine(intermediateDir, sourceFileName + ".hlsl");
-            var glslFile = Path.Combine(intermediateDir, sourceFileName + ".glsl");
-            var binFile = Path.Combine(intermediateDir, sourceFileName + ".bin");
-            var reflectFile = Path.Combine(intermediateDir, sourceFileName + ".reflect");
+            var hlslFile = Path.Combine(intermediateDir, sourceFileName + suffix + ".hlsl");
+            var glslFile = Path.Combine(intermediateDir, sourceFileName + suffix + ".glsl");
+            var binFile = Path.Combine(intermediateDir, sourceFileName + suffix + ".bin");
+            var reflectFile = Path.Combine(intermediateDir, sourceFileName + suffix + ".reflect");
 
             // Need to keep this for debugging to work.
-            var dbgFile = Path.Combine(outputPath, sourceFileName + ".dbg");
+            var dbgFile = Path.Combine(outputPath, sourceFileName + suffix + ".dbg");
 
             // Disable this if you want to keep these around for testing!
             var cleanup = new List<string>();
@@ -216,7 +223,7 @@ namespace MonoGame.Effect
                 }
 
                 toolArgs = "";
-                toolArgs += "--version 330 ";
+                toolArgs += IsGLES ? "--version 300 --es" : "--version 330 ";
                 //toolArgs += " --flip-vert-y --fixup-clipspace";
                 // Note: We do NOT use --fixup-clipspace or -fvk-invert-y.
                 // The Y flip is handled at runtime via the posFixup uniform injected
@@ -224,6 +231,8 @@ namespace MonoGame.Effect
                 // we're rendering to a render target (flip) or backbuffer (no flip).
                 toolArgs += " \"" + binFile + "\" ";
                 toolArgs += " --output \"" + glslFile + "\" ";
+
+                Console.WriteLine($"Running : {toolArgs}");
 
                 toolResult = Microsoft.Xna.Framework.Content.Pipeline.ExternalTool.Run("spirv-cross", toolArgs, out stdout, out stderr);
                 errorsAndWarnings = stderr;
@@ -240,6 +249,11 @@ namespace MonoGame.Effect
                 // Load up the compiled shader and strip layout(binding = N) qualifiers
                 // that aren't supported on macOS (GL 4.1 doesn't support GL_ARB_shading_language_420pack).
                 var glslText = File.ReadAllText(glslFile);
+                if (IsGLES)
+                {
+                    if (!glslText.Contains("#version 300 es"))
+                        throw new Exception("WTF: " + glslFile);
+                }
                 ShaderStage shaderStage = isVertexShader ? ShaderStage.Vertex : ShaderStage.Pixel;
 
                 GLSLManipulator.RemoveInGlPerVertex(ref glslText);
@@ -544,6 +558,22 @@ namespace MonoGame.Effect
                     catch { }
                 }
             }
+        }
+    }
+
+    class GLESShaderProfile : OpenGL4ShaderProfile
+    {
+        protected override bool IsGLES => true;
+
+        public GLESShaderProfile()
+            : base("GLES")
+        {
+        }
+
+        internal override void AddMacros(Dictionary<string, string> macros)
+        {
+            base.AddMacros(macros);
+            macros.Add("GLES", "1");
         }
     }
 }

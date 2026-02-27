@@ -5,6 +5,14 @@
 #include "api_MGG.h"
 #include "mg_common.h"
 
+#if defined(MG_EMSCRIPTEN)
+#include "AlphaTestEffect.ogles.mgfxo.h"
+#include "BasicEffect.ogles.mgfxo.h"
+#include "DualTextureEffect.ogles.mgfxo.h"
+#include "EnvironmentMapEffect.ogles.mgfxo.h"
+#include "SkinnedEffect.ogles.mgfxo.h"
+#include "SpriteEffect.ogles.mgfxo.h"
+#else
 // Effect includes for OpenGL
 #include "AlphaTestEffect.ogl.mgfxo.h"
 #include "BasicEffect.ogl.mgfxo.h"
@@ -12,6 +20,7 @@
 #include "EnvironmentMapEffect.ogl.mgfxo.h"
 #include "SkinnedEffect.ogl.mgfxo.h"
 #include "SpriteEffect.ogl.mgfxo.h"
+#endif
 #include "mg_effect.h"
 
 // Include required headers for OpenGL/Emscripten
@@ -3181,31 +3190,32 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
     GLint glslLength = (GLint)sizeInBytes;
 
 #if defined(MG_EMSCRIPTEN)
+    // TODO SHADER FIXUP
     // WebGL 2 uses GLSL ES 3.00, but the content pipeline generates #version 330.
     // Patch the GLSL source at runtime to make it compatible with WebGL 2.
-    std::string patchedGlsl(glslSource, glslLength);
-    {
-        // Replace "#version 330" with "#version 300 es"
-        const std::string v330 = "#version 330";
-        auto pos = patchedGlsl.find(v330);
-        if (pos != std::string::npos) {
-            patchedGlsl.replace(pos, v330.length(), "#version 300 es");
-        }
+    // std::string patchedGlsl(glslSource, glslLength);
+    // {
+    //     // Replace "#version 330" with "#version 300 es"
+    //     const std::string v330 = "#version 330";
+    //     auto pos = patchedGlsl.find(v330);
+    //     if (pos != std::string::npos) {
+    //         patchedGlsl.replace(pos, v330.length(), "#version 300 es");
+    //     }
 
-        // Find the end of the #version line to insert precision qualifiers after it
-        auto versionEnd = patchedGlsl.find('\n');
-        if (versionEnd != std::string::npos) {
-            std::string precisionBlock;
-            if (stage == MGShaderStage::Pixel) {
-                precisionBlock = "\nprecision mediump float;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n";
-            } else {
-                precisionBlock = "\nprecision highp float;\n";
-            }
-            patchedGlsl.insert(versionEnd + 1, precisionBlock);
-        }
-    }
-    glslSource = patchedGlsl.c_str();
-    glslLength = (GLint)patchedGlsl.size();
+    //     // Find the end of the #version line to insert precision qualifiers after it
+    //     auto versionEnd = patchedGlsl.find('\n');
+    //     if (versionEnd != std::string::npos) {
+    //         std::string precisionBlock;
+    //         if (stage == MGShaderStage::Pixel) {
+    //             precisionBlock = "\nprecision mediump float;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n";
+    //         } else {
+    //             precisionBlock = "\nprecision highp float;\n";
+    //         }
+    //         patchedGlsl.insert(versionEnd + 1, precisionBlock);
+    //     }
+    // }
+    // glslSource = patchedGlsl.c_str();
+    // glslLength = (GLint)patchedGlsl.size();
 #endif
 
     // --- Create and compile the GL shader ---
