@@ -851,6 +851,22 @@ void MGG_GraphicsAdapter_GetInfo(MGG_GraphicsAdapter* adapter, MGG_GraphicsAdapt
     info.DisplayModeCount = 0;
     // Initialize CurrentDisplayMode with zeros
     info.CurrentDisplayMode = { MGSurfaceFormat::Color, 0, 0 };
+#if defined(MG_EMSCRIPTEN)
+    // Get the canvas size for the current display mode
+    int canvasWidth = 800, canvasHeight = 600; // defaults
+    emscripten_get_canvas_element_size("#canvas", &canvasWidth, &canvasHeight);
+    info.CurrentDisplayMode = { MGSurfaceFormat::Color, canvasWidth, canvasHeight };
+#else
+    // For desktop, query the primary display
+    SDL_DisplayMode mode;
+    if (SDL_GetCurrentDisplayMode(0, &mode) == 0) {
+        info.CurrentDisplayMode = { MGSurfaceFormat::Color, mode.w, mode.h };
+    } else {
+        info.CurrentDisplayMode = { MGSurfaceFormat::Color, 800, 600 };
+    }
+#endif
+    
+    printf("CurrentDisplayMode: %d x %d\n", info.CurrentDisplayMode.width, info.CurrentDisplayMode.height);
 }
 
 // Helper: create the GL context and set up initial GL state.
@@ -3193,29 +3209,29 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
     // TODO SHADER FIXUP
     // WebGL 2 uses GLSL ES 3.00, but the content pipeline generates #version 330.
     // Patch the GLSL source at runtime to make it compatible with WebGL 2.
-    // std::string patchedGlsl(glslSource, glslLength);
-    // {
-    //     // Replace "#version 330" with "#version 300 es"
-    //     const std::string v330 = "#version 330";
-    //     auto pos = patchedGlsl.find(v330);
-    //     if (pos != std::string::npos) {
-    //         patchedGlsl.replace(pos, v330.length(), "#version 300 es");
-    //     }
+    std::string patchedGlsl(glslSource, glslLength);
+    {
+        // Replace "#version 330" with "#version 300 es"
+        const std::string v330 = "#version 330";
+        auto pos = patchedGlsl.find(v330);
+        if (pos != std::string::npos) {
+            patchedGlsl.replace(pos, v330.length(), "#version 300 es");
+        }
 
-    //     // Find the end of the #version line to insert precision qualifiers after it
-    //     auto versionEnd = patchedGlsl.find('\n');
-    //     if (versionEnd != std::string::npos) {
-    //         std::string precisionBlock;
-    //         if (stage == MGShaderStage::Pixel) {
-    //             precisionBlock = "\nprecision mediump float;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n";
-    //         } else {
-    //             precisionBlock = "\nprecision highp float;\n";
-    //         }
-    //         patchedGlsl.insert(versionEnd + 1, precisionBlock);
-    //     }
-    // }
-    // glslSource = patchedGlsl.c_str();
-    // glslLength = (GLint)patchedGlsl.size();
+        // Find the end of the #version line to insert precision qualifiers after it
+        auto versionEnd = patchedGlsl.find('\n');
+        if (versionEnd != std::string::npos) {
+            std::string precisionBlock;
+            if (stage == MGShaderStage::Pixel) {
+                precisionBlock = "\nprecision mediump float;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n";
+            } else {
+                precisionBlock = "\nprecision highp float;\n";
+            }
+            patchedGlsl.insert(versionEnd + 1, precisionBlock);
+        }
+    }
+    glslSource = patchedGlsl.c_str();
+    glslLength = (GLint)patchedGlsl.size();
 #endif
 
     // --- Create and compile the GL shader ---

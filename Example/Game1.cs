@@ -17,6 +17,7 @@ public class Game1 : Game
     private Texture2D _texture, _blankTexture;
     private SoundEffectInstance _soundEffect;
     private RenderTarget2D _renderTarget;
+    private int rotation = 0;
 
     public Game1()
     {
@@ -50,6 +51,7 @@ public class Game1 : Game
 
     int x, y = 0;
     int h = 200;
+    int _drawCount = 0;
 
     protected override void Update(GameTime gameTime)
     {
@@ -64,29 +66,40 @@ public class Game1 : Game
             y-=10;
         if (keyboardState.IsKeyDown(Keys.Down))
             y+=10;
+
+        rotation += 1;
         base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
+        _drawCount++;
+        bool log = _drawCount <= 20;
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: SetRenderTarget(_renderTarget)");
         GraphicsDevice.SetRenderTarget(_renderTarget);
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: Clear(Green) on RT");
         GraphicsDevice.Clear(Color.Green);
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: SetRenderTarget(null)");
         GraphicsDevice.SetRenderTarget(null);
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: Clear(CornflowerBlue) on backbuffer");
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
-        // GraphicsDevice.BlendState = BlendState.Opaque;
-        // GraphicsDevice.DepthStencilState = DepthStencilState.None;
-        // GraphicsDevice.RasterizerState = RasterizerState.CullNone;
+        GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
+        GraphicsDevice.BlendState = BlendState.Opaque;
+        GraphicsDevice.DepthStencilState = DepthStencilState.None;
+        GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
         var vp = GraphicsDevice.Viewport;
 
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: SpriteBatch.Begin()");
         _spriteBatch.Begin();
         // Draw your game objects here
-        _spriteBatch.Draw(_blankTexture, new Rectangle(vp.X, vp.Y, vp.Width, vp.Height), Color.Red);
-        _spriteBatch.Draw(_texture, new Rectangle(x, 10, 60, 60), Color.White);
+        _spriteBatch.Draw(_blankTexture, new Rectangle(vp.X, vp.Y+10, vp.Width, vp.Height-20), Color.Red);
+        _spriteBatch.Draw(_texture, new Rectangle(x, 10, 60, 60), null, Color.White, MathHelper.ToRadians(rotation), new Vector2(30, 30), SpriteEffects.None, 0f);
          _spriteBatch.Draw(_texture, new Rectangle(320-60, h-60, 60, 60), Color.White);
         _spriteBatch.Draw(_renderTarget, new Rectangle(120, 20, 40, 40), Color.White);
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: SpriteBatch.End()");
         _spriteBatch.End();
+        if (log) Console.WriteLine($"  Draw #{_drawCount}: complete");
 
         base.Draw(gameTime);
     }
@@ -109,8 +122,6 @@ public static class Program
         using (var game = new Game1())
         {
             Console.WriteLine("Running Game1");
-            //for (int i = 0; i < 5; i++)
-            //    game.RunOneFrame();
             game.Run();
 #if MG_Web
             Console.WriteLine("Run returned now yielding to JS event loop");

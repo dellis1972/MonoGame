@@ -56,8 +56,8 @@ mgbool MG_Asset_Open(const char* path, MG_Asset*& handle, mglong& length)
     // Emscripten's virtual file system can sometimes have issues with paths that don't start with a leading slash, so we add one if it's not already present.
 
     // lets see what is in the virtual file system for debugging purposes
-    printf("Listing files in virtual file system:\n");
-    listVirtualFileSystem("/"); // Start listing from the root of the virtual file system
+    // printf("Listing files in virtual file system:\n");
+    // listVirtualFileSystem("/"); // Start listing from the root of the virtual file system
 
     // Append a leading / to the path to ensure it is treated as a file and not a directory, which can cause issues in some environments
     char modifiedPath[1024];

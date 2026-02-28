@@ -249,11 +249,6 @@ namespace MonoGame.Effect
                 // Load up the compiled shader and strip layout(binding = N) qualifiers
                 // that aren't supported on macOS (GL 4.1 doesn't support GL_ARB_shading_language_420pack).
                 var glslText = File.ReadAllText(glslFile);
-                if (IsGLES)
-                {
-                    if (!glslText.Contains("#version 300 es"))
-                        throw new Exception("WTF: " + glslFile);
-                }
                 ShaderStage shaderStage = isVertexShader ? ShaderStage.Vertex : ShaderStage.Pixel;
 
                 GLSLManipulator.RemoveInGlPerVertex(ref glslText);

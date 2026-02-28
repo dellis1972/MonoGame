@@ -94,6 +94,8 @@ public sealed class BuildNativeDependenciesTask : FrostingTask<BuildContext>
         configureArgs.Append("cmake");
         configureArgs.Append("../");
         configureArgs.Append("-DSDL_STATIC=ON -DSDL_TEST=OFF");
+        configureArgs.Append("-DSDL_PTHREADS=ON");
+        configureArgs.Append("-DCMAKE_C_FLAGS=-pthread");
         configureArgs.Append($"-D CMAKE_BUILD_TYPE=Release");
 
         configureSettings.Arguments = configureArgs;
@@ -155,6 +157,7 @@ public sealed class BuildNativeDependenciesTask : FrostingTask<BuildContext>
         configureArgs.Append($"-DCMAKE_C_STANDARD_INCLUDE_DIRECTORIES={context.MakeAbsolute(new DirectoryPath(sdlIncludeDir))}");
         configureArgs.Append($"-DCMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES={context.MakeAbsolute(new DirectoryPath(sdlIncludeDir))}");
         configureArgs.Append("-DBUILD_SDL3=OFF");
+        configureArgs.Append("-DCMAKE_C_FLAGS=-pthread");
         configureArgs.Append($"-D CMAKE_BUILD_TYPE=Release");
 
         configureSettings.Arguments = configureArgs;

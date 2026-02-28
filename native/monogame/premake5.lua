@@ -45,6 +45,8 @@ function common(project_name)
         kind "StaticLib"
         targetprefix "" -- remove lib prefix
         defines {"MINIMP3_NO_SIMD"}
+        buildoptions {"-pthread"}
+        linkoptions {"-pthread", "-sSHARED_MEMORY"}
     end
     defines {"DLL_EXPORT"}
     targetdir(platform_target_path)

@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using MonoGame.Interop;
 using System.Threading;
 using MonoGame.Framework.Utilities;
+using System.Net;
 
 namespace Microsoft.Xna.Framework;
 
@@ -29,8 +30,7 @@ class NativeGamePlatform : GamePlatform
     private readonly List<string> _dropList = new List<string>(64);
 
     private int _isExiting;
-
-    private static Game _emscriptenGame;
+    private static NativeGamePlatform _nativeGamePlatform; 
     private delegate void em_callback_func();
 
     [DllImport("*", CallingConvention = CallingConvention.Cdecl)]
@@ -42,7 +42,7 @@ class NativeGamePlatform : GamePlatform
     [ObjCRuntime.MonoPInvokeCallback(typeof(em_callback_func))]
     private static unsafe void RunEmscriptenMainLoop()
     {
-        _emscriptenGame.Tick();
+        _nativeGamePlatform.RunOneLoop();
     }
 
 
@@ -87,17 +87,21 @@ class NativeGamePlatform : GamePlatform
 
         while (true)
         {
-            PollEvents();
-
-            Game.Tick();
-
-            Threading.Run();
-
+            RunOneLoop();
             if (_isExiting > 0 && ShouldExit())
                 break;
             else
                 _isExiting = 0;
         }
+    }
+
+    private void RunOneLoop()
+    {
+        PollEvents();
+
+        Game.Tick();
+
+        Threading.Run();
     }
 
     private unsafe void PollEvents()
@@ -291,7 +295,7 @@ class NativeGamePlatform : GamePlatform
     {
         if (PlatformInfo.MonoGamePlatform == MonoGamePlatform.WebGL)
         {
-            _emscriptenGame = this.Game;
+            _nativeGamePlatform = this;
             emscripten_set_main_loop(RunEmscriptenMainLoop, fps: 0, simulateInfiniteLoop: false);
         }
         else
