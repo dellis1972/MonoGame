@@ -16,6 +16,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
             return  platform == TargetPlatform.Android ||
                     platform == TargetPlatform.DesktopGL ||
                     platform == TargetPlatform.DesktopVK ||
+                    platform == TargetPlatform.DesktopGL4 ||
                     platform == TargetPlatform.MacOSX ||
                     platform == TargetPlatform.NativeClient ||
                     platform == TargetPlatform.RaspberryPi ||
@@ -68,6 +69,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
                             platform == TargetPlatform.WindowsDX12 ||
                             platform == TargetPlatform.DesktopGL ||
                             platform == TargetPlatform.DesktopVK ||
+                            platform == TargetPlatform.DesktopGL4 ||
                             platform == TargetPlatform.MacOSX ||
                             platform == TargetPlatform.NativeClient ||
                             platform == TargetPlatform.Web)

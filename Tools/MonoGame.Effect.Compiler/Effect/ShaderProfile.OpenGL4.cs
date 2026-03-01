@@ -199,6 +199,8 @@ namespace MonoGame.Effect
                 //toolArgs += "-fspv-reflect ";
                 toolArgs += "-T " + (isVertexShader ? "vs_" : "ps_") + "6_0 ";
                 toolArgs += "-E main ";
+                if (IsGLES)
+                    toolArgs += "-O0 ";
                 toolArgs += "-Fc \"" + reflectFile + "\" ";
                 toolArgs += "-Fo \"" + binFile + "\" ";
 
@@ -223,12 +225,13 @@ namespace MonoGame.Effect
                 }
 
                 toolArgs = "";
-                toolArgs += IsGLES ? "--version 300 --es" : "--version 330 ";
+                toolArgs += IsGLES ? "--version 300 --es " : "--version 330 ";
                 //toolArgs += " --flip-vert-y --fixup-clipspace";
                 // Note: We do NOT use --fixup-clipspace or -fvk-invert-y.
                 // The Y flip is handled at runtime via the posFixup uniform injected
                 // into vertex shaders. This allows conditional flipping based on whether
                 // we're rendering to a render target (flip) or backbuffer (no flip).
+
                 toolArgs += " \"" + binFile + "\" ";
                 toolArgs += " --output \"" + glslFile + "\" ";
 
@@ -256,7 +259,9 @@ namespace MonoGame.Effect
                 GLSLManipulator.AddPosFixupUniformAndCode(ref glslText, shaderStage);
                 GLSLManipulator.StripBindingQualifiers(ref glslText);
                 GLSLManipulator.FixVaryingNames(ref glslText, isVertexShader);
-                
+                GLSLManipulator.InjectPrecision(ref glslText, IsGLES);
+                GLSLManipulator.RenameUniformBlock(ref glslText, isVertexShader, IsGLES);
+
                 var bytecode = System.Text.Encoding.UTF8.GetBytes(glslText);
 
                 // First look to see if we already created this same shader.
@@ -301,7 +306,9 @@ namespace MonoGame.Effect
                         }
 
                         SpirvTypeStruct constantBuffer = variable.Pointer.PointerType as SpirvTypeStruct;
-                        ConstantBufferData cbuffer = ConstantBufferData.BuildFromSpirvStruct(constantBuffer);
+                        ConstantBufferData cbuffer = IsGLES
+                            ? ConstantBufferData.BuildFromSpirvStructStd140(constantBuffer)
+                            : ConstantBufferData.BuildFromSpirvStruct(constantBuffer);
 
                         if (cbuffer.Size > 0)
                         {
@@ -399,6 +406,11 @@ namespace MonoGame.Effect
                     {
                         var a = new ShaderData.Attribute();
                         var semanticId = input.HlslSemantic ?? input.Id.Replace("%in_var_", "");
+
+                        // Strip the SV_ prefix from system-value semantics so
+                        // SV_POSITION matches the POSITION case below.
+                        if (semanticId.StartsWith("SV_", StringComparison.OrdinalIgnoreCase))
+                            semanticId = semanticId.Substring(3);
 
                         var m = Regex.Match(semanticId, @"(\D+)(\d+)?");
                         if (m.Groups[2].Success)

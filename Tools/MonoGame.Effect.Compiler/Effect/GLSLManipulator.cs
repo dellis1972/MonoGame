@@ -61,6 +61,47 @@ namespace MonoGame.Effect
         }
 
         /// <summary>
+        /// Ensure pixel and vertex shaders have consistent precision qualifiers for WebGL/GLES.
+        /// SPIRV-Cross output may lack precision qualifiers which causes linker errors like
+        /// "number of uniform block differ between VERTEX and FRAGMENT shaders".
+        /// This adds highp qualifiers to all float-based types (float, vecN, matN, matNxM).
+        /// </summary>
+        /// <param name="glsl">The GLSL source code to modify.</param>
+        /// <param name="isGLES">True if targeting GLES/WebGL.</param>
+        public static void InjectPrecision(ref string glsl, bool isGLES)
+        {
+            if (!isGLES)
+                return;
+
+            // Upgrade mediump to highp for consistency between vertex and fragment shaders
+            glsl = glsl.Replace("precision mediump float;", "precision highp float;");
+
+            // Add default precision statements after version directive if not present
+            if (!glsl.Contains("precision highp float;"))
+            {
+                glsl = glsl.Replace("#version 300 es", "#version 300 es\nprecision highp float;\nprecision highp int;");
+            }
+
+            // Pattern for float-based types that need precision qualifiers
+            const string floatTypes = @"float|vec[234]|mat[234](?:x[234])?";
+
+            // Add highp to uniform block members with layout qualifiers (e.g., layout(row_major))
+            // SPIRV-Cross generates: layout(row_major) mat4 Name;
+            // We need: layout(row_major) highp mat4 Name;
+            glsl = Regex.Replace(glsl,
+                $@"(layout\s*\([^)]+\)\s+)(?!(highp|mediump|lowp)\s)({floatTypes})\b",
+                "$1highp $3");
+
+            // Add highp to uniform block members without layout qualifiers
+            // These are indented lines inside uniform blocks: "    vec4 Color;"
+            // Use multiline mode to match start of line with ^
+            glsl = Regex.Replace(glsl,
+                $@"^(\s+)(?!(highp|mediump|lowp|in|out|uniform|layout)\b)({floatTypes})\s+(\w+\s*[;\[=])",
+                "$1highp $3 $4",
+                RegexOptions.Multiline);
+        }
+
+        /// <summary>
         /// Strip layout(binding = N) qualifiers and the GL_ARB_shading_language_420pack
         /// ifdef block from GLSL source. macOS GL 4.1 doesn't support the 420pack extension,
         /// so these must be removed at compile time. The binding info is already stored in the
@@ -79,6 +120,27 @@ namespace MonoGame.Effect
 
             // Remove the GL_ARB_shading_language_420pack ifdef block
             glsl = Regex.Replace(glsl, @"#ifdef GL_ARB_shading_language_420pack\s*\n.*?\n#endif\s*\n", "", RegexOptions.Singleline);
+        }
+
+        /// <summary>
+        /// Rename UBO block and instance names to stage-specific names for WebGL/GLES.
+        /// WebGL requires uniform blocks with the same name to have identical definitions
+        /// across linked stages. When SpriteBatch links its VS with a custom PS-only effect,
+        /// the type_MG_Globals blocks have different members and linking fails. Renaming the
+        /// block type and instance per-stage avoids this collision.
+        /// </summary>
+        public static void RenameUniformBlock(ref string glsl, bool isVertexShader, bool isGLES)
+        {
+            // Always rename UBO blocks per-stage. SPIRV-Cross may strip unused members,
+            // causing VS and PS blocks with the same name to have different definitions.
+            // OpenGL requires uniform blocks with the same name to have identical definitions
+            // across linked stages, so renaming avoids link failures.
+            string suffix = isVertexShader ? "VS" : "PS";
+            // Rename block type first (type_MG_Globals contains _MG_Globals as substring).
+            // After this, the type name no longer contains _MG_Globals.
+            glsl = glsl.Replace("type_MG_Globals", $"type_MG_UBO_{suffix}");
+            // Then rename instance name and member access expressions.
+            glsl = glsl.Replace("_MG_Globals", $"_MG_UBO_{suffix}");
         }
 
         public static void AddPosFixupUniformAndCode(ref string glsl, ShaderStage shaderStage)

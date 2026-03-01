@@ -51,7 +51,6 @@ void listVirtualFileSystem(const char* path, int indent = 0) {
 mgbool MG_Asset_Open(const char* path, MG_Asset*& handle, mglong& length)
 {
     handle = new MG_Asset();
-    printf("Trying to open file: %s\n", path);
 #if defined(MG_EMSCRIPTEN)
     // Emscripten's virtual file system can sometimes have issues with paths that don't start with a leading slash, so we add one if it's not already present.
 
@@ -89,8 +88,6 @@ mgbool MG_Asset_Open(const char* path, MG_Asset*& handle, mglong& length)
         delete handle;
         return false;
     }
-
-    printf("Successfully opened file: %s (length: %lld bytes)\n", path, length);
 
     return true;
 }

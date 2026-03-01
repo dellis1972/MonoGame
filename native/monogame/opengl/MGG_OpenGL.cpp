@@ -754,8 +754,8 @@ struct MGG_GraphicsDevice
     GLuint currentProgram = 0;
 
     // --- Resource bindings ---
-    // Constant buffers (per stage)
-    MGG_Buffer* constantBuffers[MAX_UNIFORM_BUFFER_SLOTS] = { nullptr };
+    // Constant buffers (per stage, per slot)
+    MGG_Buffer* constantBuffers[(int)MGShaderStage::Count][MAX_UNIFORM_BUFFER_SLOTS] = { { nullptr } };
     uint32_t uniformDirty = 0;
 
     // Textures and samplers (pixel slots 0..15, vertex slots 16..31)
@@ -793,6 +793,10 @@ struct MGG_GraphicsDevice
 
     // --- Frame tracking ---
     int frameNumber = 0;
+
+    // Track how many vertex attrib locations are currently enabled,
+    // so we can disable extras when switching to a smaller layout.
+    int enabledAttribCount = 0;
 
     // --- Tracking for cleanup ---
     std::vector<MGG_Buffer*> all_buffers;
@@ -1578,9 +1582,10 @@ void MGG_GraphicsDevice_SetConstantBuffer(MGG_GraphicsDevice* device, MGShaderSt
     assert(buffer != nullptr);
     assert(slot >= 0 && slot < MAX_UNIFORM_BUFFER_SLOTS);
 
-    if (device->constantBuffers[slot] != buffer)
+    int s = (int)stage;
+    if (device->constantBuffers[s][slot] != buffer)
     {
-        device->constantBuffers[slot] = buffer;
+        device->constantBuffers[s][slot] = buffer;
         device->uniformDirty |= 1 << slot;
     }
 }
@@ -1691,21 +1696,27 @@ static GLuint MGL_ProgramGetOrCreate(MGG_GraphicsDevice* device, MGG_Shader* ver
     // For each shader (vertex + pixel), iterate the parsed bindings and
     // connect OpenGL uniform blocks to the correct UBO binding points.
     MGG_Shader* shaders[2] = { vertexShader, pixelShader };
-    for (int s = 0; s < 2; s++) {
-        MGG_Shader* sh = shaders[s];
-        for (int i = 0; i < sh->bindingCount; i++) {
-            auto& b = sh->bindings[i];
-            if (b.descriptorType == MG_BINDING_TYPE_UNIFORM_BUFFER) {
-                GLint numBlocks = 0;
-                glGetProgramiv(program, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks);
-                for (GLint bi = 0; bi < numBlocks; bi++) {
-                    GLint currentBinding = -1;
-                    glGetActiveUniformBlockiv(program, bi, GL_UNIFORM_BLOCK_BINDING, &currentBinding);
-                    int uboBindingPoint = (int)sh->stage + (int)b.binding;
-                    if (currentBinding == (GLint)b.binding) {
-                        glUniformBlockBinding(program, bi, uboBindingPoint);
-                    }
-                }
+    // The content pipeline renames UBO blocks per-stage (type_MG_UBO_VS / type_MG_UBO_PS)
+    // to avoid link failures when VS and PS have different UBO member sets.
+    // Look up blocks by name and assign each to a stage-specific binding point.
+    {
+        const char* blockNames[] = { "type_MG_UBO_VS", "type_MG_UBO_PS" };
+        bool foundAny = false;
+        for (int s = 0; s < 2; s++) {
+            GLuint blockIndex = glGetUniformBlockIndex(program, blockNames[s]);
+            if (blockIndex != GL_INVALID_INDEX) {
+                int bindingPoint = s; // VS=0, PS=1
+                glUniformBlockBinding(program, blockIndex, bindingPoint);
+                foundAny = true;
+            }
+        }
+        // Fallback: older compiled effects may still use the shared block name.
+        // Assign it to binding point 0; both VS and PS constant buffers share the
+        // same data, so the shader reads correct values from either binding point.
+        if (!foundAny) {
+            GLuint blockIndex = glGetUniformBlockIndex(program, "type_MG_Globals");
+            if (blockIndex != GL_INVALID_INDEX) {
+                glUniformBlockBinding(program, blockIndex, 0);
             }
         }
     }
@@ -2218,17 +2229,13 @@ static void ApplyState(MGG_GraphicsDevice* device)
         {
             if (slotsToUpdate & (1 << slot))
             {
-                auto buffer = device->constantBuffers[slot];
-                if (buffer)
+                for (int s = 0; s < (int)MGShaderStage::Count; s++)
                 {
-                    // Bind UBO to the binding point.
-                    // Vertex shader uses binding point = slot,
-                    // Pixel shader uses binding point = 1 + slot (offset by stage).
-                    // Since we bind all active slots for both stages, we bind per-stage:
-                    for (int s = 0; s < (int)MGShaderStage::Count; s++)
+                    auto sh = device->shaders[s];
+                    if (sh && (sh->uniformSlots & (1 << slot)))
                     {
-                        auto sh = device->shaders[s];
-                        if (sh && (sh->uniformSlots & (1 << slot)))
+                        auto buffer = device->constantBuffers[s][slot];
+                        if (buffer)
                         {
                             int bindingPoint = s + slot;
                             glBindBufferBase(GL_UNIFORM_BUFFER, bindingPoint, buffer->handle);
@@ -2303,10 +2310,16 @@ static void ApplyState(MGG_GraphicsDevice* device)
         {
             int elementCount = (int)layout->elements.size();
 
-            // Disable all attribute slots first, then enable the ones we need
-            // to avoid stale attributes from a previous layout.
+            // Enable the attribute locations we need
             for (int i = 0; i < elementCount; i++)
                 glEnableVertexAttribArray(i);
+
+            // Disable any previously-enabled locations beyond our current count
+            for (int i = elementCount; i < device->enabledAttribCount; i++) {
+                glDisableVertexAttribArray(i);
+                glVertexAttribDivisor(i, 0);
+            }
+            device->enabledAttribCount = elementCount;
 
             for (int i = 0; i < elementCount; i++)
             {
@@ -2359,7 +2372,8 @@ static void ApplyState(MGG_GraphicsDevice* device)
 
 #if defined(MG_EMSCRIPTEN)
 // Emulate glDrawElementsBaseVertex on WebGL by temporarily offsetting
-// all vertex attribute pointers by vertexStart * stride.
+// per-vertex attribute pointers by vertexStart * stride.
+// Per-instance attributes are left unchanged.
 static void EmulateBaseVertex(MGG_GraphicsDevice* device, mgint vertexStart) {
     if (vertexStart == 0 || !device->inputLayout)
         return;
@@ -2369,6 +2383,13 @@ static void EmulateBaseVertex(MGG_GraphicsDevice* device, mgint vertexStart) {
 
     for (int i = 0; i < elementCount; i++) {
         const auto& elem = layout->elements[i];
+
+        // Only offset per-vertex attributes; per-instance attributes
+        // (InstanceDataStepRate > 0) advance per-instance, not per-vertex,
+        // so applying vertexStart to them would read garbage transforms.
+        if (elem.InstanceDataStepRate > 0)
+            continue;
+
         int vbSlot = elem.VertexBufferSlot;
         auto vb = device->vertexBuffers[vbSlot];
         if (!vb)
@@ -3205,35 +3226,6 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
     const char* glslSource = (const char*)bytecode;
     GLint glslLength = (GLint)sizeInBytes;
 
-#if defined(MG_EMSCRIPTEN)
-    // TODO SHADER FIXUP
-    // WebGL 2 uses GLSL ES 3.00, but the content pipeline generates #version 330.
-    // Patch the GLSL source at runtime to make it compatible with WebGL 2.
-    std::string patchedGlsl(glslSource, glslLength);
-    {
-        // Replace "#version 330" with "#version 300 es"
-        const std::string v330 = "#version 330";
-        auto pos = patchedGlsl.find(v330);
-        if (pos != std::string::npos) {
-            patchedGlsl.replace(pos, v330.length(), "#version 300 es");
-        }
-
-        // Find the end of the #version line to insert precision qualifiers after it
-        auto versionEnd = patchedGlsl.find('\n');
-        if (versionEnd != std::string::npos) {
-            std::string precisionBlock;
-            if (stage == MGShaderStage::Pixel) {
-                precisionBlock = "\nprecision mediump float;\nprecision mediump sampler2D;\nprecision mediump samplerCube;\n";
-            } else {
-                precisionBlock = "\nprecision highp float;\n";
-            }
-            patchedGlsl.insert(versionEnd + 1, precisionBlock);
-        }
-    }
-    glslSource = patchedGlsl.c_str();
-    glslLength = (GLint)patchedGlsl.size();
-#endif
-
     // --- Create and compile the GL shader ---
     GLenum glStage = (stage == MGShaderStage::Vertex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
     shader->shader = glCreateShader(glStage);
@@ -3258,12 +3250,12 @@ MGG_Shader* MGG_Shader_Create(MGG_GraphicsDevice* device, MGShaderStage stage, m
         return nullptr;
     }
 
-#ifndef NDEBUG
-    printf("Shader source:\n%s\n", glslSource);
-#endif
-
     shader->id = ++device->currentShaderId;
     device->all_shaders.push_back(shader);
+
+#ifndef NDEBUG
+    printf("Shader %d source:\n%s\n", shader->id,  glslSource);
+#endif
 
     GL_CHECK_ERROR();
     return shader;

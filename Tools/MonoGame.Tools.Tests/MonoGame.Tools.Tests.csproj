@@ -912,6 +912,12 @@
     <Content Update="..\..\Tests\Assets\Effects\DirectX.mgcb">
       <Link>Assets\Effects\DirectX.mgcb</Link>
     </Content>
+    <Content Update="..\..\Tests\Assets\Effects\OpenGL4.mgcb">
+      <Link>Assets\Effects\OpenGL4.mgcb</Link>
+    </Content>
+    <Content Update="..\..\Tests\Assets\Effects\OpenGLES.mgcb">
+      <Link>Assets\Effects\OpenGLES.mgcb</Link>
+    </Content>
     <Content Update="..\..\Tests\Assets\Effects\Include.fxh">
       <Link>Assets\Effects\Include.fxh</Link>
     </Content>

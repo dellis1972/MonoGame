@@ -348,6 +348,11 @@ namespace MonoGame.Effect
                         var a = new ShaderData.Attribute();
                         var semanticId = input.HlslSemantic ?? input.Id.Replace("%in_var_", "");
 
+                        // Strip the SV_ prefix from system-value semantics so
+                        // SV_POSITION matches the POSITION case below.
+                        if (semanticId.StartsWith("SV_", StringComparison.OrdinalIgnoreCase))
+                            semanticId = semanticId.Substring(3);
+
                         var m = Regex.Match(semanticId, @"(\D+)(\d+)?");
                         if (m.Groups[2].Success)
                             a.index = int.Parse(m.Groups[2].Value);

@@ -56,6 +56,7 @@ namespace MonoGame.Tests.ContentPipeline
             TargetPlatform.iOS,
             TargetPlatform.Android,
             TargetPlatform.DesktopGL,
+            TargetPlatform.DesktopGL4,
             TargetPlatform.MacOSX,
             TargetPlatform.NativeClient,
 
