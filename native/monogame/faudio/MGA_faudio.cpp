@@ -108,7 +108,11 @@ MGA_System* MGA_System_Create()
 {
 	auto system = new MGA_System();
 
+#if MG_EMSCRIPTEN
+	uint32_t result = FAudioCreate(&system->faudio, FAUDIO_1024_QUANTUM, FAUDIO_DEFAULT_PROCESSOR);
+#else
 	uint32_t result = FAudioCreate(&system->faudio, 0, FAUDIO_DEFAULT_PROCESSOR);
+#endif
 	if (result != 0)
 	{
 		delete system;
