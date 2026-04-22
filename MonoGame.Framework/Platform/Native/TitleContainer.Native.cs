@@ -4,10 +4,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-<<<<<<< HEAD
-=======
-using System.Security.Cryptography.X509Certificates;
->>>>>>> 55d4590d0 (Fixed a ton of bugs around Sprite Effects and Instanced Rendering for both OpenGL4 and Web)
 using MonoGame.Interop;
 
 
