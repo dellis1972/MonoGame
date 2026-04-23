@@ -40,11 +40,15 @@
 #endif
 
 #if defined(MG_SDL2)
-#define GL_GLEXT_PROTOTYPES 1
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_opengl_glext.h>
 #endif
+
+// GL function loader — must be included AFTER SDL/GL headers.
+// On desktop, this redirects GL 1.2+ function names to dynamically loaded
+// function pointers via SDL_GL_GetProcAddress. No-op on Emscripten.
+#include "MGG_GLLoader.h"
 
 #include <vector>
 #include <string>
@@ -906,6 +910,14 @@ static bool MGL_InitContext(MGG_GraphicsDevice* device, SDL_Window* window) {
     // Make the context current
     if (SDL_GL_MakeCurrent(device->window, device->context) < 0) {
         fprintf(stderr, "Failed to make OpenGL context current: %s\n", SDL_GetError());
+        SDL_GL_DeleteContext(device->context);
+        device->context = nullptr;
+        return false;
+    }
+
+    // Load GL 1.2+ function pointers via SDL_GL_GetProcAddress.
+    if (!MGL_LoadGLFunctions()) {
+        fprintf(stderr, "Failed to load required OpenGL functions\n");
         SDL_GL_DeleteContext(device->context);
         device->context = nullptr;
         return false;

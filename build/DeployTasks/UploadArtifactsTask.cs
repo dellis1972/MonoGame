@@ -75,7 +75,7 @@ public sealed class UploadArtifactsTask : AsyncFrostingTask<BuildContext>
             case PlatformFamily.Linux:
                 await context.GitHubActions().Commands.UploadArtifact(new DirectoryPath($"Artifacts/native/mgpipeline/linux/{arch}/Release/"), $"mgpipeline-linux-{arch}.{context.Version}");
                 await context.GitHubActions().Commands.UploadArtifact(new DirectoryPath($"Artifacts/native/mgruntime/desktopvk/linux/{arch}/"), $"mgnative-linux-{arch}.{context.Version}");
-                await context.GitHubActions().Commands.UploadArtifact(new DirectoryPath("Artifacts/native/mgruntime/emscripten/wasm/Release/"), $"mgnative-wasm-{os}.{context.Version}");
+                await context.GitHubActions().Commands.UploadArtifact(new DirectoryPath("Artifacts/native/mgruntime/wasm/emscripten/Release/"), $"mgnative-wasm-{os}.{context.Version}");
                 break;
             case PlatformFamily.OSX:
                 // macOS produces universal binaries
