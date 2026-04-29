@@ -22,6 +22,10 @@ public sealed class BuildNativeDependenciesTask : FrostingTask<BuildContext>
 
         if (context.IsRunningOnWindows())
             return;
+
+        if (context.Environment.Platform.Family == PlatformFamily.Linux && RuntimeInformation.OSArchitecture == Architecture.Arm64)
+            return;
+
         BuildSDL2ForEmscripten(context);
         BuildFAudioForEmscripten(context);
     }
