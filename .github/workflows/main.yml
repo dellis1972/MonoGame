@@ -138,11 +138,13 @@ jobs:
         uses: monogame/monogame-actions/install-fonts@v1
 
       - name: Setup Emsdk
+        if: runner.os != 'Linux' || runner.arch != 'ARM64'
         uses: mymindstorm/setup-emsdk@v14
         with:
           version: '3.1.56'
       
       - name: List Emscripten Version
+        if: runner.os != 'Linux' || runner.arch != 'ARM64'
         run: |
           emcc --version
 
