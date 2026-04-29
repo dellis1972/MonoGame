@@ -28,7 +28,7 @@ public sealed class BuildPremake
                 Scaffold(context, name, workingDirectory, $"--arch={arch} gmake2");
                 Make(context, name, workingDirectory);
 
-                Scaffold(context, name, workingDirectory, $"--arch={arch} gmake2", "emscripten");
+                Scaffold(context, name, workingDirectory, $"gmake2", "emscripten");
                 Make(context, name, workingDirectory);
 
                 break;
