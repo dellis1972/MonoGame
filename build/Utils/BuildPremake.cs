@@ -28,6 +28,9 @@ public sealed class BuildPremake
                 Scaffold(context, name, workingDirectory, $"--arch={arch} gmake2");
                 Make(context, name, workingDirectory);
 
+                if (context.Environment.Platform.Family == PlatformFamily.Linux && RuntimeInformation.OSArchitecture == Architecture.Arm64)
+                    break;
+
                 Scaffold(context, name, workingDirectory, $"gmake2", "emscripten");
                 Make(context, name, workingDirectory);
 
