@@ -169,8 +169,6 @@ namespace Microsoft.Xna.Framework.Content.Pipeline
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && File.Exists(lincom))
                 return lincom;
 
-            var rid = RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "arm64" : "x64";
-
             // For Linux check specific subfolder for current process rid
             lincom = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"linux-{rid}", command);
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && File.Exists(lincom))

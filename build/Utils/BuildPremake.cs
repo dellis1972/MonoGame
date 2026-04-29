@@ -28,6 +28,9 @@ public sealed class BuildPremake
                 Scaffold(context, name, workingDirectory, $"--arch={arch} gmake2");
                 Make(context, name, workingDirectory);
 
+                Scaffold(context, name, workingDirectory, $"--arch={arch} gmake2", "emscripten");
+                Make(context, name, workingDirectory);
+
                 break;
             }
             default:
@@ -37,7 +40,7 @@ public sealed class BuildPremake
         }
     }
 
-    private void Scaffold(BuildContext context, string name, string workingDirectory, string premakeArguments)
+    private void Scaffold(BuildContext context, string name, string workingDirectory, string premakeArguments, string os = "")
     {
         int exit;
         exit = context.StartProcess("premake5", new ProcessSettings { WorkingDirectory = workingDirectory, Arguments = "clean" });
